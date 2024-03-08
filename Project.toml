@@ -1,0 +1,26 @@
+name = "LAInterfaces"
+uuid = "e2c85c5c-1d9a-4bfa-853f-83f0516c6f2c"
+authors = ["Graham Stark"]
+version = "1.0.0-DEV"
+
+[deps]
+ArgCheck = "dce04be8-c92d-5529-be00-80e4d2c0e197"
+CSV = "336ed68f-0bac-5ca0-87d4-7b16caf5d00b"
+CairoMakie = "13f3f980-e62b-5c42-98c6-ff1f3baf88f0"
+DataFrames = "a93c6f00-e57d-5684-b7b6-d8193f3e46c0"
+Format = "1fa38f19-a742-5d3f-a2b9-30dd87b9d5f8"
+GenieFramework = "a59fdf5c-6bf0-4f5d-949c-a137c9e2f353"
+Observables = "510215fc-4207-5dde-b226-833fc4488ee2"
+Pluto = "c3e4b0f8-55cb-11ea-2926-15256bba5781"
+PlutoUI = "7f904dfe-b85e-4ff6-b463-dae2292396a8"
+ScottishTaxBenefitModel = "a734f2ee-4b7f-478f-84ca-797081d39f6e"
+StatsBase = "2913bbd2-ae8a-5f71-8c99-4fb6c76f3a91"
+
+[compat]
+julia = "1"
+
+[extras]
+Test = "8dfed614-e22c-5e08-85e1-65c5234f0b40"
+
+[targets]
+test = ["Test"]
