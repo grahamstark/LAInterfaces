@@ -1,0 +1,15 @@
+mv 'Disabled Person 1.svg' disabled-person-1.svg
+mv 'Disabled Person 2.svg' disabled-person-2.svg
+mv 'Family-Dual Income.svg' family-dual-income.svg
+mv 'Family-Single Income.svg' family-single-income.svg
+mv Family.svg family.svg
+mv Income-100k.svg income-100k.svg
+mv Income-12k.svg income-12k.svg
+mv Income-25k.svg income-25k.svg
+mv Income-35k.svg income-35k.svg
+mv 'Pensioner Couple.svg' pensioner-couple.svg
+mv 'Single Female Pensioner.svg' single-female-pensioner.svg
+mv 'Single Male Pensioner.svg' single-male-pensioner.svg
+mv 'Single Parent.svg' single-parent.svg
+mv 'Single Person-Single Income.svg' single-person-employed.svg
+mv 'Single Person.svg' 'single-person-unemployed.svg  

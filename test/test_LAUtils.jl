@@ -4,7 +4,6 @@ using ScottishTaxBenefitModel
 using .LegalAidOutput
 
 @testset "LAUtils Test" begin
-
     settings = make_default_settings()
     settings.run_name = "LAUtils Test"
     odp = LAUtils.BASE_SYS.legalaid.civil.income_other_dependants_allowance 

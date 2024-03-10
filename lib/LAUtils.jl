@@ -143,16 +143,18 @@ of = on(obs) do p
     # println(tot)
 end
 
-function run( settings :: Settings, other_dependents_allowance::Real )
+function run( settings :: Settings, other_dependents_allowance = nothing ) #::Union{Nothing,Real} )
     global tot
+    println( "running $other_dependents_allowance")
     tot = 0
     sys2 = deepcopy(BASE_SYS)
     
-    sys2.legalaid.civil.income_other_dependants_allowance = 
-        other_dependents_allowance/WEEKS_PER_YEAR
-
-    allout = LegalAidRunner.do_one_run( settings, [BASE_SYS,sys2], obs )
-    return allout
+    if ! isnothing( other_dependents_allowance )
+        sys2.legalaid.civil.income_other_dependants_allowance = 
+            other_dependents_allowance/WEEKS_PER_YEAR
+    end
+    laout = LegalAidRunner.do_one_run( settings, [BASE_SYS,sys2], obs )
+    return laout
 end
   
 

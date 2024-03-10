@@ -1,0 +1,342 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta charset="UTF-8">
+    <title>TriplePC: The Public Policy Preference Calculator</title>
+    <link rel="icon" href="images/favicon.png">
+    <link rel="stylesheet" href="css/bisite-bootstrap.css"/>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.9.1/font/bootstrap-icons.css"/>
+    <script type='text/javascript' src='js/jquery.js'></script>
+    <script type='text/javascript' src='js/jquery.periodicalupdater.js'></script>
+    <script type='text/javascript' src='js/jquery.validate.js'></script>
+     <!-- bootstrap -->
+    <script src="js/bootstrap.bundle.js"></script>
+    <!-- vega graphics -->
+    <script type="text/javascript" src="js/vega-lite.min.js"></script>
+    <script type="text/javascript" src="js/vega.js"></script>
+    <script type="text/javascript" src="js/vega-embed.min.js"></script>
+    <!-- templates -->
+    <script type='text/javascript' src="js/mustache.min.js"></script>
+   
+</head>
+<body class='text-primary p-2'>
+    
+         <header class="">
+        
+        <nav class="navbar navbar-expand-lg nav-fill text-bg-primary">
+            <a class='nav-link active' href='https://hosting.northumbria.ac.uk/basicincomehealth/'><img src='images/logos/Basic Income Health logo_Rev_RGB.png' height='80' /></a>
+            <span class='display-5 nav-item'>TriplePC: Public Policy Preference Calculator</span>
+            <a class='nav-link active' href='https://northumbria.ac.uk'><img src='images/NU_Logo_White.svg' height='120' /></a>
+        </nav>
+
+        </header>
+        <form id='mainform' action="thing" method="POST">       
+            <div class='container-fluid'>                 
+                <div class='row'><!-- input row -->
+                    <fieldset class="col border text-black m-1 p-2">
+                        <legend class="text-primary">Benefit Levels - How much?</legend>
+                        <div class="row">                                                                                    
+                            <div class="col">                                                    
+                                <label for='income_living_allowance' class='form-label'>Living Allowance</label>
+                                <input id='income_living_allowance' type='number' name="income_living_allowance" min='0' max='200000' value='' step='1' size="12" class='form-control w-50'/>
+                            </div>
+                            <div class="col">                                                    
+                                <label for='income_partners_allowance' class='form-label'>Partner's Allowance</label>
+                                <input id='income_partners_allowance' type='number' name="income_partners_allowance" min='0' max='200000' value='' step='1' size="12" class='form-control w-50'/>
+                            </div>
+                        </div>
+                        <div class="row">                                                                                    
+                            <div class="col">                                                    
+                                <label for='income_other_dependants_allowance' class='form-label'>Other Dependent's Allowance</label>
+                                <input id='income_other_dependants_allowance' type='number' name="income_other_dependants_allowance" min='0' max='200000' value='' step='1' size="12" class='form-control w-50'/>
+                            </div>
+                            <div class="col">                                                    
+                                <label for='income_child_allowance' class='form-label'>Children's Allowance</label>
+                                <input id='income_child_allowance' type='number' name="income_child_allowance" min='0' max='200000' value='' step='1' size="12" class='form-control w-50'/>
+                            </div>
+                        </div>
+                    </fieldset>
+                </div> <!-- row -->
+                                                
+                <div class="row"> <!-- progress bar -->
+                    <div class="col"></div>
+                    <div class='col-4' id="progress-indicator"></div>
+                    <div class="col"></div>
+                </div> <!-- output row -->
+                
+                <fieldset class="row">
+                    <div class="col"></div>
+                    <div class="col"></div>
+                    <div class="col"></div>
+                    <div class="col">
+                        <ul class="nav">
+                            <li class="nav-item  p-2">                      
+                                <button  type="button" class='btn btn-secondary ' value='' onclick='submitForm( "reset" )'>Reset</button>
+                            </li>
+                             <li class="nav-item p-2">                      
+                                <button  type="button" class='btn btn-primary ' value='' onclick='submitForm( "run" )'>Run</button>
+                            </li>
+                        </ul>
+                    </div>
+                </fieldset> <!-- submission row -->
+                
+                <div class='row justify-content-center text-secondary pt-3 pb-3'>
+                    <div class='col-4'></div>
+                    <div class='col-4 text-center'>
+                        <h3>Effects ...</h3>
+                    </div>
+                    <div class='col-4'></div>
+                </div>
+
+                <div class="row">
+                    <div class='col-4'></div>
+                    <div class='col-4' id='crosstab'></div>
+                    <div class='col-4'></div>
+                </div>
+            </div> <!-- container -->
+        </form>
+
+        <p class="text-danger">Note: some features are not yet implemented.</p>
+        
+        <footer>
+            <nav class="text-bg-primary text-center position-relative">
+            copyright&copy; 2024 SLAB/Virtual Worlds Research/Others | Code released under the <a href='https://mit-license.org/'>MIT Licence</a>
+            </nav>
+        </footer>
+
+<script type='text/javascript'>
+
+
+
+var updater;
+
+function drawRunProgress( data ){
+    console.log( "data.completed" + data.completed + "data.size" + data.size );
+    var pct = Math.trunc(100 * data.completed / data.size);
+    var runn = "Model Running";
+    var colour = "bg-success";
+    if( data.phase == 'health' ){
+        runn = "Estimating Health";
+        colour = "bg-info";
+    }
+
+    var prog = 
+        "<p>" + runn + "</p>"+
+        "<div class='progress'>"+
+        "<div class='progress-bar " + colour +" progress-bar-animated progress-bar-striped' role='progressbar' "+
+            "aria-valuenow='" + pct + "' " + 
+            "style='width: "+pct+"%' " +
+            "aria-valuemin='0' " +
+            "aria-valuemax='100'>"+
+            pct + "%" +
+            "</div> "+
+            "</div>";
+    console.log( "prog="+prog )
+    $("#progress-indicator").html( prog );
+}
+
+
+
+function createLorenzCurve( targetId, result, thumbnail ){
+    var height = 300;
+    var xtitle = "Population Share";
+    var ytitle = "Income Share";
+    var title = "Lorenz Curve"
+    if( thumbnail ){
+        var height = 70;
+        xtitle = "";
+        ytitle = "";
+        title = "";
+    }
+    var width = Math.trunc( GOLDEN_RATIO*height);
+    var data=[];
+    console.log( "deciles" + result.lorenz_pre.toString());
+    console.log( "lorenz_pre length" + result.lorenz_pre.length );
+    // deciles levels are rhs. so push a 0,0
+    data.push( {"Population Share":0, "Income Share":0,
+            "Which System":"Before"  });
+    popn = 0.0;
+    incr = 1/result.lorenz_pre.length;
+    for( var i = 0; i < result.lorenz_pre.length; i++){
+        popn += incr;
+        data.push( {"Population Share":popn, 
+                    "Income Share":result.lorenz_pre[i], 
+                    "Which System":"Before"
+                });
+    }
+    // var data_post= [];
+    data.push( {"Population Share":0, "Income Share":0,
+            "Which System":"After" });
+    popn = 0.0;
+    for( var i = 0; i < result.lorenz_post.length; i++){
+        popn += incr;
+        data.push( {"Population Share":popn, "Income Share":result.lorenz_post[i],
+            "Which System":"After" });
+    }
+    data.push( {"Population Share":0.0, "Income Share":0.0, "Which System":"Line of Equality"});
+    data.push( {"Population Share":1.0, "Income Share":1.0, "Which System":"Line of Equality"});
+    var gini_vg = {
+        "$schema": "https://vega.github.io/schema/vega-lite/v3.json",
+        "title": title,
+        "width": width,
+        "height": height,
+        "description": title,
+        "data": {"values": data }, // , "post":data_post
+        "mark": {"type":"line"},
+        "encoding":{
+                    "x": { "type": "quantitative",
+                        "field": "Population Share"},
+                    "y": { "type": "quantitative",
+                        "field": "Income Share"},
+                    "color": {"field":"Which System", "type":"Nominal"}
+        }
+    }
+    vegaEmbed( targetId, gini_vg );
+}
+
+const GOLDEN_RATIO = 1.618
+ 
+function createDecileBarChart( targetId, result, thumbnail ){
+    var height = 300;
+    var xtitle = "Deciles";
+    var ytitle = "Transfers (£m p.a.)";
+    var title = "Changes By Decile"
+    if( thumbnail ){
+        var height = 70;
+        xtitle = "";
+        ytitle = "";
+        title = "";
+    }
+    var width = Math.trunc( GOLDEN_RATIO*height);
+    var data=[];
+    console.log( "deciles" + result.gains_by_decile.toString());
+    console.log( "lorenz_pre[2] length" + result.gains_by_decile.length );
+    for( var i = 0; i < result.gains_by_decile.length; i++){
+        var dec = (i+1);
+        data.push( {"decile":dec, "gain":result.gains_by_decile[i] });
+    }
+    var deciles_vg = {
+        "$schema": "https://vega.github.io/schema/vega-lite/v3.json",
+        "title": title,
+        "width": width,
+        "height": height,
+        "description": title,
+        "data": {"values": data }, // , "post":data_post
+        "mark": "bar",
+        "encoding":{
+            "x": { "type": "ordinal",
+                   "field": "decile",
+                   "axis":{
+                      "title": xtitle
+                   }
+             },
+            "y": { "type": "quantitative",
+                   "field": "gain",
+                   "axis":{
+                      "title": ytitle
+                   }
+            }
+        } // encoding
+    }
+    console.log( "deciles_vg=" + JSON.stringify(deciles_vg) );
+
+    vegaEmbed( targetId, deciles_vg );
+}
+
+function setVal( id, val, def ){
+    $( "#"+id ).val( val );
+    console.log( "setVal for #%s val=%s def=%s", id, val, def )
+    if( val != def ){
+        $( "#"+id ).addClass( 'changed');
+    } else {
+        $( "#"+id ).removeClass( 'changed');
+    }
+}
+
+function createMainOutputs( result ){
+    console.log( result.crosstab );
+    $("#crosstab").html( result.crosstab );
+}
+
+function loadOutput(){
+    // FIXME use asnc or something
+    $.ajax(
+        { url: "/conjoint/output",
+        method: 'post',
+        dataType: 'json',
+        contentType: "application/json",
+        data:""
+        }).done(
+            function( outp ){
+                // if( outp.response == 'output_ready' ){
+                    console.log( "submitForm; result %o", outp);
+                    createMainOutputs( outp.data );
+                // } else {
+                //    return "";
+                // }
+            }
+        );
+}
+
+
+function loadFromForm(){
+    var data = {
+        income_living_allowance: parseFloat($( "#income_living_allowance" ).val()),
+        income_partners_allowance: parseFloat($( "#income_partners_allowance" ).val()),
+        income_other_dependants_allowance: parseFloat($( "#income_other_dependants_allowance" ).val()),
+        income_child_allowance: parseFloat($( "income_child_allowance" ).val())
+    }
+    return data;
+}
+
+function submitForm( action, target ){
+     var url = "/conjoint/"+action;
+     if( target != null ){
+        url += "/"+target;
+     }
+     $("#mainform").validate();
+     var dataset = JSON.stringify(loadFromForm());
+     console.log( "submitForm; data = %o", dataset );
+     $.ajax(
+        { url: url,
+         method: 'post',
+         dataType: 'json',
+         contentType: "application/json",
+         data: dataset
+        }).done(
+            function( initialResult ){
+                console.log( "submitForm; initialResult%o", initialResult);
+                console.log( "target " + target );
+                switch( action ){
+                case 'run':
+                    loadOutput();
+                    break;
+                case 'reset':
+                    // FIXME something to reset parameters
+                    // createMainOutputs( result.data );                    
+                    loadParams( initialResult.data );
+                    loadOutput();
+                    break;
+                }
+            }
+        ).fail(
+            function( jqXHR, textStatus, errorThrown ){
+                console.log( "failed with " + textStatus + " errorThrown "+errorThrown );
+                console.log( "jqXHR.statusCode" + jqXHR.status + " text" + jqXHR.statusText );
+            }
+        );
+}
+
+$(document).ready(function(){
+        $("mainform").submit(function(e){
+                alert('submit intercepted');
+                e.preventDefault(e);
+        });
+        submitForm("reset", null ); // FIXME make this params?
+        
+    });
+
+</script>
+</body>
+</html>
