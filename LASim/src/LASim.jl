@@ -21,6 +21,7 @@ using .FRSHouseholdGetter
 using .GeneralTaxComponents: WEEKS_PER_YEAR
 using .Monitor: Progress
 using .RunSettings
+using .Results
 using .Definitions
 using .STBParameters: 
   TaxBenefitSystem, 
@@ -73,6 +74,7 @@ function format_crosstab( crosstab :: Matrix, caption = "") :: AbstractString
     tr = "<tr><th></th>"
     for c in 1:4
         cell = "<th>$(labels[c])</th>"
+        tr *= cell
     end
     tr *= "</tr>"
     t *= tr
@@ -83,7 +85,7 @@ function format_crosstab( crosstab :: Matrix, caption = "") :: AbstractString
         for c in 1:4
             v = fmt( crosstab[r,c] )
             colour = if r == c # on the diagonal
-                "text-secondary"
+                "text-primary"
             elseif r < c # above the diagonal
                 "text-success"
             else # below the diagonal
@@ -112,45 +114,82 @@ of = on(obs) do p
     # println(tot)
 end
 
+"""
+annualised
+"""
+function default_la_sys()
+  civil = STBParameters.default_civil_sys( 2023, Float64 )
+  civil.gross_income_limit = min( civil.gross_income_limit, 999999999999 )
+  return civil
+  # legalaid.civil.included_capital = WealthSet([net_financial_wealth])
+end
+
 function make_default_sys()
   sys = STBParameters.get_default_system_for_fin_year( 2023, scotland=true )
   # overwrite with annualised version
-  sys.legalaid.civil = STBParameters.default_civil_sys( 2023, Float64 )
-  sys.legalaid.civil.included_capital = WealthSet([net_financial_wealth])
   return sys
 end 
+
+const DEFAULT_PARAMS =  make_default_sys()
+const DEFAULT_SETTINGS = make_default_settings()
 
 function do_run( la2 :: OneLegalAidSys; iscivil=true )
   global tot
   tot = 0
-  sys2 = deepcopy(DEFAULT_SYS)
+  sys2 = deepcopy(DEFAULT_PARAMS)
   if iscivil
     sys2.legalaid.civil = la2
     weeklyise!( sys2.legalaid.civil )
   else
     sys2.legalaid.aa = la2
   end  
-  allout = LegalAidRunner.do_one_run( DEFAULT_SETTINGS, [DEFAULT_SYS,sys2], obs )
+  allout = LegalAidRunner.do_one_run( DEFAULT_SETTINGS, [DEFAULT_PARAMS,sys2], obs )
   return allout
 end
 
-const DEFAULT_PARAMS =  make_default_sys()
-const DEFAULT_SETTINGS = make_default_settings()
+
+# TOLIBRARY
+function results_to_html( 
+  results      :: AllLegalOutput ) :: NamedTuple
+  # table expects a tuple
+  k = "$(LegalAidData.PROBLEM_TYPES[1])-$(LegalAidData.ESTIMATE_TYPES[2])"
+  crosstab = format_crosstab( results.civil.crosstab_pers[1][k] )
+  (; crosstab )
+end
+
+
 const DEFAULT_RUN = do_run( DEFAULT_PARAMS.legalaid.civil )
 const DEFAULT_OUTPUT = results_to_html( DEFAULT_RUN )
 
 const up = Genie.up
 export up
 
+
+mutable struct LASubsys{T}
+  income_living_allowance :: T       
+  income_partners_allowance   :: T        
+  income_other_dependants_allowance :: T  
+  income_child_allowance   :: T           
+end
+
+function LASubsys( sys :: OneLegalAidSys )
+  LASubsys(
+    sys.income_living_allowance,
+    sys.income_partners_allowance,        
+    sys.income_other_dependants_allowance,
+    sys.income_child_allowance )
+end
+
 function sysfrompayload( payload ) :: OneLegalAidSys
-  @show payload
-  pars = JSON3.read( payload )
+  pars = JSON3.read( payload, LASubsys{Float64})
+  @show pars
+  
   # make this swappable to aa
-  sys = deepcopy( deepcopy(DEFAULT_SYS.legalaid.civil ))
-  sys.income_living_allowance           = parse(Float64, pars.income_living_allowance )
-  sys.income_partners_allowance         = parse(Float64, pars.income_partners_allowance )
-  sys.income_other_dependants_allowance = parse(Float64, pars.income_other_dependants_allowance )
-  sys.income_child_allowance            = parse(Float64, pars.income_child_allowance )
+  sys = deepcopy( DEFAULT_PARAMS.legalaid.civil )
+  sys.income_living_allowance           = pars.income_living_allowance
+  sys.income_partners_allowance         = pars.income_partners_allowance
+  sys.income_other_dependants_allowance = pars.income_other_dependants_allowance
+  sys.income_child_allowance            = pars.income_child_allowance
   
   # capital_allowances                = RT.([])    
   # income_cont_type = cont_proportion 
@@ -158,21 +197,16 @@ function sysfrompayload( payload ) :: OneLegalAidSys
   return sys
 end
 
-function results_to_html( 
-  results      :: NamedTuple ) :: NamedTuple
-  # table expects a tuple
-  crosstab = format_crosstab( results.civil.crosstab_pers[1] )
-  (; crosstab )
-end
-
 function reset()
+  defaults = default_la_sys()
+  @info defaults
   (; output=DEFAULT_OUTPUT, 
-     params = DEFAULT_PARAMS.legal.civil,
-     defaults = DEFAULT_PARAMS.legal.civil ) |> json
+     params = defaults,
+     defaults = defaults ) |> json
 end
 
 function run()
-  lasys = sysfrompayload( rawpayload())
+  lasys = sysfrompayload( rawpayload()) 
   lares = do_run( lasys )
   output = results_to_html( lares )
   params = lasys

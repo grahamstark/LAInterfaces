@@ -31,7 +31,7 @@
         </nav>
 
         </header>
-        <form id='mainform' action="thing" method="GET">       
+        <form id='mainform' action="thing" method="POST">       
             <div class='container-fluid'>                 
                 <div class='row'><!-- input row -->
                     <fieldset class="col border text-black m-1 p-2">
@@ -215,8 +215,9 @@ function loadFromForm(){
         income_living_allowance: parseFloat($( "#income_living_allowance" ).val()),
         income_partners_allowance: parseFloat($( "#income_partners_allowance" ).val()),
         income_other_dependants_allowance: parseFloat($( "#income_other_dependants_allowance" ).val()),
-        income_child_allowance: parseFloat($( "income_child_allowance" ).val())
+        income_child_allowance: parseFloat($( "#income_child_allowance" ).val())
     }
+    console.log( "loadFromForm data = %o", data );
     return data;
 }
 
@@ -230,7 +231,7 @@ function submitForm( action, target ){
      console.log( "submitForm; data = %o", dataset );
      $.ajax(
         { url: url,
-         method: 'get',
+         method: 'post',
          dataType: 'json',
          contentType: "application/json",
          data: dataset
