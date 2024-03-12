@@ -25,12 +25,13 @@
          <header class="">
         
         <nav class="navbar navbar-expand-lg nav-fill text-bg-primary">
-            <span class='display-5 nav-item'>SLAB SIM</span>
-            <a class='nav-link active' href='https://www.slab.org.uk/'><img src='images/slab-logo.svg' height='120' /></a>
+            <span class='display-4 nav-item'><a class='nav-link active' href='https://www.slab.org.uk/'>
+                <img src='images/slab-logo.svg' height='120' width='280'/></a></span>
+            <span class='display-2 nav-item'>SLAB SIM</span>
         </nav>
 
         </header>
-        <form id='mainform' action="thing" method="POST">       
+        <form id='mainform' action="thing" method="GET">       
             <div class='container-fluid'>                 
                 <div class='row'><!-- input row -->
                     <fieldset class="col border text-black m-1 p-2">
@@ -137,63 +138,6 @@ function drawRunProgress( data ){
 
 
 
-function createLorenzCurve( targetId, result, thumbnail ){
-    var height = 300;
-    var xtitle = "Population Share";
-    var ytitle = "Income Share";
-    var title = "Lorenz Curve"
-    if( thumbnail ){
-        var height = 70;
-        xtitle = "";
-        ytitle = "";
-        title = "";
-    }
-    var width = Math.trunc( GOLDEN_RATIO*height);
-    var data=[];
-    console.log( "deciles" + result.lorenz_pre.toString());
-    console.log( "lorenz_pre length" + result.lorenz_pre.length );
-    // deciles levels are rhs. so push a 0,0
-    data.push( {"Population Share":0, "Income Share":0,
-            "Which System":"Before"  });
-    popn = 0.0;
-    incr = 1/result.lorenz_pre.length;
-    for( var i = 0; i < result.lorenz_pre.length; i++){
-        popn += incr;
-        data.push( {"Population Share":popn, 
-                    "Income Share":result.lorenz_pre[i], 
-                    "Which System":"Before"
-                });
-    }
-    // var data_post= [];
-    data.push( {"Population Share":0, "Income Share":0,
-            "Which System":"After" });
-    popn = 0.0;
-    for( var i = 0; i < result.lorenz_post.length; i++){
-        popn += incr;
-        data.push( {"Population Share":popn, "Income Share":result.lorenz_post[i],
-            "Which System":"After" });
-    }
-    data.push( {"Population Share":0.0, "Income Share":0.0, "Which System":"Line of Equality"});
-    data.push( {"Population Share":1.0, "Income Share":1.0, "Which System":"Line of Equality"});
-    var gini_vg = {
-        "$schema": "https://vega.github.io/schema/vega-lite/v3.json",
-        "title": title,
-        "width": width,
-        "height": height,
-        "description": title,
-        "data": {"values": data }, // , "post":data_post
-        "mark": {"type":"line"},
-        "encoding":{
-                    "x": { "type": "quantitative",
-                        "field": "Population Share"},
-                    "y": { "type": "quantitative",
-                        "field": "Income Share"},
-                    "color": {"field":"Which System", "type":"Nominal"}
-        }
-    }
-    vegaEmbed( targetId, gini_vg );
-}
-
 const GOLDEN_RATIO = 1.618
  
 function createDecileBarChart( targetId, result, thumbnail ){
@@ -253,31 +197,18 @@ function setVal( id, val, def ){
     }
 }
 
+function loadParams( params, defaults ){
+    setVal( "income_living_allowance", params.income_living_allowance, defaults.income_living_allowance);
+    setVal( "income_partners_allowance", params.income_partners_allowance, defaults.income_partners_allowance );
+    setVal( "income_other_dependants_allowance", params.income_other_dependants_allowance, defaults.income_other_dependants_allowance );
+    setVal( "income_child_allowance", params.income_child_allowance, defaults.income_child_allowance );
+
+}
+
 function createMainOutputs( result ){
     console.log( result.crosstab );
     $("#crosstab").html( result.crosstab );
 }
-
-function loadOutput(){
-    // FIXME use asnc or something
-    $.ajax(
-        { url: "/conjoint/output",
-        method: 'post',
-        dataType: 'json',
-        contentType: "application/json",
-        data:""
-        }).done(
-            function( outp ){
-                // if( outp.response == 'output_ready' ){
-                    console.log( "submitForm; result %o", outp);
-                    createMainOutputs( outp.data );
-                // } else {
-                //    return "";
-                // }
-            }
-        );
-}
-
 
 function loadFromForm(){
     var data = {
@@ -290,7 +221,7 @@ function loadFromForm(){
 }
 
 function submitForm( action, target ){
-     var url = "/conjoint/"+action;
+     var url = "/lasim/"+action;
      if( target != null ){
         url += "/"+target;
      }
@@ -299,7 +230,7 @@ function submitForm( action, target ){
      console.log( "submitForm; data = %o", dataset );
      $.ajax(
         { url: url,
-         method: 'post',
+         method: 'get',
          dataType: 'json',
          contentType: "application/json",
          data: dataset
@@ -308,15 +239,11 @@ function submitForm( action, target ){
                 console.log( "submitForm; initialResult%o", initialResult);
                 console.log( "target " + target );
                 switch( action ){
-                case 'run':
-                    loadOutput();
-                    break;
-                case 'reset':
-                    // FIXME something to reset parameters
-                    // createMainOutputs( result.data );                    
-                    loadParams( initialResult.data );
-                    loadOutput();
-                    break;
+                    case 'run':
+                    case 'reset':
+                        loadParams( initialResult.params, initialResult.defaults );
+                        createMainOutputs( initialResult.output );
+                        break;
                 }
             }
         ).fail(
@@ -333,7 +260,6 @@ $(document).ready(function(){
                 e.preventDefault(e);
         });
         submitForm("reset", null ); // FIXME make this params?
-        
     });
 
 </script>

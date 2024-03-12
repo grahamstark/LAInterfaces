@@ -1,3 +1,7 @@
+# get around weird bug similar to: https://github.com/GenieFramework/Genie.jl/issues/433
+__precompile__(false)
+
+
 module LASim
 
 using Genie
@@ -10,7 +14,7 @@ using Format
 using StatsBase 
 using Observables
 using ArgCheck
-
+using UUIDs
 
 using ScottishTaxBenefitModel
 using .FRSHouseholdGetter
@@ -18,7 +22,13 @@ using .GeneralTaxComponents: WEEKS_PER_YEAR
 using .Monitor: Progress
 using .RunSettings
 using .Definitions
-using .STBParameters: TaxBenefitSystem, get_default_system_for_fin_year
+using .STBParameters: 
+  TaxBenefitSystem, 
+  get_default_system_for_fin_year, 
+  OneLegalAidSys, 
+  ScottishLegalAidSys, 
+  weeklyise!
+
 using .Utils
 
 using .LegalAidCalculations: calc_legal_aid!
@@ -47,15 +57,6 @@ end
 
 function fmt2(v::Number)::String 
   Format.format( v, precision=2, commas=true )
-end
-
-tot = 0
-obs = Observable( Monitor.Progress( SETTINGS.uuid,"",0,0,0,0))
-of = on(obs) do p
-    global tot
-    println(p)
-    tot += p.step
-    # println(tot)
 end
 
 function format_crosstab( crosstab :: Matrix, caption = "") :: AbstractString
@@ -101,28 +102,42 @@ function format_crosstab( crosstab :: Matrix, caption = "") :: AbstractString
   return t 
 end
 
+tot = 0
+
+obs = Observable( Monitor.Progress( UUIDs.uuid4(),"",0,0,0,0))
+of = on(obs) do p
+    global tot
+    println(p)
+    tot += p.step
+    # println(tot)
+end
+
 function make_default_sys()
   sys = STBParameters.get_default_system_for_fin_year( 2023, scotland=true )
+  # overwrite with annualised version
+  sys.legalaid.civil = STBParameters.default_civil_sys( 2023, Float64 )
   sys.legalaid.civil.included_capital = WealthSet([net_financial_wealth])
   return sys
 end 
 
-function do_run( settings :: Settings, la2 :: OneLegalAidSys; iscivil=true )
+function do_run( la2 :: OneLegalAidSys; iscivil=true )
   global tot
   tot = 0
   sys2 = deepcopy(DEFAULT_SYS)
   if iscivil
     sys2.legalaid.civil = la2
+    weeklyise!( sys2.legalaid.civil )
   else
     sys2.legalaid.aa = la2
-  end
-  allout = LegalAidRunner.do_one_run( settings, [DEFAULT_SYS,sys2], obs )
+  end  
+  allout = LegalAidRunner.do_one_run( DEFAULT_SETTINGS, [DEFAULT_SYS,sys2], obs )
   return allout
 end
 
 const DEFAULT_PARAMS =  make_default_sys()
-const DEFAULT_RUN = do_run( DEFAULT_SETTINGS, DEFAULT_PARAMS.legal.civil )
 const DEFAULT_SETTINGS = make_default_settings()
+const DEFAULT_RUN = do_run( DEFAULT_PARAMS.legalaid.civil )
+const DEFAULT_OUTPUT = results_to_html( DEFAULT_RUN )
 
 const up = Genie.up
 export up
@@ -144,18 +159,25 @@ function sysfrompayload( payload ) :: OneLegalAidSys
 end
 
 function results_to_html( 
-  settings     :: Settings,  
   results      :: NamedTuple ) :: NamedTuple
   # table expects a tuple
   crosstab = format_crosstab( results.civil.crosstab_pers[1] )
   (; crosstab )
 end
 
+function reset()
+  (; output=DEFAULT_OUTPUT, 
+     params = DEFAULT_PARAMS.legal.civil,
+     defaults = DEFAULT_PARAMS.legal.civil ) |> json
+end
+
 function run()
   lasys = sysfrompayload( rawpayload())
-  lares = do_run( DEFAULT_SETTINGS, lasys )
-  output = results_to_html( settings, lares )
-  output |> json
+  lares = do_run( lasys )
+  output = results_to_html( lares )
+  params = lasys
+  defaults = DEFAULT_PARAMS.legalaid.civil
+  (; output, params, defaults ) |> json
 end
 
 function main()
