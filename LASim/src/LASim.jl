@@ -23,6 +23,7 @@ using .Monitor: Progress
 using .RunSettings
 using .Results
 using .Definitions
+using .STBIncomes
 using .STBParameters: 
   TaxBenefitSystem, 
   get_default_system_for_fin_year, 
@@ -112,26 +113,49 @@ of = on(obs) do p
     global tot
     println(p)
     tot += p.step
-    # println(tot)
+end
+
+# included_capital = WealthSet([net_financial_wealth,net_physical_wealth])
+
+
+mutable struct LASubsys{T}
+  income_living_allowance :: T       
+  income_partners_allowance   :: T        
+  income_other_dependants_allowance :: T  
+  income_child_allowance   :: T   
+  INCOME_SUPPORT_passported :: Bool
+  NON_CONTRIB_EMPLOYMENT_AND_SUPPORT_ALLOWANCE_passported :: Bool
+  NON_CONTRIB_JOBSEEKERS_ALLOWANCE_passported  :: Bool
+  UNIVERSAL_CREDIT_passported  :: Bool      
+end
+
+function LASubsys( sys :: OneLegalAidSys )
+  LASubsys(
+    sys.income_living_allowance,
+    sys.income_partners_allowance,        
+    sys.income_other_dependants_allowance,
+    sys.income_child_allowance,
+    INCOME_SUPPORT in sys.passported_benefits,
+    NON_CONTRIB_EMPLOYMENT_AND_SUPPORT_ALLOWANCE in sys.passported_benefits,
+    NON_CONTRIB_JOBSEEKERS_ALLOWANCE in sys.passported_benefits, 
+    UNIVERSAL_CREDIT in sys.passported_benefits)
 end
 
 """
 annualised
 """
-function default_la_sys()
+function default_la_sys()::LASubsys
   civil = STBParameters.default_civil_sys( 2023, Float64 )
-  civil.gross_income_limit = min( civil.gross_income_limit, 999999999999 )
-  return civil
-  # legalaid.civil.included_capital = WealthSet([net_financial_wealth])
+  return LASubsys(civil)
 end
 
 function make_default_sys()
   sys = STBParameters.get_default_system_for_fin_year( 2023, scotland=true )
-  # overwrite with annualised version
+  sys.legalaid.civil.included_capital = WealthSet([net_financial_wealth])
   return sys
 end 
 
-const DEFAULT_PARAMS =  make_default_sys()
+const DEFAULT_PARAMS = make_default_sys()
 const DEFAULT_SETTINGS = make_default_settings()
 
 function do_run( la2 :: OneLegalAidSys; iscivil=true )
@@ -140,7 +164,7 @@ function do_run( la2 :: OneLegalAidSys; iscivil=true )
   sys2 = deepcopy(DEFAULT_PARAMS)
   if iscivil
     sys2.legalaid.civil = deepcopy(la2)
-    weeklyise!( sys2.legalaid.civil )
+    # weeklyise!( sys2.legalaid.civil )
   else
     sys2.legalaid.aa = la2
   end  
@@ -166,36 +190,51 @@ const up = Genie.up
 export up
 
 
-mutable struct LASubsys{T}
-  income_living_allowance :: T       
-  income_partners_allowance   :: T        
-  income_other_dependants_allowance :: T  
-  income_child_allowance   :: T           
-end
 
-function LASubsys( sys :: OneLegalAidSys )
-  LASubsys(
-    sys.income_living_allowance,
-    sys.income_partners_allowance,        
-    sys.income_other_dependants_allowance,
-    sys.income_child_allowance )
-end
 
-function sysfrompayload( payload ) :: OneLegalAidSys
+function sysfrompayload( payload ) :: Tuple
   pars = JSON3.read( payload, LASubsys{Float64})
   @show pars
   
   # make this swappable to aa
   sys = deepcopy( DEFAULT_PARAMS.legalaid.civil )
-  sys.income_living_allowance           = pars.income_living_allowance
-  sys.income_partners_allowance         = pars.income_partners_allowance
-  sys.income_other_dependants_allowance = pars.income_other_dependants_allowance
-  sys.income_child_allowance            = pars.income_child_allowance
-  
-  # capital_allowances                = RT.([])    
-  # income_cont_type = cont_proportion 
-
-  return sys
+  sys.income_living_allowance           = pars.income_living_allowance/WEEKS_PER_YEAR
+  sys.income_partners_allowance         = pars.income_partners_allowance/WEEKS_PER_YEAR
+  sys.income_other_dependants_allowance = pars.income_other_dependants_allowance/WEEKS_PER_YEAR
+  sys.income_child_allowance            = pars.income_child_allowance/WEEKS_PER_YEAR
+  if pars.INCOME_SUPPORT_passported 
+    push!( sys.passported_benefits, INCOME_SUPPORT )
+  else
+    try
+      pop!(sys.passported_benefits,INCOME_SUPPORT)
+    catch
+    end
+  end
+  if pars.NON_CONTRIB_EMPLOYMENT_AND_SUPPORT_ALLOWANCE_passported 
+    push!( sys.passported_benefits, NON_CONTRIB_EMPLOYMENT_AND_SUPPORT_ALLOWANCE )
+  else
+    try
+      pop!(sys.passported_benefits, NON_CONTRIB_EMPLOYMENT_AND_SUPPORT_ALLOWANCE)
+    catch
+    end
+  end
+  if pars.NON_CONTRIB_JOBSEEKERS_ALLOWANCE_passported
+    push!( sys.passported_benefits, NON_CONTRIB_JOBSEEKERS_ALLOWANCE )
+  else
+    try
+      pop!(sys.passported_benefits, NON_CONTRIB_JOBSEEKERS_ALLOWANCE )
+    catch
+    end
+  end
+  if pars.UNIVERSAL_CREDIT_passported
+    push!( sys.passported_benefits, UNIVERSAL_CREDIT )
+  else
+    try
+      pop!(sys.passported_benefits, UNIVERSAL_CREDIT )
+    catch
+    end
+  end
+  return sys, pars
 end
 
 function reset()
@@ -207,11 +246,11 @@ function reset()
 end
 
 function run()
-  lasys = sysfrompayload( rawpayload()) 
+  lasys, params = sysfrompayload( rawpayload()) 
   lares = do_run( lasys )
   output = results_to_html( lares )
-  params = lasys
-  defaults = DEFAULT_PARAMS.legalaid.civil
+  # params = lasys
+  defaults = default_la_sys() #DEFAULT_PARAMS.legalaid.civil
   (; output, params, defaults ) |> json
 end
 

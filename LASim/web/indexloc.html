@@ -3,7 +3,7 @@
 <head>
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta charset="UTF-8">
-    <title>TriplePC: The Public Policy Preference Calculator</title>
+    <title>Scottish Legal Aid Board Sim, v0.1.0</title>
     <link rel="icon" href="images/favicon.png">
     <link rel="stylesheet" href="css/bisite-bootstrap.css"/>
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.9.1/font/bootstrap-icons.css"/>
@@ -35,7 +35,7 @@
             <div class='container-fluid'>                 
                 <div class='row'><!-- input row -->
                     <fieldset class="col border text-black m-1 p-2">
-                        <legend class="text-primary">Benefit Levels - How much?</legend>
+                        <legend class="text-primary">Allowance Levels</legend>
                         <div class="row">                                                                                    
                             <div class="col">                                                    
                                 <label for='income_living_allowance' class='form-label'>Living Allowance</label>
@@ -56,6 +56,35 @@
                                 <input id='income_child_allowance' type='number' name="income_child_allowance" min='0' max='200000' value='' step='1' size="12" class='form-control w-50'/>
                             </div>
                         </div>
+                    </fieldset>
+            
+                    <fieldset class="col border text-black m-1 p-2">
+                        <legend class="text-primary">Passported Benefits</legend>
+                        <div class="form-check">
+                            <input class="form-check-input INCOME_SUPPORT_passported" type="checkbox" value="" id="INCOME_SUPPORT_passported" checked="checked"/>
+                            <label class="form-check-label INCOME_SUPPORT_passported" for="INCOME_SUPPORT_passported">
+                                Income Support
+                            </label>
+                          </div>
+                          <div class="form-check">
+                            <input class="form-check-input NON_CONTRIB_EMPLOYMENT_AND_SUPPORT_ALLOWANCE_passported" type="checkbox" value="" id="NON_CONTRIB_EMPLOYMENT_AND_SUPPORT_ALLOWANCE_passported" checked="checked"/>
+                            <label class="form-check-label NON_CONTRIB_EMPLOYMENT_AND_SUPPORT_ALLOWANCE_passported" for="NON_CONTRIB_EMPLOYMENT_AND_SUPPORT_ALLOWANCE_passported">
+                                Non-Contrib ESA
+                            </label>
+                          </div> 
+                          <div class="form-check">
+                            <input class="form-check-input NON_CONTRIB_JOBSEEKERS_ALLOWANCE_passported" type="checkbox" value="" id="NON_CONTRIB_JOBSEEKERS_ALLOWANCE_passported" checked="checked"/>
+                            <label class="form-check-label NON_CONTRIB_JOBSEEKERS_ALLOWANCE_passported" for="NON_CONTRIB_JOBSEEKERS_ALLOWANCE_passported">
+                                Non-Contrib JSA
+                            </label>
+                          </div>
+                          <div class="form-check">
+                            <input class="form-check-input UNIVERSAL_CREDIT_passported" type="checkbox" value=""  id="UNIVERSAL_CREDIT_passported" checked="checked"/>
+                            <label class="form-check-label UNIVERSAL_CREDIT_passported" for="UNIVERSAL_CREDIT_passported" >
+                                Universal Credit
+                            </label>
+                          </div>
+                        </fieldset>
                     </fieldset>
                 </div> <!-- row -->
                                                 
@@ -189,11 +218,21 @@ function createDecileBarChart( targetId, result, thumbnail ){
 
 function setVal( id, val, def ){
     $( "#"+id ).val( val );
-    console.log( "setVal for #%s val=%s def=%s", id, val, def )
+    console.log( "setVal for #%s val=%s def=%s", id, val, def );
     if( val != def ){
         $( "#"+id ).addClass( 'changed');
     } else {
         $( "#"+id ).removeClass( 'changed');
+    }
+}
+
+function setCheck( id, val, def ){
+    $( "#"+id ).prop('checked', val );
+    console.log( "setCheck for #%s val=%s def=%s", id, val, def )
+    if( val != def ){
+        $( "."+id ).addClass( 'changed');
+    } else {
+        $( "."+id ).removeClass( 'changed');
     }
 }
 
@@ -202,7 +241,22 @@ function loadParams( params, defaults ){
     setVal( "income_partners_allowance", params.income_partners_allowance, defaults.income_partners_allowance );
     setVal( "income_other_dependants_allowance", params.income_other_dependants_allowance, defaults.income_other_dependants_allowance );
     setVal( "income_child_allowance", params.income_child_allowance, defaults.income_child_allowance );
-
+    setCheck( 
+        "INCOME_SUPPORT_passported", 
+        params.INCOME_SUPPORT_passported, 
+        defaults.INCOME_SUPPORT_passported );
+    setCheck(
+        "NON_CONTRIB_EMPLOYMENT_AND_SUPPORT_ALLOWANCE_passported",
+        params.NON_CONTRIB_EMPLOYMENT_AND_SUPPORT_ALLOWANCE_passported,
+        defaults.NON_CONTRIB_EMPLOYMENT_AND_SUPPORT_ALLOWANCE_passported );
+    setCheck( 
+        "NON_CONTRIB_JOBSEEKERS_ALLOWANCE_passported",
+        params.NON_CONTRIB_JOBSEEKERS_ALLOWANCE_passported,
+        defaults.NON_CONTRIB_JOBSEEKERS_ALLOWANCE_passported );
+    setCheck(
+        "UNIVERSAL_CREDIT_passported",
+        params.UNIVERSAL_CREDIT_passported,
+        defaults.UNIVERSAL_CREDIT_passported );
 }
 
 function createMainOutputs( result ){
@@ -215,7 +269,11 @@ function loadFromForm(){
         income_living_allowance: parseFloat($( "#income_living_allowance" ).val()),
         income_partners_allowance: parseFloat($( "#income_partners_allowance" ).val()),
         income_other_dependants_allowance: parseFloat($( "#income_other_dependants_allowance" ).val()),
-        income_child_allowance: parseFloat($( "#income_child_allowance" ).val())
+        income_child_allowance: parseFloat($( "#income_child_allowance" ).val()),
+        INCOME_SUPPORT_passported: $('#INCOME_SUPPORT_passported').is(':checked'),
+        NON_CONTRIB_EMPLOYMENT_AND_SUPPORT_ALLOWANCE_passported: $('#NON_CONTRIB_EMPLOYMENT_AND_SUPPORT_ALLOWANCE_passported').is(':checked'),
+        NON_CONTRIB_JOBSEEKERS_ALLOWANCE_passported: $('#NON_CONTRIB_JOBSEEKERS_ALLOWANCE_passported').is(':checked'),
+        UNIVERSAL_CREDIT_passported: $('#UNIVERSAL_CREDIT_passported').is(':checked')
     }
 
     console.log( "loadFromForm data = %o", data );
