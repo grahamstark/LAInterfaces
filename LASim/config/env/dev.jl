@@ -6,6 +6,7 @@ Genie.Configuration.config!(
   log_level                       = Logging.Info,
   log_to_file                     = false,
   server_handle_static_files      = true,
+  server_document_root            = "web/",
   path_build                      = "build",
   format_julia_builds             = true,
   format_html_output              = true,
