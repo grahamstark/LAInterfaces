@@ -58,17 +58,17 @@ function fmt2(v::Number)::String
 end
 
 function format_crosstab( crosstab :: Matrix, caption = "") :: AbstractString
-  @argcheck size( crosstab ) == (4,4)
+  @argcheck size( crosstab ) == (5,5)
   labels = ["Passported","Fully Entitled", "W/Contribution","Not Entitled", "Total"]
 
   t = """
-  <table class='table table-sm'>
+  <table class='table'>
         <thead>
         <caption>$caption</caption>
         </thead>
         <tbody>
     """
-    t *= "<tr><th></th><th colspan='5'>Old System</th><tr><th rowspan='5'>New System</th>"
+    tr = "<tr><td></td><td colspan='5' style='text-align:center' class='justify-content-center'>Old System</td><tr><td rowspan='7' class='align-middle'>New System</td><tr><th></th>"
     for c in 1:5
         cell = "<th>$(labels[c])</th>"
         tr *= cell
@@ -81,8 +81,10 @@ function format_crosstab( crosstab :: Matrix, caption = "") :: AbstractString
         """
         for c in 1:5
             v = fmt( crosstab[r,c] )
-            colour = if(r == 5) || (c == 5) # totals
-              "table-info"
+            colour = if( r == 5) && ( c == 5)
+                "table-primary"
+            elseif(r == 5) || (c == 5) # totals
+                "table-info"
             elseif r == c # on the diagonal
                 "table-primary"
             elseif r < c # above the diagonal
