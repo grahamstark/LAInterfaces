@@ -59,7 +59,7 @@ end
 
 function format_crosstab( crosstab :: Matrix, caption = "") :: AbstractString
   @argcheck size( crosstab ) == (4,4)
-  labels = ["Not Entitled","W/Contribution","Fully Entitled","Passported"]
+  labels = ["Passported","Fully Entitled", "W/Contribution","Not Entitled", "Total"]
 
   t = """
   <table class='table table-sm'>
@@ -68,25 +68,27 @@ function format_crosstab( crosstab :: Matrix, caption = "") :: AbstractString
         </thead>
         <tbody>
     """
-    tr = "<tr><th></th>"
-    for c in 1:4
+    t *= "<tr><th></th><th colspan='5'>Old System</th><tr><th rowspan='5'>New System</th>"
+    for c in 1:5
         cell = "<th>$(labels[c])</th>"
         tr *= cell
     end
     tr *= "</tr>"
     t *= tr
-    for r in 1:4
+    for r in 1:5
         tr = """
             <tr><th>$(labels[r])</th>
         """
-        for c in 1:4
+        for c in 1:5
             v = fmt( crosstab[r,c] )
-            colour = if r == c # on the diagonal
-                "text-primary"
+            colour = if(r == 5) || (c == 5) # totals
+              "table-info"
+            elseif r == c # on the diagonal
+                "table-primary"
             elseif r < c # above the diagonal
-                "text-success"
+                "table-success"
             else # below the diagonal
-                "text-danger"
+                "table-danger"
             end
             cell = "<td class='text-right $colour' style='text-align:right'>$v</td>"
             tr *= cell
