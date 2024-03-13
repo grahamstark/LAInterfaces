@@ -217,6 +217,7 @@ function loadFromForm(){
         income_other_dependants_allowance: parseFloat($( "#income_other_dependants_allowance" ).val()),
         income_child_allowance: parseFloat($( "#income_child_allowance" ).val())
     }
+
     console.log( "loadFromForm data = %o", data );
     return data;
 }
@@ -242,8 +243,8 @@ function submitForm( action, target ){
                 switch( action ){
                     case 'run':
                     case 'reset':
-                        loadParams( initialResult.params, initialResult.defaults );
                         createMainOutputs( initialResult.output );
+                        loadParams( initialResult.params, initialResult.defaults );
                         break;
                 }
             }

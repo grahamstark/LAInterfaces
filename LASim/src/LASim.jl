@@ -43,9 +43,6 @@ function make_default_settings() :: Settings
   settings.do_legal_aid = true
   settings.do_marginal_rates = false
   settings.requested_threads = 4
-  settings.export_full_results = true
-  settings.do_legal_aid = true
-  settings.requested_threads = 6
   settings.num_households, settings.num_people, nhh2 = 
       FRSHouseholdGetter.initialise( settings; reset=true ) # force Scottish dataset 
   # ExampleHouseholdGetter.initialise( settings ) # force a reload for reasons I don't quite understand.
@@ -138,7 +135,7 @@ function do_run( la2 :: OneLegalAidSys; iscivil=true )
   tot = 0
   sys2 = deepcopy(DEFAULT_PARAMS)
   if iscivil
-    sys2.legalaid.civil = la2
+    sys2.legalaid.civil = deepcopy(la2)
     weeklyise!( sys2.legalaid.civil )
   else
     sys2.legalaid.aa = la2
