@@ -471,8 +471,9 @@ function loadParams( params, defaults ){
 }
 
 function createMainOutputs( result ){
-    console.log( result.crosstab );
+    // console.log( result.crosstab );
     $("#crosstab").html( result.crosstab );
+    $("#crosstabtables").html( result.crosstabtables );
 }
 
 function loadFromForm(){

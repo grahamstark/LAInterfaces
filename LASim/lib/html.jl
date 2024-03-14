@@ -69,6 +69,7 @@ function format_crosstab(
                 </div>
             </div>
     """
+    end
     return t 
 end
 
@@ -80,8 +81,29 @@ function results_to_html(
     crosstab = format_crosstab( results.civil.crosstab_pers[1][k]; 
         caption="Changes to elgibility: all Scottish Adults." )
     crosstabtables = "<div>"
-
-    crosstabtables *- "</div>"
+    ctno = 1
+    pc = format_crosstab( results.civil.crosstab_bu[ctno]; 
+        caption="Benefit Units", 
+        add_wrapper=true, 
+        title="Entilemment - Benefit Units"  )
+    crosstabtables *= pc
+    crosstabtables *= "<div class='row'><div class='col'><h3>Tables By Problem Type</h3></div></div>"
+    for p in LegalAidData.PROBLEM_TYPES[2:end]
+        prettyprob = Utils.pretty(p)
+        crosstabtables *= "<div class='row'><div class='col'><h4>Personal Level Tables For Problem Type: $prettyprob</h4></div></div>"
+        for est in LegalAidData.ESTIMATE_TYPES
+            prettyest = Utils.pretty(est)
+            title = "Estimate $(prettyest)"
+            k = "$(p)-$(est)"
+            pc =  format_crosstab( 
+                results.civil.crosstab_pers[ctno][k];
+                title = title,
+                caption = "Estimated number of Scottish adults experiencing $prettyprob in a 3-year period, by eligibility type; estimate: $prettyest",
+                add_wrapper = true ) 
+            crosstabtables *= pc
+        end
+    end
+    crosstabtables *= "</div>"
     (; crosstab, crosstabtables )
 end
   
