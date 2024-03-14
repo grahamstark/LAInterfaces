@@ -177,14 +177,16 @@
                 </div>
 
                 <div class="row">
-                    <div class='col-1'></div>
-                    <div class="col-10"
+                    <div class="col-6"
                                     data-bs-toggle='modal' 
                                     data-bs-target='#crosstab-popup'>
                                     <div id="crosstab"></div>
                     </div>  
-
-                    <div class='col-1'></div>
+                    <div class="col-6"
+                                    data-bs-toggle='modal' 
+                                    data-bs-target='#allcounts-popup'>
+                                    <div id="countstable"></div>
+                    </div>  
                 </div>
             </div> <!-- container -->
         </form>
@@ -210,9 +212,20 @@
                 </div><!-- content -->
             </div> <!--dialog -->
         </div> <!-- big-table modal -->
-        <div id="crosstab-popup">
-            <p>HELLO</p>
-        </div>
+        <div class='modal fade' id='allcounts-popup' tabindex='-1' role='dialog' aria-labelledby='crosstab-label' aria-hidden='true'>
+            <div class='modal-dialog modal-xl'  role='document'>
+                <div class='modal-content'>
+                    <div class='modal-header'>
+                        <h5 class='modal-title' id='crosstab-table-label'/>Detailed Changes to Entitlements</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div> <!-- header -->
+                    <div class='modal-body'>
+                        <div id='allcounts'></div>
+                    </div>
+                </div><!-- content -->
+            </div> <!--dialog -->
+        </div> <!-- big-table modal -->
+
 <script type='text/javascript'>
 
 
@@ -471,9 +484,11 @@ function loadParams( params, defaults ){
 }
 
 function createMainOutputs( result ){
-    // console.log( result.crosstab );
+    console.log( result.countstable );
     $("#crosstab").html( result.crosstab );
     $("#crosstabtables").html( result.crosstabtables );
+    $("#countstable").html( result.countstable );
+    $("#allcounts").html( result.allcounts );
 }
 
 function loadFromForm(){
