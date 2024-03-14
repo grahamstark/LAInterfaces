@@ -38,13 +38,12 @@ using .LegalAidData
 using .LegalAidOutput
 using .LegalAidRunner
 
-include("../lib/definitions.jl")
 include("../lib/html.jl")
+include("../lib/definitions.jl")
 include("../lib/handlers.jl")
 
 const up = Genie.up
 export up
-
 
 function main()
   Genie.genie(; context = @__MODULE__)

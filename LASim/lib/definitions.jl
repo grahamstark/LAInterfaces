@@ -25,33 +25,42 @@ end
 
 
 mutable struct LASubsys{T}
-  income_living_allowance :: T       
-  income_partners_allowance   :: T        
-  income_other_dependants_allowance :: T  
-  income_child_allowance   :: T   
-  INCOME_SUPPORT_passported :: Bool
-  NON_CONTRIB_EMPLOYMENT_AND_SUPPORT_ALLOWANCE_passported :: Bool
-  NON_CONTRIB_JOBSEEKERS_ALLOWANCE_passported  :: Bool
-  UNIVERSAL_CREDIT_passported  :: Bool 
-  net_financial_wealth :: Bool
-  net_physical_wealth :: Bool
-  net_housing_wealth :: Bool
+    income_living_allowance :: T       
+    income_partners_allowance   :: T        
+    income_other_dependants_allowance :: T  
+    income_child_allowance   :: T   
+    INCOME_SUPPORT_passported :: Bool
+    NON_CONTRIB_EMPLOYMENT_AND_SUPPORT_ALLOWANCE_passported :: Bool
+    NON_CONTRIB_JOBSEEKERS_ALLOWANCE_passported  :: Bool
+    UNIVERSAL_CREDIT_passported  :: Bool 
+    net_financial_wealth :: Bool
+    net_physical_wealth :: Bool
+    net_housing_wealth :: Bool    
+    income_contribution_rates :: Vector{T}
+    income_contribution_limits :: Vector{T}  
+    capital_contribution_rates :: Vector{T}
+    capital_contribution_limits :: Vector{T}  
 end
-
+  
 function LASubsys( sys :: OneLegalAidSys )
-  LASubsys(
-    sys.income_living_allowance,
-    sys.income_partners_allowance,        
-    sys.income_other_dependants_allowance,
-    sys.income_child_allowance,
-    INCOME_SUPPORT in sys.passported_benefits,
-    NON_CONTRIB_EMPLOYMENT_AND_SUPPORT_ALLOWANCE in sys.passported_benefits,
-    NON_CONTRIB_JOBSEEKERS_ALLOWANCE in sys.passported_benefits, 
-    UNIVERSAL_CREDIT in sys.passported_benefits,
-    net_financial_wealth in sys.included_capital,
-    net_physical_wealth in sys.included_capital,
-    net_housing_wealth in sys.included_capital )
+    LASubsys(
+      sys.income_living_allowance,
+      sys.income_partners_allowance,        
+      sys.income_other_dependants_allowance,
+      sys.income_child_allowance,
+      INCOME_SUPPORT in sys.passported_benefits,
+      NON_CONTRIB_EMPLOYMENT_AND_SUPPORT_ALLOWANCE in sys.passported_benefits,
+      NON_CONTRIB_JOBSEEKERS_ALLOWANCE in sys.passported_benefits, 
+      UNIVERSAL_CREDIT in sys.passported_benefits,
+      net_financial_wealth in sys.included_capital,
+      net_physical_wealth in sys.included_capital,
+      net_housing_wealth in sys.included_capital,
+      sys.income_contribution_rates,
+      sys.income_contribution_limits,
+      sys.capital_contribution_rates,
+      sys.capital_contribution_limits )
 end
+  
 
 """
 annualised
@@ -63,13 +72,14 @@ end
 
 function make_default_sys()
   sys = STBParameters.get_default_system_for_fin_year( 2023, scotland=true )
-  sys.legalaid.civil.included_capital = WealthSet([net_financial_wealth])
+  # sys.legalaid.civil.included_capital = WealthSet([net_financial_wealth])
   return sys
 end 
 
 const DEFAULT_PARAMS = make_default_sys()
-const DEFAULT_SETTINGS = make_default_settings()t = 0
+const DEFAULT_SETTINGS = make_default_settings()
 
+tot = 0
 obs = Observable( Monitor.Progress( UUIDs.uuid4(),"",0,0,0,0))
 of = on(obs) do p
     global tot
@@ -79,51 +89,17 @@ end
 
 # included_capital = WealthSet([net_financial_wealth,net_physical_wealth])
 
-
-mutable struct LASubsys{T}
-  income_living_allowance :: T       
-  income_partners_allowance   :: T        
-  income_other_dependants_allowance :: T  
-  income_child_allowance   :: T   
-  INCOME_SUPPORT_passported :: Bool
-  NON_CONTRIB_EMPLOYMENT_AND_SUPPORT_ALLOWANCE_passported :: Bool
-  NON_CONTRIB_JOBSEEKERS_ALLOWANCE_passported  :: Bool
-  UNIVERSAL_CREDIT_passported  :: Bool 
-  net_financial_wealth :: Bool
-  net_physical_wealth :: Bool
-  net_housing_wealth :: Bool
-end
-
-function LASubsys( sys :: OneLegalAidSys )
-  LASubsys(
-    sys.income_living_allowance,
-    sys.income_partners_allowance,        
-    sys.income_other_dependants_allowance,
-    sys.income_child_allowance,
-    INCOME_SUPPORT in sys.passported_benefits,
-    NON_CONTRIB_EMPLOYMENT_AND_SUPPORT_ALLOWANCE in sys.passported_benefits,
-    NON_CONTRIB_JOBSEEKERS_ALLOWANCE in sys.passported_benefits, 
-    UNIVERSAL_CREDIT in sys.passported_benefits,
-    net_financial_wealth in sys.included_capital,
-    net_physical_wealth in sys.included_capital,
-    net_housing_wealth in sys.included_capital )
-end
-
 """
-annualised
+FIXME: better place for this.
 """
-function default_la_sys()::LASubsys
-  civil = STBParameters.default_civil_sys( 2023, Float64 )
-  return LASubsys(civil)
+function do_run( la2 :: OneLegalAidSys; iscivil=true )
+    global tot
+    tot = 0
+    sys2 = deepcopy(DEFAULT_PARAMS)
+    sys2.legalaid.civil = deepcopy(la2)
+    allout = LegalAidRunner.do_one_run( DEFAULT_SETTINGS, [DEFAULT_PARAMS,sys2], obs )
+    return allout
 end
 
-function make_default_sys()
-  sys = STBParameters.get_default_system_for_fin_year( 2023, scotland=true )
-  sys.legalaid.civil.included_capital = WealthSet([net_financial_wealth])
-  return sys
-end 
-
-const DEFAULT_PARAMS = make_default_sys()
-const DEFAULT_SETTINGS = make_default_settings()  
 const DEFAULT_RUN = do_run( DEFAULT_PARAMS.legalaid.civil )
 const DEFAULT_OUTPUT = results_to_html( DEFAULT_RUN )

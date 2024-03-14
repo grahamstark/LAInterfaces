@@ -1,21 +1,5 @@
 #
 
-
-function do_run( la2 :: OneLegalAidSys; iscivil=true )
-    global tot
-    tot = 0
-    sys2 = deepcopy(DEFAULT_PARAMS)
-    if iscivil
-      sys2.legalaid.civil = deepcopy(la2)
-      # weeklyise!( sys2.legalaid.civil )
-    else
-      sys2.legalaid.aa = la2
-    end  
-    allout = LegalAidRunner.do_one_run( DEFAULT_SETTINGS, [DEFAULT_PARAMS,sys2], obs )
-    return allout
-end
-
-
 function spop!( s :: Set, thing )
     if thing in s
       t = pop!( s, thing )
@@ -70,6 +54,18 @@ function sysfrompayload( payload ) :: Tuple
     else
       spop!( sys.included_capital, net_housing_wealth )
     end
+    println( "sys.income_contribution_rates was: $(sys.income_contribution_rates)")
+    println( "sys.income_contribution_limit was: $(sys.income_contribution_limits)")
+    sys.income_contribution_rates = pars.income_contribution_rates ./100
+    println( "sys.income_contribution_rates now: $(sys.income_contribution_rates)")
+    sys.income_contribution_limits = pars.income_contribution_limits ./ WEEKS_PER_YEAR
+    println( "sys.income_contribution_limit now: $(sys.income_contribution_limits)")
+    println( "sys.capital_contribution_rates was: $(sys.capital_contribution_rates)")
+    sys.capital_contribution_rates = pars.capital_contribution_rates  ./100
+    println( "sys.capital_contribution_rates now: $(sys.capital_contribution_rates)")
+    println( "sys.capital_contribution_limits was: $(sys.capital_contribution_limits)")
+    sys.capital_contribution_limits = pars.capital_contribution_limits
+    println( "sys.capital_contribution_limits now: $(sys.capital_contribution_limits)")
     return sys, pars
 end
   
@@ -89,5 +85,93 @@ function run()
     defaults = default_la_sys() #DEFAULT_PARAMS.legalaid.civil
     (; output, params, defaults ) |> json
 end
+
+
+
+function delonerb!( 
+    rates::AbstractVector, 
+    bands::AbstractVector, 
+    pos::Integer )
+    sz = size(rates)[1]
+    sb = size(bands)[1]
+    @assert sb in (sz-1):sz
+    if pos > sz
+        return
+    end
+    deleteat!( rates, pos )
+    # top case where there's no explicit top band
+    if sz > sb && pos == sz
+        deleteat!( bands, pos-1)
+    else
+        deleteat!( bands, pos )
+    end
+end
+
+function addonerb!( 
+    rates::AbstractVector{T}, 
+    bands::AbstractVector{T}, 
+    pos::Integer, 
+    val :: T = zero(T) ) where T
+    sz = size(rates)[1]
+    sb = size(bands)[1]
+    @assert sb in (sz-1):sz
+    if pos in 1:sz
+        insert!( rates, pos, val )
+        if pos <= sb
+            insert!( bands, pos, val )
+        else
+            push!(  bands, val )
+        end
+    else
+        push!( bands, val )
+        push!( rates, val )
+    end
+end
+
+function addincome( n :: Int ) 
+    params = JSON3.read( rawpayload(), LASubsys{Float64})
+    @info "addincome; before = $(params.income_contribution_rates)"
+    addonerb!( 
+        params.income_contribution_rates, 
+        params.income_contribution_limits,
+        n )
+    @info "addincome; after = $(params.income_contribution_rates)"
+    defaults=default_la_sys()
+    (; params, defaults ) |> json
+end
+
+function delincome( n )
+    params = JSON3.read( rawpayload(), LASubsys{Float64})
+    println( "delincome; before = $(params.income_contribution_rates)" )
+    delonerb!( 
+        params.income_contribution_rates, 
+        params.income_contribution_limits,
+        n )
+    println( "delincome; after = $(params.income_contribution_rates)" )
+    defaults=default_la_sys()
+    (; params, defaults ) |> json
+end
+
+function addcapital( n :: Int ) 
+    params = JSON3.read( rawpayload(), LASubsys{Float64})
+    addonerb!( 
+        params.capital_contribution_rates, 
+        params.capital_contribution_limits,
+        n )
+    defaults=default_la_sys()
+    (; params, defaults ) |> json
+end
+
+function delcapital( n )
+    params = JSON3.read( rawpayload(), LASubsys{Float64})
+    delonerb!( 
+        params.capital_contribution_rates, 
+        params.capital_contribution_limits,
+        n )
+    defaults=default_la_sys()
+    (; params, defaults ) |> json
+end
+
+
   
   

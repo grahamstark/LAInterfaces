@@ -4,22 +4,22 @@ route("/run", LASim.run, method=POST )
 
 route("/reset", LASim.reset, method=POST )
 
-route("/addincome/:n", method = POST) do 
+route("/addincome-contribution/:n", method = POST) do 
   n::Int = parse(Int, payload(:n))
   LASim.addincome( n )
 end
 
-route("/delincome/:n", method = POST ) do
+route("/delincome-contribution/:n", method = POST ) do
   n::Int = parse(Int, payload(:n))
   LASim.delincome( n )
 end
 
-route("/addcapital/:n", method = POST ) do 
+route("/addcapital-contribution/:n", method = POST ) do 
   n::Int = parse(Int, payload(:n))
   LASim.addcapital( n )
 end
 
-route("/delcapital/:n", method = POST ) do 
+route("/delcapital-contribution/:n", method = POST ) do 
   n::Int = parse(Int,  payload(:n))
   LASim.delcapital( n )
 end

@@ -9,7 +9,12 @@ function fmt2(v::Number)::String
     Format.format( v, precision=2, commas=true )
 end
 
-function format_crosstab( crosstab :: Matrix, caption = "") :: AbstractString
+function format_crosstab( 
+    crosstab :: Matrix; 
+    title="", 
+    caption = "", 
+    add_wrapper = false ) :: AbstractString
+    
     @argcheck size( crosstab ) == (5,5)
     labels = ["Passported","Fully Entitled", "W/Contribution","Not Entitled", "Total"]
 
@@ -54,18 +59,29 @@ function format_crosstab( crosstab :: Matrix, caption = "") :: AbstractString
         </tbody>     
     </table>
     """
+    
+    if add_wrapper
+    t ="""
+            <div class='row'>
+                <div class='col'>
+                    <h5>$title</h5>
+                    $t
+                </div>
+            </div>
+    """
     return t 
 end
-
-
-
 
 # TOLIBRARY
 function results_to_html( 
     results      :: AllLegalOutput ) :: NamedTuple
     # table expects a tuple
     k = "$(LegalAidData.PROBLEM_TYPES[1])-$(LegalAidData.ESTIMATE_TYPES[2])"
-    crosstab = format_crosstab( results.civil.crosstab_pers[1][k] )
-    (; crosstab )
+    crosstab = format_crosstab( results.civil.crosstab_pers[1][k]; 
+        caption="Changes to elgibility: all Scottish Adults." )
+    crosstabtables = "<div>"
+
+    crosstabtables *- "</div>"
+    (; crosstab, crosstabtables )
 end
   
