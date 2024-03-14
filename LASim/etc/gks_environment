@@ -1,0 +1,3 @@
+JULIA=/opt/julia/
+STB_HOME=/home/graham_s/julia/vw/ScottishTaxBenefitModel/
+GENIE_ENV=prod

@@ -1,0 +1,20 @@
+[Unit]
+Description=Genie server for Northumbria Conjoint modelling demo
+After=network.target remote-fs.target nss-lookup.target
+
+[Service]
+# Type=forking
+User=graham_s
+# note this now includes GINI_ENV=prod to use production environment
+EnvironmentFile=/etc/systemd/user/gks_environment
+# The PID file is optional, but recommended in the manpage
+# "so that systemd can identify the main process of the daemon"
+PIDFile=/run/LASim.pid
+WorkingDirectory=/home/graham_s/julia/vw/LAInterfaces/LASim/
+ExecStart=/home/graham_s/julia/vw/LAInterfaces/LASim/bin/server
+ExecStop=/bin/kill -WINCH ${MAINPID}
+KillSignal=SIGKILL
+PrivateTmp=true
+TimeoutStartSec=360
+[Install]
+WantedBy=multi-user.target
