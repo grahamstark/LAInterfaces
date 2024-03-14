@@ -86,6 +86,29 @@
                           </div>
                         </fieldset>
                     </fieldset>
+                    <fieldset class="col border text-black m-1 p-2">
+                        <legend class="text-primary">Included Wealth</legend>
+                        <div class="form-check">
+                            <input class="form-check-input net_financial_wealth" type="checkbox" value="" id="net_financial_wealth" checked="checked"/>
+                            <label class="form-check-label net_financial_wealth" for="net_financial_wealth">
+                                Net Financial Wealth
+                            </label>
+                        </div>
+                        <div class="form-check">
+                            <input class="form-check-input net_physical_wealth" type="checkbox" value="" id="net_physical_wealth" checked="checked"/>
+                            <label class="form-check-label net_physical_wealth" for="net_physical_wealth">
+                                Net Physical Wealth
+                            </label>
+                        </div>
+                        <div class="form-check">
+                            <input class="form-check-input net_housing_wealth" type="checkbox" value="" id="net_housing_wealth" checked="checked"/>
+                            <label class="form-check-label net_housing_wealth" for="net_housing_wealth">
+                                Net Housing Wealth
+                            </label>
+                        </div>
+
+                    </fieldset>
+
                 </div> <!-- row -->
                                                 
                 <div class="row"> <!-- progress bar -->
@@ -257,6 +280,20 @@ function loadParams( params, defaults ){
         "UNIVERSAL_CREDIT_passported",
         params.UNIVERSAL_CREDIT_passported,
         defaults.UNIVERSAL_CREDIT_passported );
+    setCheck(
+        "net_housing_wealth",
+        params.net_housing_wealth,
+        defaults.net_housing_wealth );
+    setCheck(
+        "net_financial_wealth",
+        params.net_financial_wealth,
+        defaults.net_financial_wealth );
+    setCheck(
+        "net_physical_wealth",
+        params.net_physical_wealth,
+        defaults.net_physical_wealth );
+
+
 }
 
 function createMainOutputs( result ){
@@ -273,7 +310,10 @@ function loadFromForm(){
         INCOME_SUPPORT_passported: $('#INCOME_SUPPORT_passported').is(':checked'),
         NON_CONTRIB_EMPLOYMENT_AND_SUPPORT_ALLOWANCE_passported: $('#NON_CONTRIB_EMPLOYMENT_AND_SUPPORT_ALLOWANCE_passported').is(':checked'),
         NON_CONTRIB_JOBSEEKERS_ALLOWANCE_passported: $('#NON_CONTRIB_JOBSEEKERS_ALLOWANCE_passported').is(':checked'),
-        UNIVERSAL_CREDIT_passported: $('#UNIVERSAL_CREDIT_passported').is(':checked')
+        UNIVERSAL_CREDIT_passported: $('#UNIVERSAL_CREDIT_passported').is(':checked'),
+        net_financial_wealth: $('#net_financial_wealth').is(':checked'),
+        net_physical_wealth: $('#net_physical_wealth').is(':checked'),
+        net_housing_wealth: $('#net_housing_wealth').is(':checked')
     }
 
     console.log( "loadFromForm data = %o", data );

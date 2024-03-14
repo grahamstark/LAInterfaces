@@ -69,7 +69,7 @@ function format_crosstab( crosstab :: Matrix, caption = "") :: AbstractString
         </thead>
         <tbody>
     """
-    tr = "<tr><td></td><td colspan='5' style='text-align:center' class='justify-content-center'>Old System</td><tr><td rowspan='7' class='align-middle'>New System</td><tr><th></th>"
+    tr = "<tr><td></td><td colspan='5' style='text-align:center' class='justify-content-center'>Old System</td><tr><td rowspan='8' class='align-middle'>New System</td><tr><th></th>"
     for c in 1:5
         cell = "<th>$(labels[c])</th>"
         tr *= cell
@@ -126,7 +126,10 @@ mutable struct LASubsys{T}
   INCOME_SUPPORT_passported :: Bool
   NON_CONTRIB_EMPLOYMENT_AND_SUPPORT_ALLOWANCE_passported :: Bool
   NON_CONTRIB_JOBSEEKERS_ALLOWANCE_passported  :: Bool
-  UNIVERSAL_CREDIT_passported  :: Bool      
+  UNIVERSAL_CREDIT_passported  :: Bool 
+  net_financial_wealth :: Bool
+  net_physical_wealth :: Bool
+  net_housing_wealth :: Bool
 end
 
 function LASubsys( sys :: OneLegalAidSys )
@@ -138,7 +141,10 @@ function LASubsys( sys :: OneLegalAidSys )
     INCOME_SUPPORT in sys.passported_benefits,
     NON_CONTRIB_EMPLOYMENT_AND_SUPPORT_ALLOWANCE in sys.passported_benefits,
     NON_CONTRIB_JOBSEEKERS_ALLOWANCE in sys.passported_benefits, 
-    UNIVERSAL_CREDIT in sys.passported_benefits)
+    UNIVERSAL_CREDIT in sys.passported_benefits,
+    net_financial_wealth in sys.included_capital,
+    net_physical_wealth in sys.included_capital,
+    net_housing_wealth in sys.included_capital )
 end
 
 """
@@ -190,7 +196,11 @@ const up = Genie.up
 export up
 
 
-
+function spop!( s :: Set, thing )
+  if thing in s
+    t = pop!( s, thing )
+  end
+end
 
 function sysfrompayload( payload ) :: Tuple
   pars = JSON3.read( payload, LASubsys{Float64})
@@ -213,26 +223,32 @@ function sysfrompayload( payload ) :: Tuple
   if pars.NON_CONTRIB_EMPLOYMENT_AND_SUPPORT_ALLOWANCE_passported 
     push!( sys.passported_benefits, NON_CONTRIB_EMPLOYMENT_AND_SUPPORT_ALLOWANCE )
   else
-    try
-      pop!(sys.passported_benefits, NON_CONTRIB_EMPLOYMENT_AND_SUPPORT_ALLOWANCE)
-    catch
-    end
+    spop!(sys.passported_benefits, NON_CONTRIB_EMPLOYMENT_AND_SUPPORT_ALLOWANCE)
   end
   if pars.NON_CONTRIB_JOBSEEKERS_ALLOWANCE_passported
     push!( sys.passported_benefits, NON_CONTRIB_JOBSEEKERS_ALLOWANCE )
   else
-    try
-      pop!(sys.passported_benefits, NON_CONTRIB_JOBSEEKERS_ALLOWANCE )
-    catch
-    end
+    spop!(sys.passported_benefits, NON_CONTRIB_JOBSEEKERS_ALLOWANCE )
   end
   if pars.UNIVERSAL_CREDIT_passported
     push!( sys.passported_benefits, UNIVERSAL_CREDIT )
   else
-    try
-      pop!(sys.passported_benefits, UNIVERSAL_CREDIT )
-    catch
-    end
+    spop!(sys.passported_benefits, UNIVERSAL_CREDIT )
+  end
+  if pars.net_financial_wealth
+    push!( sys.included_capital, net_financial_wealth ) 
+  else
+    spop!( sys.included_capital, net_financial_wealth )
+  end
+  if pars.net_physical_wealth
+    push!( sys.included_capital, net_physical_wealth ) 
+  else
+    spop!( sys.included_capital, net_physical_wealth )
+  end
+  if pars.net_housing_wealth
+    push!( sys.included_capital, net_housing_wealth ) 
+  else
+    spop!( sys.included_capital, net_housing_wealth )
   end
   return sys, pars
 end
