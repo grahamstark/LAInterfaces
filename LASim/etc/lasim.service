@@ -1,5 +1,5 @@
 [Unit]
-Description=Genie server for Northumbria Conjoint modelling demo
+Description=Genie server for Legal Aid Modelling demo 
 After=network.target remote-fs.target nss-lookup.target
 
 [Service]
