@@ -176,19 +176,38 @@
                     </div>
                     <div class='col-4'></div>
                 </div>
-
                 <div class='row justify-content-center text-secondary pt-3 pb-3'>
-                    <div class="col"
-                                    data-bs-toggle='modal' 
-                                    data-bs-target='#crosstab-popup'>
-                                    <div id="crosstab"></div>
+                    <div class="col table-responsive"
+                        data-bs-toggle='modal' 
+                        data-bs-target='#crosstab-popup'>                                    
+                        <div id="crosstab"></div>
                     </div>  
-                    <div class="col"
-                                    data-bs-toggle='modal' 
-                                    data-bs-target='#allcounts-popup'>
-                                    <div id="countstable"></div>
+                </div>
+                <div class='row justify-content-center text-secondary pt-3 pb-3'>
+                    <div class="col  table-responsive"
+                        data-bs-toggle='modal' 
+                        data-bs-target='#allcosts-popup'>
+                        <h3>Costs (£000s)</h3>
+                        <div id="coststable"></div>
                     </div>  <!-- costs col -->
                 </div> <!-- row -->
+                <div class='row justify-content-center text-secondary pt-3 pb-3'>
+                    <div class="col table-responsive"
+                        data-bs-toggle='modal' 
+                        data-bs-target='#allcases-popup'>
+                        <h3>Cases</h3>
+                        <div id="casestable"></div>
+                    </div>  <!-- costs col -->
+                </div>
+                <div class='row justify-content-center text-secondary pt-3 pb-3'>
+                    <div class="col table-responsive"
+                        data-bs-toggle='modal' 
+                        data-bs-target='#allcounts-popup'>
+                        <h3>Entitlements</h3>
+                        <div id="countstable"></div>
+                    </div>  <!-- costs col -->
+                </div>
+                </form>
             </div> <!-- container -->
         </form>
 
@@ -217,11 +236,37 @@
             <div class='modal-dialog modal-xl'  role='document'>
                 <div class='modal-content'>
                     <div class='modal-header'>
-                        <h5 class='modal-title' id='crosstab-table-label'/>Detailed Changes to Entitlements</h5>
+                        <h5 class='modal-title' id='allcounts-table-label'/>Detailed Changes to Entitlements</h5>
                         <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                     </div> <!-- header -->
                     <div class='modal-body'>
                         <div id='allcounts'></div>
+                    </div>
+                </div><!-- content -->
+            </div> <!--dialog -->
+        </div> <!-- big-table modal -->
+        <div class='modal fade' id='allcosts-popup' tabindex='-1' role='dialog' aria-labelledby='crosstab-label' aria-hidden='true'>
+            <div class='modal-dialog modal-xl'  role='document'>
+                <div class='modal-content'>
+                    <div class='modal-header'>
+                        <h5 class='modal-title' id='allcosts-table-label'/>Detailed Changes to Cases</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div> <!-- header -->
+                    <div class='modal-body'>
+                        <div id='allcosts'></div>
+                    </div>
+                </div><!-- content -->
+            </div> <!--dialog -->
+        </div> <!-- big-table modal -->
+        <div class='modal fade' id='allcases-popup' tabindex='-1' role='dialog' aria-labelledby='crosstab-label' aria-hidden='true'>
+            <div class='modal-dialog modal-xl'  role='document'>
+                <div class='modal-content'>
+                    <div class='modal-header'>
+                        <h5 class='modal-title' id='allcases-table-label'/>Detailed Changes to Costs</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div> <!-- header -->
+                    <div class='modal-body'>
+                        <div id='allcases'></div>
                     </div>
                 </div><!-- content -->
             </div> <!--dialog -->
@@ -490,6 +535,10 @@ function createMainOutputs( result ){
     $("#crosstabtables").html( result.crosstabtables );
     $("#countstable").html( result.countstable );
     $("#allcounts").html( result.allcounts );
+    $("#coststable").html( result.coststable );
+    $("#allcosts").html( result.allcosts );
+    $("#casestable").html( result.casestable );
+    $("#allcases").html( result.allcases );
 }
 
 function loadFromForm(){
@@ -519,7 +568,7 @@ function loadFromForm(){
 }
 
 function submitForm( action, target ){
-     var url = "/lasim/"+action;
+     var url = "/"+action; // url = "/lasim/"+action;
      if( target != null ){
         url += "/"+target;
      }

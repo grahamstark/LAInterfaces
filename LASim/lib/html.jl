@@ -163,6 +163,8 @@ function results_to_html(
         title="Entilemment - Benefit Units"  )
     pc = wraptable( "Counts of Benefit Units", pc )
     crosstabtables *= pc
+
+    
     crosstabtables *= "<div class='row'><div class='col'><h3>Tables By Problem Type</h3></div></div>"
     for p in LegalAidData.PROBLEM_TYPES[2:end]
         prettyprob = Utils.pretty(p)
@@ -181,16 +183,17 @@ function results_to_html(
     crosstabtables *= "</div>"
     tgts = LegalAidOutput.LA_TARGETS
     t = tgts[1]
-    allcounts =  "<div class='row'><div class='col'><h3>Breakdowns By Characteristics</h3></div></div>"
     countstable = frame_to_table(
         ;    
         pre_df = results.civil.breakdown_pers[1][t],
         post_df = results.civil.breakdown_pers[2][t],
         caption =  "Eligibility Counts, all Scottish adults, by Employment (click table for more)." )
+    
+    allcounts =  "<div class='row'><div class='col'><h3>Breakdowns By Characteristics</h3></div></div>"
     for t in tgts[2:end]
         prett = Utils.pretty(t)
         allcounts *= "<div class='row'><div class='col'><h3>Breakdown Type: $prett</h3></div></div>"
-        allcounts *= "<div class='row'><div class='col'><h4>Personal Level</h4></div></div>"
+        allcounts *= "<div class='row'><div class='col table-responsive'><h4>Personal Level</h4></div></div>"
         allcounts *= frame_to_table(
             ;    
             pre_df = results.civil.breakdown_pers[1][t],
@@ -205,6 +208,51 @@ function results_to_html(
         allcounts *= "</div></div>"
     end
     allcounts *= "</div>"    
-    (; crosstab, crosstabtables, countstable, allcounts )
+    
+    casestable = frame_to_table(
+            ;    
+            pre_df = results.civil.cases_pers[1][t],
+            post_df = results.civil.cases_pers[2][t],
+            caption =  "Costs, all Scottish adults, by Employment and Problem Type(click table for more)." )
+            allcosts = "<div class='row'><div class='col'><h3>Costs By Characteristics</h3></div></div>"
+    
+    allcases= "<div class='row'><div class='col'><h3>Cases By Characteristics</h3></div></div>"
+    for t in tgts[2:end]
+        prett = Utils.pretty(t)
+        allcases *= "<div class='row'><div class='col'><h3>Breakdown Type: $prett</h3></div></div>"
+        allcases *= "<div class='row'><div class='col table-responsive'><h4>Personal Level</h4></div></div>"
+        allcases *= frame_to_table(
+            ;    
+            pre_df = results.civil.cases_pers[1][t],
+            post_df = results.civil.cases_pers[2][t],
+            caption =  "Cases, all Scottish people, by $prett and case type." )
+        allcases *= "</div></div>"
+    end
+    allcases *= "</div>"    
+    # cases_pers :: Vector{AbstractDict}
+    # costs_pers :
+    coststable = frame_to_table(
+            ;    
+            pre_df = results.civil.costs_pers[1][t],
+            post_df = results.civil.costs_pers[2][t],
+            caption =  "Costs, all Scottish people, by Employment and Problem Type(click table for more)." )
+            allcosts = "<div class='row'><div class='col table-responsive'><h3>Costs By Characteristics</h3></div></div>"
+    
+    allcosts= "<div class='row'><div class='col'><h3>Cases By Characteristics</h3></div></div>"
+    for t in tgts[2:end]
+        prett = Utils.pretty(t)
+        allcosts *= "<div class='row'><div class='col'><h3>Breakdown Type: $prett</h3></div></div>"
+        allcosts *= "<div class='row'><div class='col table-responsive'><h4>Personal Level</h4></div></div>"
+        allcosts *= frame_to_table(
+            ;    
+            pre_df = results.civil.costs_pers[1][t],
+            post_df = results.civil.costs_pers[2][t],
+            caption =  "Costs, by $prett and case type." )
+        allcosts *= "</div></div>"
+    end
+    allcosts *= "</div>"    
+
+
+    (; crosstab, crosstabtables, countstable, allcounts, coststable, allcosts, casestable, allcases )
 end
   
