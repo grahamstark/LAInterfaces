@@ -29,6 +29,7 @@ using .STBParameters:
   get_default_system_for_fin_year, 
   OneLegalAidSys, 
   ScottishLegalAidSys, 
+  Expense,
   weeklyise!
 
 using .Utils

@@ -66,6 +66,12 @@ function sysfrompayload( payload ) :: Tuple
     println( "sys.capital_contribution_limits was: $(sys.capital_contribution_limits)")
     sys.capital_contribution_limits = pars.capital_contribution_limits
     println( "sys.capital_contribution_limits now: $(sys.capital_contribution_limits)")
+
+    sys.expenses.housing = Expense( pars.housing_is_flat, pars.housing_v, pars.housing_max )
+    sys.expenses.childcare = Expense( pars.childcare_is_flat, pars.childcare_v, pars.childcare_max )
+    sys.expenses.work_expenses = Expense( pars.work_expenses_is_flat, pars.work_expenses_v, pars.work_expenses_max )
+    sys.expenses.maintenance = Expense( pars.maintenance_is_flat, pars.maintenance_v, pars.maintenance_max )
+    sys.expenses.repayments = Expense( pars.repayments_is_flat, pars.repayments_v, pars.repayments_max )
     return sys, pars
 end
   

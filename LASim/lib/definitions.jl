@@ -40,6 +40,27 @@ mutable struct LASubsys{T}
     income_contribution_limits :: Vector{T}  
     capital_contribution_rates :: Vector{T}
     capital_contribution_limits :: Vector{T}  
+
+    housing_is_flat :: Bool
+    housing_v :: T
+    housing_max :: T
+
+    childcare_is_flat :: Bool
+    childcare_v :: T
+    childcare_max :: T
+
+    work_expenses_is_flat :: Bool
+    work_expenses_v :: T
+    work_expenses_max :: T
+
+    maintenance_is_flat :: Bool
+    maintenance_v :: T
+    maintenance_max :: T
+
+    repayments_is_flat :: Bool
+    repayments_v :: T
+    repayments_max :: T
+
 end
   
 function LASubsys( sys :: OneLegalAidSys )
@@ -58,7 +79,28 @@ function LASubsys( sys :: OneLegalAidSys )
       sys.income_contribution_rates,
       sys.income_contribution_limits,
       sys.capital_contribution_rates,
-      sys.capital_contribution_limits )
+      sys.capital_contribution_limits,
+
+      sys.expenses.housing.is_flat,
+      sys.expenses.housing.v,
+      sys.expenses.housing.max,
+      
+      sys.expenses.childcare.is_flat,
+      sys.expenses.childcare.v,
+      sys.expenses.childcare.max,
+      
+      sys.expenses.work_expenses.is_flat,
+      sys.expenses.work_expenses.v,
+      sys.expenses.work_expenses.max,
+      
+      sys.expenses.maintenance.is_flat,
+      sys.expenses.maintenance.v,
+      sys.expenses.maintenance.max,
+      
+      sys.expenses.repayments.is_flat,
+      sys.expenses.repayments.v,
+      sys.expenses.repayments.max )
+      
 end
   
 
