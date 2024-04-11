@@ -70,6 +70,8 @@ mainload = ""
 
 formload = ""
 
+expenses_set = ""
+
 for item in items
     global jsload
     global fields
@@ -77,11 +79,18 @@ for item in items
     global subload
     global mainload
     global formload
+    global expenses_set 
 
     isflatkey = "$(item)_is_flat"
     vkey = "$(item)_v"
     maxkey = "$(item)_max"
+    vlabelkey = "$(item)_vlabel"
     label = pretty( item )
+
+    expenses_set *= """
+    setExpenseFields( "$(item)", false );
+    """
+
     jsload *= """
 
     $(isflatkey): \$('#$(isflatkey)').is(':checked'),
@@ -90,16 +99,18 @@ for item in items
 
     """
 
+
     fields *= """
 
     <fieldset class="col border text-black m-1 p-2">
     <legend class="text-primary">$(label)</legend>
-    <div class="form-check">
-        <input class='form-check-input ' type='checkbox' id='$(isflatkey)' />
+    <div>
+        <input onchange='setExpenseFields( "$(item)", true )' class='form-check-input ' type='checkbox' id='$(isflatkey)' />
         <label class='form-check-label $(isflatkey)' for='$(isflatkey)'>
             Treat as Flat Rate?
         </label>
-        <label for='$(vkey)' class='form-label'>% Applicable or Absolute amount (£)</label>
+        <br/>
+        <label for='$(vkey)' id='$vlabelkey'  class='form-label'>% Applicable or Absolute amount (£)</label>
         <input id='$(vkey)' type='number' name="$(vkey)" min='0' max='2000' value='' step='0.01' size="8" class='form-control w-50'/>
         <label for='$(maxkey)' class='form-label'>Maximum Amount (£)</label>
         <input id='$(maxkey)' type='number' name="$(maxkey)" min='0' max='99999999999' value='' step='1' size="8" class='form-control w-50'/>
@@ -143,3 +154,4 @@ println( subsys )
 println( subload )
 println( mainload )
 println( formload )
+println( expenses_set )

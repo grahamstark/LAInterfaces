@@ -18,7 +18,7 @@
     <script type="text/javascript" src="js/vega-embed.min.js"></script>
     <!-- templates -->
     <script type='text/javascript' src="js/mustache.min.js"></script>
-   
+    
 </head>
 <body class='text-primary p-2'>
     
@@ -153,77 +153,85 @@
 
                 </div> <!-- row -->
                 <div class="row">
-
+                    <h3>Expenses</h3>
+                </div>
+                <div class="row">
+                   
 
                     <fieldset class="col border text-black m-1 p-2">
                         <legend class="text-primary">Housing</legend>
-                        <div class="form-check">
-                            <input class='form-check-input ' type='checkbox' id='housing_is_flat' />
+                        <div>
+                            <input onchange='setExpenseFields( "housing", true )' class='form-check-input ' type='checkbox' id='housing_is_flat' />
                             <label class='form-check-label housing_is_flat' for='housing_is_flat'>
                                 Treat as Flat Rate?
                             </label>
-                            <label for='housing_v' class='form-label'>% Applicable or Absolute amount (£)</label>
+                            <br/>
+                            <label for='housing_v' id='housing_vlabel'  class='form-label'>% Applicable or Absolute amount (£)</label>
                             <input id='housing_v' type='number' name="housing_v" min='0' max='2000' value='' step='0.01' size="8" class='form-control w-50'/>
                             <label for='housing_max' class='form-label'>Maximum Amount (£)</label>
                             <input id='housing_max' type='number' name="housing_max" min='0' max='99999999999' value='' step='1' size="8" class='form-control w-50'/>
                         </div>
-                    </fieldset>
+                        </fieldset>
                         
-                    <fieldset class="col border text-black m-1 p-2">
+                        <fieldset class="col border text-black m-1 p-2">
                         <legend class="text-primary">Childcare</legend>
-                        <div class="form-check">
-                            <input class='form-check-input ' type='checkbox' id='childcare_is_flat' />
+                        <div>
+                            <input onchange='setExpenseFields( "childcare", true )' class='form-check-input ' type='checkbox' id='childcare_is_flat' />
                             <label class='form-check-label childcare_is_flat' for='childcare_is_flat'>
                                 Treat as Flat Rate?
                             </label>
-                            <label for='childcare_v' class='form-label'>% Applicable or Absolute amount (£)</label>
+                            <br/>
+                            <label for='childcare_v' id='childcare_vlabel'  class='form-label'>% Applicable or Absolute amount (£)</label>
                             <input id='childcare_v' type='number' name="childcare_v" min='0' max='2000' value='' step='0.01' size="8" class='form-control w-50'/>
                             <label for='childcare_max' class='form-label'>Maximum Amount (£)</label>
                             <input id='childcare_max' type='number' name="childcare_max" min='0' max='99999999999' value='' step='1' size="8" class='form-control w-50'/>
                         </div>
-                    </fieldset>
+                        </fieldset>
                         
-                    <fieldset class="col border text-black m-1 p-2">
+                        <fieldset class="col border text-black m-1 p-2">
                         <legend class="text-primary">Work Expenses</legend>
-                        <div class="form-check">
-                            <input class='form-check-input ' type='checkbox' id='work_expenses_is_flat' />
+                        <div>
+                            <input onchange='setExpenseFields( "work_expenses", true )' class='form-check-input ' type='checkbox' id='work_expenses_is_flat' />
                             <label class='form-check-label work_expenses_is_flat' for='work_expenses_is_flat'>
                                 Treat as Flat Rate?
                             </label>
-                            <label for='work_expenses_v' class='form-label'>% Applicable or Absolute amount (£)</label>
+                            <br/>
+                            <label for='work_expenses_v' id='work_expenses_vlabel'  class='form-label'>% Applicable or Absolute amount (£)</label>
                             <input id='work_expenses_v' type='number' name="work_expenses_v" min='0' max='2000' value='' step='0.01' size="8" class='form-control w-50'/>
                             <label for='work_expenses_max' class='form-label'>Maximum Amount (£)</label>
                             <input id='work_expenses_max' type='number' name="work_expenses_max" min='0' max='99999999999' value='' step='1' size="8" class='form-control w-50'/>
                         </div>
-                    </fieldset>
+                        </fieldset>
                         
-                    <fieldset class="col border text-black m-1 p-2">
+                        <fieldset class="col border text-black m-1 p-2">
                         <legend class="text-primary">Maintenance</legend>
-                        <div class="form-check">
-                            <input class='form-check-input ' type='checkbox' id='maintenance_is_flat' />
+                        <div>
+                            <input onchange='setExpenseFields( "maintenance", true )' class='form-check-input ' type='checkbox' id='maintenance_is_flat' />
                             <label class='form-check-label maintenance_is_flat' for='maintenance_is_flat'>
                                 Treat as Flat Rate?
                             </label>
-                            <label for='maintenance_v' class='form-label'>% Applicable or Absolute amount (£)</label>
+                            <br/>
+                            <label for='maintenance_v' id='maintenance_vlabel'  class='form-label'>% Applicable or Absolute amount (£)</label>
                             <input id='maintenance_v' type='number' name="maintenance_v" min='0' max='2000' value='' step='0.01' size="8" class='form-control w-50'/>
                             <label for='maintenance_max' class='form-label'>Maximum Amount (£)</label>
                             <input id='maintenance_max' type='number' name="maintenance_max" min='0' max='99999999999' value='' step='1' size="8" class='form-control w-50'/>
                         </div>
-                    </fieldset>
+                        </fieldset>
                         
-                    <fieldset class="col border text-black m-1 p-2">
+                        <fieldset class="col border text-black m-1 p-2">
                         <legend class="text-primary">Repayments</legend>
-                        <div class="form-check">
-                            <input class='form-check-input ' type='checkbox' id='repayments_is_flat' />
+                        <div>
+                            <input onchange='setExpenseFields( "repayments", true )' class='form-check-input ' type='checkbox' id='repayments_is_flat' />
                             <label class='form-check-label repayments_is_flat' for='repayments_is_flat'>
                                 Treat as Flat Rate?
                             </label>
-                            <label for='repayments_v' class='form-label'>% Applicable or Absolute amount (£)</label>
+                            <br/>
+                            <label for='repayments_v' id='repayments_vlabel'  class='form-label'>% Applicable or Absolute amount (£)</label>
                             <input id='repayments_v' type='number' name="repayments_v" min='0' max='2000' value='' step='0.01' size="8" class='form-control w-50'/>
                             <label for='repayments_max' class='form-label'>Maximum Amount (£)</label>
                             <input id='repayments_max' type='number' name="repayments_max" min='0' max='99999999999' value='' step='1' size="8" class='form-control w-50'/>
                         </div>
-                    </fieldset>
+                        </fieldset>                    
                     
                 </div>
                 <fieldset class="row">
@@ -346,6 +354,39 @@
         </div> <!-- big-table modal -->
 
 <script type='text/javascript'>
+
+
+
+function setExpenseFields( which, ischange ){
+    console.log( "setExpenseFields entered for |"+which );
+    var isflatkey = "#"+which+"_is_flat";
+    var maxkey = "#"+which+"_max";
+    var vkey = "#"+which+"_v";
+    var vlabelkey = "#"+which+"_vlabel";
+    var isflat =  $(isflatkey).is(':checked');
+    if( isflat ){
+        $(vlabelkey).html( "Amount £s");
+        $(vkey).attr({
+           "max" : 10000,       
+           "min" : 0,
+           "step": 1} );
+        $(maxkey).prop( 'disabled', 'disabled' );
+        if( ischange ){
+            $(vkey).val(0);
+        }
+    } else {
+        $(vlabelkey).html( "% Applicable");
+        $(vkey).attr({
+           "max" : 100,       
+           "min" : 0,
+           "step": 1} );
+        $(maxkey).prop( 'disabled', false );
+        if( ischange ){ // default value
+            $(vkey).val(100);
+
+        }
+    }
+}
 
 
 
@@ -635,6 +676,12 @@ function loadParams( params, defaults ){
         defaults.repayments_is_flat );
     setVal( "repayments_v", params.repayments_v, defaults.repayments_v );
     setVal( "repayments_max", params.repayments_max, defaults.repayments_max );
+
+    setExpenseFields( "housing", false );
+    setExpenseFields( "childcare", false );
+    setExpenseFields( "work_expenses", false );
+    setExpenseFields( "maintenance", false );
+    setExpenseFields( "repayments", false );
 
 }
 
