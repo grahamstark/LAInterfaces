@@ -72,6 +72,7 @@ function sysfrompayload( payload ) :: Tuple
     sys.expenses.work_expenses = Expense( pars.work_expenses_is_flat, pars.work_expenses_v, pars.work_expenses_max )
     sys.expenses.maintenance = Expense( pars.maintenance_is_flat, pars.maintenance_v, pars.maintenance_max )
     sys.expenses.repayments = Expense( pars.repayments_is_flat, pars.repayments_v, pars.repayments_max )
+    weeklyise!( sys.expenses )
     return sys, pars
 end
   
