@@ -25,6 +25,7 @@ end
 
 
 mutable struct LASubsys{T}
+    systype :: SystemType    
     income_living_allowance :: T       
     income_partners_allowance   :: T        
     income_other_dependants_allowance :: T  
@@ -65,6 +66,7 @@ end
   
 function LASubsys( sys :: OneLegalAidSys )
     LASubsys(
+      sys.systype,
       sys.income_living_allowance,
       sys.income_partners_allowance,        
       sys.income_other_dependants_allowance,

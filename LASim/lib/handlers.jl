@@ -9,13 +9,17 @@ end
 function sysfrompayload( payload ) :: Tuple
     pars = JSON3.read( payload, LASubsys{Float64})
     @show pars
-    
     # make this swappable to aa
-    sys = deepcopy( DEFAULT_PARAMS.legalaid.civil )
-    sys.income_living_allowance           = pars.income_living_allowance/WEEKS_PER_YEAR
-    sys.income_partners_allowance         = pars.income_partners_allowance/WEEKS_PER_YEAR
-    sys.income_other_dependants_allowance = pars.income_other_dependants_allowance/WEEKS_PER_YEAR
-    sys.income_child_allowance            = pars.income_child_allowance/WEEKS_PER_YEAR
+    sys = nothing
+    if pars.systype == sys_civil
+      sys = deepcopy( DEFAULT_PARAMS.legalaid.civil )
+    else
+      sys = deepcopy( DEFAULT_PARAMS.legalaid.aa )
+    end
+    sys.income_living_allowance           = pars.income_living_allowance
+    sys.income_partners_allowance         = pars.income_partners_allowance
+    sys.income_other_dependants_allowance = pars.income_other_dependants_allowance
+    sys.income_child_allowance            = pars.income_child_allowance
     if pars.INCOME_SUPPORT_passported 
       push!( sys.passported_benefits, INCOME_SUPPORT )
     else
@@ -56,12 +60,12 @@ function sysfrompayload( payload ) :: Tuple
     end
     println( "sys.income_contribution_rates was: $(sys.income_contribution_rates)")
     println( "sys.income_contribution_limit was: $(sys.income_contribution_limits)")
-    sys.income_contribution_rates = pars.income_contribution_rates ./100
+    sys.income_contribution_rates = pars.income_contribution_rates
     println( "sys.income_contribution_rates now: $(sys.income_contribution_rates)")
-    sys.income_contribution_limits = pars.income_contribution_limits ./ WEEKS_PER_YEAR
+    sys.income_contribution_limits = pars.income_contribution_limits
     println( "sys.income_contribution_limit now: $(sys.income_contribution_limits)")
     println( "sys.capital_contribution_rates was: $(sys.capital_contribution_rates)")
-    sys.capital_contribution_rates = pars.capital_contribution_rates  ./100
+    sys.capital_contribution_rates = pars.capital_contribution_rates
     println( "sys.capital_contribution_rates now: $(sys.capital_contribution_rates)")
     println( "sys.capital_contribution_limits was: $(sys.capital_contribution_limits)")
     sys.capital_contribution_limits = pars.capital_contribution_limits
@@ -72,7 +76,7 @@ function sysfrompayload( payload ) :: Tuple
     sys.expenses.work_expenses = Expense( pars.work_expenses_is_flat, pars.work_expenses_v, pars.work_expenses_max )
     sys.expenses.maintenance = Expense( pars.maintenance_is_flat, pars.maintenance_v, pars.maintenance_max )
     sys.expenses.repayments = Expense( pars.repayments_is_flat, pars.repayments_v, pars.repayments_max )
-    weeklyise!( sys.expenses )
+    weeklyise!( sys )
     return sys, pars
 end
   

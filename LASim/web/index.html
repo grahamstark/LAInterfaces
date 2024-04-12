@@ -31,7 +31,8 @@
         </nav>
 
         </header>
-        <form id='mainform' action="thing" method="POST">       
+        <form id='mainform' action="thing" method="POST">  
+            <input type="hidden" id="systype" name="systype" value="" /> 
             <div class='container-fluid'>
                 <div class='row justify-content-center text-secondary pt-3 pb-3'>
                     <div class='col-4'></div>
@@ -598,6 +599,7 @@ function scrapetax( name ){
 
 
 function loadParams( params, defaults ){
+    $( "#systype" ).val( params.systype )
     setVal( "income_living_allowance", params.income_living_allowance, defaults.income_living_allowance);
     setVal( "income_partners_allowance", params.income_partners_allowance, defaults.income_partners_allowance );
     setVal( "income_other_dependants_allowance", params.income_other_dependants_allowance, defaults.income_other_dependants_allowance );
@@ -702,6 +704,7 @@ function loadFromForm(){
     cc = scrapetax( "capital-contribution" )
 
     var data = {
+        systype = $( "#systype" ).val(),
         income_living_allowance: parseFloat($( "#income_living_allowance" ).val()),
         income_partners_allowance: parseFloat($( "#income_partners_allowance" ).val()),
         income_other_dependants_allowance: parseFloat($( "#income_other_dependants_allowance" ).val()),
