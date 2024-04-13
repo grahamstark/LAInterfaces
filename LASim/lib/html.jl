@@ -151,7 +151,7 @@ end # frame to table
 
 # TOLIBRARY
 function results_to_html( 
-    results      :: LegalAidOutput ) :: NamedTuple
+    results :: LegalOutput ) :: NamedTuple
     # table expects a tuple
     k = "$(LegalAidData.PROBLEM_TYPES[1])-$(LegalAidData.ESTIMATE_TYPES[2])"
     crosstab = format_crosstab( results.crosstab_pers[1][k]; 

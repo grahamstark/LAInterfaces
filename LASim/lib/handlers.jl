@@ -6,119 +6,125 @@ function spop!( s :: Set, thing )
     end
 end
 
-function pars_from_payload( payload )
-  pars = JSON3.read( payload, LASubsys{Float64})
-  @show pars
-  pars
+function subsys_from_payload()
+  return JSON3.read( rawpayload(), LASubsys{Float64})
 end
   
-function sysfrompayload( payload ) :: Tuple
+function map_sys_from_subsys( subsys :: LASubsys )::OneLegalAidSys
     # make this swappable to aa
-    pars = pars_from_payload( payload )
-    sys = nothing
-    if pars.systype == sys_civil
-      sys = deepcopy( DEFAULT_PARAMS.legalaid.civil )
+    fullsys = if subsys.systype == sys_civil 
+      deepcopy( DEFAULT_PARAMS.legalaid.civil )
     else
-      sys = deepcopy( DEFAULT_PARAMS.legalaid.aa )
+      deepcopy( DEFAULT_PARAMS.legalaid.aa )
     end
-    sys.income_living_allowance           = pars.income_living_allowance
-    sys.income_partners_allowance         = pars.income_partners_allowance
-    sys.income_other_dependants_allowance = pars.income_other_dependants_allowance
-    sys.income_child_allowance            = pars.income_child_allowance
-    if pars.INCOME_SUPPORT_passported 
-      push!( sys.passported_benefits, INCOME_SUPPORT )
+    fullsys.income_living_allowance           = subsys.income_living_allowance
+    fullsys.income_partners_allowance         = subsys.income_partners_allowance
+    fullsys.income_other_dependants_allowance = subsys.income_other_dependants_allowance
+    fullsys.income_child_allowance            = subsys.income_child_allowance
+    if subsys.INCOME_SUPPORT_passported 
+      push!( fullsys.passported_benefits, INCOME_SUPPORT )
     else
       try
-        pop!(sys.passported_benefits,INCOME_SUPPORT)
+        pop!(fullsys.passported_benefits,INCOME_SUPPORT)
       catch
       end
     end
-    if pars.NON_CONTRIB_EMPLOYMENT_AND_SUPPORT_ALLOWANCE_passported 
-      push!( sys.passported_benefits, NON_CONTRIB_EMPLOYMENT_AND_SUPPORT_ALLOWANCE )
+    if subsys.NON_CONTRIB_EMPLOYMENT_AND_SUPPORT_ALLOWANCE_passported 
+      push!( fullsys.passported_benefits, NON_CONTRIB_EMPLOYMENT_AND_SUPPORT_ALLOWANCE )
     else
-      spop!(sys.passported_benefits, NON_CONTRIB_EMPLOYMENT_AND_SUPPORT_ALLOWANCE)
+      spop!( fullsys.passported_benefits, NON_CONTRIB_EMPLOYMENT_AND_SUPPORT_ALLOWANCE)
     end
-    if pars.NON_CONTRIB_JOBSEEKERS_ALLOWANCE_passported
-      push!( sys.passported_benefits, NON_CONTRIB_JOBSEEKERS_ALLOWANCE )
+    if subsys.NON_CONTRIB_JOBSEEKERS_ALLOWANCE_passported
+      push!( fullsys.passported_benefits, NON_CONTRIB_JOBSEEKERS_ALLOWANCE )
     else
-      spop!(sys.passported_benefits, NON_CONTRIB_JOBSEEKERS_ALLOWANCE )
+      spop!( fullsys.passported_benefits, NON_CONTRIB_JOBSEEKERS_ALLOWANCE )
     end
-    if pars.UNIVERSAL_CREDIT_passported
-      push!( sys.passported_benefits, UNIVERSAL_CREDIT )
+    if subsys.UNIVERSAL_CREDIT_passported
+      push!( fullsys.passported_benefits, UNIVERSAL_CREDIT )
     else
-      spop!(sys.passported_benefits, UNIVERSAL_CREDIT )
+      spop!( fullsys.passported_benefits, UNIVERSAL_CREDIT )
     end
-    if pars.net_financial_wealth
-      push!( sys.included_capital, net_financial_wealth ) 
+    if subsys.net_financial_wealth
+      push!( fullsys.included_capital, net_financial_wealth ) 
     else
-      spop!( sys.included_capital, net_financial_wealth )
+      spop!( fullsys.included_capital, net_financial_wealth )
     end
-    if pars.net_physical_wealth
-      push!( sys.included_capital, net_physical_wealth ) 
+    if subsys.net_physical_wealth
+      push!( fullsys.included_capital, net_physical_wealth ) 
     else
-      spop!( sys.included_capital, net_physical_wealth )
+      spop!( fullsys.included_capital, net_physical_wealth )
     end
-    if pars.net_housing_wealth
-      push!( sys.included_capital, net_housing_wealth ) 
+    if subsys.net_housing_wealth
+      push!( fullsys.included_capital, net_housing_wealth ) 
     else
-      spop!( sys.included_capital, net_housing_wealth )
+      spop!( fullsys.included_capital, net_housing_wealth )
     end
-    println( "sys.income_contribution_rates was: $(sys.income_contribution_rates)")
-    println( "sys.income_contribution_limit was: $(sys.income_contribution_limits)")
-    sys.income_contribution_rates = pars.income_contribution_rates
-    println( "sys.income_contribution_rates now: $(sys.income_contribution_rates)")
-    sys.income_contribution_limits = pars.income_contribution_limits
-    println( "sys.income_contribution_limit now: $(sys.income_contribution_limits)")
-    println( "sys.capital_contribution_rates was: $(sys.capital_contribution_rates)")
-    sys.capital_contribution_rates = pars.capital_contribution_rates
-    println( "sys.capital_contribution_rates now: $(sys.capital_contribution_rates)")
-    println( "sys.capital_contribution_limits was: $(sys.capital_contribution_limits)")
-    sys.capital_contribution_limits = pars.capital_contribution_limits
-    println( "sys.capital_contribution_limits now: $(sys.capital_contribution_limits)")
+    println( "sys.income_contribution_rates was: $(fullsys.income_contribution_rates)")
+    println( "sys.income_contribution_limit was: $(fullsys.income_contribution_limits)")
+    fullsys.income_contribution_rates = subsys.income_contribution_rates
+    println( "sys.income_contribution_rates now: $(fullsys.income_contribution_rates)")
+    fullsys.income_contribution_limits = subsys.income_contribution_limits
+    println( "sys.income_contribution_limit now: $(fullsys.income_contribution_limits)")
+    println( "sys.capital_contribution_rates was: $(fullsys.capital_contribution_rates)")
+    fullsys.capital_contribution_rates = subsys.capital_contribution_rates
+    println( "sys.capital_contribution_rates now: $(fullsys.capital_contribution_rates)")
+    println( "sys.capital_contribution_limits was: $(fullsys.capital_contribution_limits)")
+    fullsys.capital_contribution_limits = subsys.capital_contribution_limits
+    println( "sys.capital_contribution_limits now: $(fullsys.capital_contribution_limits)")
 
-    sys.expenses.housing = Expense( pars.housing_is_flat, pars.housing_v, pars.housing_max )
-    sys.expenses.childcare = Expense( pars.childcare_is_flat, pars.childcare_v, pars.childcare_max )
-    sys.expenses.work_expenses = Expense( pars.work_expenses_is_flat, pars.work_expenses_v, pars.work_expenses_max )
-    sys.expenses.maintenance = Expense( pars.maintenance_is_flat, pars.maintenance_v, pars.maintenance_max )
-    sys.expenses.repayments = Expense( pars.repayments_is_flat, pars.repayments_v, pars.repayments_max )
-    weeklyise!( sys )
-    return sys, pars
+    fullsys.expenses.housing = Expense( subsys.housing_is_flat, subsys.housing_v, subsys.housing_max )
+    fullsys.expenses.childcare = Expense( subsys.childcare_is_flat, subsys.childcare_v, subsys.childcare_max )
+    fullsys.expenses.work_expenses = Expense( subsys.work_expenses_is_flat, subsys.work_expenses_v, subsys.work_expenses_max )
+    fullsys.expenses.maintenance = Expense( subsys.maintenance_is_flat, subsys.maintenance_v, subsys.maintenance_max )
+    fullsys.expenses.repayments = Expense( subsys.repayments_is_flat, subsys.repayments_v, subsys.repayments_max )
+    weeklyise!( fullsys )
+    return fullsys
 end
   
 function reset()
-    pars = pars_from_payload( rawpayload() )
-    defaults = default_la_sys( pars.systype )
+    # don't try to load all of it since it might be unset, just sys type
+    rp = jsonpayload()
+    @show rp
+    systype = rp["systype"] == "sys_aa" ? sys_aa : sys_civil
+    # subsys = subsys_from_payload()
+    defaults = default_la_subsys( systype )
     @info defaults
-    (; output=get_default_output( pars.systype ), 
+    (; output=get_default_output( systype ), 
        params = defaults,
        defaults = defaults ) |> json
 end
 
 function switch_system()
-    payload = rawpayload()
-    pars = JSON3.read( payload, LASubsys{Float64})
+    reset()
+    #=
+    subsys = subsys_from_payload( rawpayload() )
     @show pars
     # make this swappable to aa
-    lasys = nothing
-    if pars.systype == sys_civil
+    defaults = nothing
+    if subsys.systype == sys_civil
       lasys = deepcopy( DEFAULT_PARAMS.legalaid.civil )
     else
       lasys = deepcopy( DEFAULT_PARAMS.legalaid.aa )
     end
-
+    output = get_default_output( subsys.systype )
     (; output, params, defaults ) |> json
+    =#
 end
   
 function run()
-    lasys, params = sysfrompayload( rawpayload()) 
-    lares = do_run( lasys; systype=params.systype )
-    output = results_to_html( lares )
+    subsys = subsys_from_payload()
+    fullsys = map_sys_from_subsys( subsys ) 
+    lares = do_run( fullsys; systype=subsys.systype )
+    alloutput = results_to_html( lares )
+    output = if subsys.systype == sys_civil 
+      alloutput.civil
+    else
+      alloutput.aa
+    end
     # params = lasys
-    defaults = default_la_sys( lasys.systype ) #DEFAULT_PARAMS.legalaid.civil
-    (; output, params, defaults ) |> json
+    defaults = default_la_subsys( subsys.systype )
+    (; output, params=subsys, defaults ) |> json
 end
-
-
 
 function delonerb!( 
     rates::AbstractVector, 
@@ -161,49 +167,45 @@ function addonerb!(
 end
 
 function addincome( n :: Int ) 
-    params = JSON3.read( rawpayload(), LASubsys{Float64})
+    params = subsys_from_payload()
     @info "addincome; before = $(params.income_contribution_rates)"
     addonerb!( 
         params.income_contribution_rates, 
         params.income_contribution_limits,
         n )
     @info "addincome; after = $(params.income_contribution_rates)"
-    defaults=default_la_sys( params.systype )
+    defaults=default_la_subsys( params.systype )
     (; params, defaults ) |> json
 end
 
 function delincome( n )
-    params = JSON3.read( rawpayload(), LASubsys{Float64})
+    params = subsys_from_payload()
     println( "delincome; before = $(params.income_contribution_rates)" )
     delonerb!( 
         params.income_contribution_rates, 
         params.income_contribution_limits,
         n )
     println( "delincome; after = $(params.income_contribution_rates)" )
-    defaults=default_la_sys( params.systype )
+    defaults=default_la_subsys( params.systype )
     (; params, defaults ) |> json
 end
 
 function addcapital( n :: Int ) 
-    params = JSON3.read( rawpayload(), LASubsys{Float64})
+    params = subsys_from_payload()
     addonerb!( 
         params.capital_contribution_rates, 
         params.capital_contribution_limits,
         n )
-    defaults=default_la_sys( params.systype )
+    defaults=default_la_subsys( params.systype )
     (; params, defaults ) |> json
 end
 
 function delcapital( n )
-    params = JSON3.read( rawpayload(), LASubsys{Float64})
+    params = subsys_from_payload()
     delonerb!( 
         params.capital_contribution_rates, 
         params.capital_contribution_limits,
         n )
-    defaults=default_la_sys( params.systype )
+    defaults=default_la_subsys( params.systype )
     (; params, defaults ) |> json
 end
-
-
-  
-  

@@ -107,15 +107,16 @@ end
   
 
 """
-annualised
+reload from source so we're correctly annualised CAREFUL change load
+as default params change
 """
-function default_la_sys( systype :: SystemType )::LASubsys
-  if systype == la_civil
-    civil = STBParameters.default_civil_sys( 2023, Float64 )
-    return LASubsys(civil)
+function default_la_subsys( systype :: SystemType )::LASubsys
+  subs = if systype == sys_civil
+    STBParameters.default_civil_sys( 2023, Float64 )
+  else
+    STBParameters.default_aa_sys( 2023, Float64 )
   end
-  aa = STBParameters.default_aa_sys( 2023, Float64 )
-  return LASubsys(aa)
+  return LASubsys(subs)
 end
 
 function make_default_sys()
@@ -144,7 +145,7 @@ function do_run( la2 :: OneLegalAidSys; systype :: SystemType  )
     global tot
     tot = 0
     sys2 = deepcopy(DEFAULT_PARAMS)
-    if systype == la_civil 
+    if systype == sys_civil 
         sys2.legalaid.civil = deepcopy(la2)
     else
         sys2.legalaid.aa = deepcopy(la2)
@@ -165,5 +166,5 @@ const DEFAULT_RUN = do_default_run()
 const DEFAULT_OUTPUT = results_to_html( DEFAULT_RUN )
 
 function get_default_output( systype :: SystemType )
-    return systype == la_civil ? DEFAULT_OUTPUT.civil : DEFAULT_OUTPUT.aa 
+    return systype == sys_civil ? DEFAULT_OUTPUT.civil : DEFAULT_OUTPUT.aa 
 end
