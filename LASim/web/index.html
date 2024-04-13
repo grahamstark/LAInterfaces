@@ -32,7 +32,7 @@
 
         </header>
         <form id='mainform' action="thing" method="POST">  
-            <input type="hidden" id="systype" name="systype" value="" /> 
+            
             <div class='container-fluid'>
                 <div class='row justify-content-center text-secondary pt-3 pb-3'>
                     <div class='col-4'></div>
@@ -41,7 +41,19 @@
                     </div>
                     <div class='col-4'></div>
                 </div>                 
-                <div class='row'><!-- input row -->
+                <div class='row  justify-content-center text-secondary pt-3 pb-3'><!-- input row -->
+                    <div class='col-5'></div>
+                    <fieldset class="col border text-black m-1 p-2">
+                        <legend class="text-primary">Civil or A&amp;A</legend>
+                        <select id="systype" name="systype" value='' onchange='submitForm( "switch_system", null )' > 
+                            <option value="sys_civil">Civil</option>
+                            <option value="sys_aa">Advice and Assistance</option>
+                        </select>
+                    </fieldset>
+                    <div class='col-5'></div>
+                </div><!-- row -->
+
+                <div class='row justify-content-center text-secondary pt-3 pb-3'>
                     <fieldset class="col border text-black m-1 p-2">
                         <legend class="text-primary">Allowance Levels</legend>
                         <div class="row">                                                                                    
@@ -296,9 +308,16 @@
         <p class="text-danger">Note: some features are not yet implemented.</p>
         
         <footer>
+            <ul class="nav flex-column">
+                <li class="nav-item mb-2">
+                    <a class="nav-link p-0 text-muted" href="https://docs.google.com/spreadsheets/d/1ts0Eo4UUCUO_taFyjIUkAyTlcyNJIFRUu5ON3mauK6k/edit?usp=sharing">Task List</a>
+                </li>
+                <li class="nav-item mb-2"><a href="#" class="nav-link p-0 text-muted">... </a></li>
+            </ul>
             <nav class="text-bg-primary text-center position-relative">
             copyright&copy; 2024 SLAB/Virtual Worlds Research/Others | Code released under the <a href='https://mit-license.org/'>MIT Licence</a>
             </nav>
+
         </footer>
 
         <div class='modal fade' id='crosstab-popup' tabindex='-1' role='dialog' aria-labelledby='crosstab-label' aria-hidden='true'>
@@ -353,6 +372,7 @@
                 </div><!-- content -->
             </div> <!--dialog -->
         </div> <!-- big-table modal -->
+     
 
 <script type='text/javascript'>
 
@@ -704,7 +724,7 @@ function loadFromForm(){
     cc = scrapetax( "capital-contribution" )
 
     var data = {
-        systype = $( "#systype" ).val(),
+        systype: $( "#systype" ).val(),
         income_living_allowance: parseFloat($( "#income_living_allowance" ).val()),
         income_partners_allowance: parseFloat($( "#income_partners_allowance" ).val()),
         income_other_dependants_allowance: parseFloat($( "#income_other_dependants_allowance" ).val()),
@@ -773,6 +793,7 @@ function submitForm( action, target ){
                 switch( action ){
                     case 'run':
                     case 'reset':
+                    case 'switch_system':
                         createMainOutputs( initialResult.output );
                         break;
                     case 'del':

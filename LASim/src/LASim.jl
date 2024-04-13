@@ -24,15 +24,7 @@ using .RunSettings
 using .Results
 using .Definitions
 using .STBIncomes
-using .STBParameters: 
-  TaxBenefitSystem, 
-  get_default_system_for_fin_year, 
-  OneLegalAidSys, 
-  ScottishLegalAidSys, 
-  Expense,
-  SystemType,
-  weeklyise!
-
+using .STBParameters
 using .Utils
 
 using .LegalAidCalculations: calc_legal_aid!

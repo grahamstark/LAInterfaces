@@ -151,14 +151,14 @@ end # frame to table
 
 # TOLIBRARY
 function results_to_html( 
-    results      :: AllLegalOutput ) :: NamedTuple
+    results      :: LegalAidOutput ) :: NamedTuple
     # table expects a tuple
     k = "$(LegalAidData.PROBLEM_TYPES[1])-$(LegalAidData.ESTIMATE_TYPES[2])"
-    crosstab = format_crosstab( results.civil.crosstab_pers[1][k]; 
+    crosstab = format_crosstab( results.crosstab_pers[1][k]; 
         caption="Changes to elgibility: all Scottish Adults (click table for breakdowns)" )
     crosstabtables = "<div>"
     ctno = 1
-    pc = format_crosstab( results.civil.crosstab_bu[ctno]; 
+    pc = format_crosstab( results.crosstab_bu[ctno]; 
         caption="Benefit Units", 
         title="Entilemment - Benefit Units"  )
     pc = wraptable( "Counts of Benefit Units", pc )
@@ -174,7 +174,7 @@ function results_to_html(
             title = "Estimate $(prettyest)"
             k = "$(p)-$(est)"
             pc =  format_crosstab( 
-                results.civil.crosstab_pers[ctno][k];
+                results.crosstab_pers[ctno][k];
                 caption = "Estimated number of Scottish adults experiencing $prettyprob in a 3-year period, by eligibility type; estimate: $prettyest" ) 
             pc = wraptable( title, pc )
             crosstabtables *= pc
@@ -185,8 +185,8 @@ function results_to_html(
     t = tgts[1]
     countstable = frame_to_table(
         ;    
-        pre_df = results.civil.breakdown_pers[1][t],
-        post_df = results.civil.breakdown_pers[2][t],
+        pre_df = results.breakdown_pers[1][t],
+        post_df = results.breakdown_pers[2][t],
         caption =  "Eligibility Counts, all Scottish adults, by Employment (click table for more)." )
     
     allcounts =  "<div class='row'><div class='col'><h3>Breakdowns By Characteristics</h3></div></div>"
@@ -196,14 +196,14 @@ function results_to_html(
         allcounts *= "<div class='row'><div class='col table-responsive'><h4>Personal Level</h4></div></div>"
         allcounts *= frame_to_table(
             ;    
-            pre_df = results.civil.breakdown_pers[1][t],
-            post_df = results.civil.breakdown_pers[2][t],
+            pre_df = results.breakdown_pers[1][t],
+            post_df = results.breakdown_pers[2][t],
             caption =  "Eligibility Counts of all Scottish adults, by $prett." )
         allcounts *= "<div class='row'><div class='col'><h4>Assessment Unit Level</h4></div></div>"
         allcounts *= frame_to_table(
             ;    
-            pre_df = results.civil.breakdown_bu[1][t],
-            post_df = results.civil.breakdown_bu[2][t],
+            pre_df = results.breakdown_bu[1][t],
+            post_df = results.breakdown_bu[2][t],
             caption =  "Eligibility Counts of assessment units, by $prett of the head of the unit." )
         allcounts *= "</div></div>"
     end
@@ -211,8 +211,8 @@ function results_to_html(
     
     casestable = frame_to_table(
             ;    
-            pre_df = results.civil.cases_pers[1][t],
-            post_df = results.civil.cases_pers[2][t],
+            pre_df = results.cases_pers[1][t],
+            post_df = results.cases_pers[2][t],
             caption =  "Costs, all Scottish adults, by Employment and Problem Type(click table for more)." )
             allcosts = "<div class='row'><div class='col'><h3>Costs By Characteristics</h3></div></div>"
     
@@ -223,8 +223,8 @@ function results_to_html(
         allcases *= "<div class='row'><div class='col table-responsive'><h4>Personal Level</h4></div></div>"
         allcases *= frame_to_table(
             ;    
-            pre_df = results.civil.cases_pers[1][t],
-            post_df = results.civil.cases_pers[2][t],
+            pre_df = results.cases_pers[1][t],
+            post_df = results.cases_pers[2][t],
             caption =  "Cases, all Scottish people, by $prett and case type." )
         allcases *= "</div></div>"
     end
@@ -233,8 +233,8 @@ function results_to_html(
     # costs_pers :
     coststable = frame_to_table(
             ;    
-            pre_df = results.civil.costs_pers[1][t],
-            post_df = results.civil.costs_pers[2][t],
+            pre_df = results.costs_pers[1][t],
+            post_df = results.costs_pers[2][t],
             caption =  "Costs, all Scottish people, by Employment and Problem Type(click table for more)." )
             allcosts = "<div class='row'><div class='col table-responsive'><h3>Costs By Characteristics</h3></div></div>"
     
@@ -245,8 +245,8 @@ function results_to_html(
         allcosts *= "<div class='row'><div class='col table-responsive'><h4>Personal Level</h4></div></div>"
         allcosts *= frame_to_table(
             ;    
-            pre_df = results.civil.costs_pers[1][t],
-            post_df = results.civil.costs_pers[2][t],
+            pre_df = results.costs_pers[1][t],
+            post_df = results.costs_pers[2][t],
             caption =  "Costs, by $prett and case type." )
         allcosts *= "</div></div>"
     end
@@ -255,4 +255,10 @@ function results_to_html(
 
     (; crosstab, crosstabtables, countstable, allcounts, coststable, allcosts, casestable, allcases )
 end
-  
+
+function results_to_html( 
+    results      :: AllLegalOutput ) :: NamedTuple
+    civil = results_to_html( results.civil )
+    aa  = results_to_html( results.aa )
+    (; aa, civil )
+end

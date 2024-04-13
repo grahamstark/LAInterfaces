@@ -109,9 +109,13 @@ end
 """
 annualised
 """
-function default_la_sys()::LASubsys
-  civil = STBParameters.default_civil_sys( 2023, Float64 )
-  return LASubsys(civil)
+function default_la_sys( systype :: SystemType )::LASubsys
+  if systype == la_civil
+    civil = STBParameters.default_civil_sys( 2023, Float64 )
+    return LASubsys(civil)
+  end
+  aa = STBParameters.default_aa_sys( 2023, Float64 )
+  return LASubsys(aa)
 end
 
 function make_default_sys()
@@ -136,14 +140,30 @@ end
 """
 FIXME: better place for this.
 """
-function do_run( la2 :: OneLegalAidSys; iscivil=true )
+function do_run( la2 :: OneLegalAidSys; systype :: SystemType  )
     global tot
     tot = 0
     sys2 = deepcopy(DEFAULT_PARAMS)
-    sys2.legalaid.civil = deepcopy(la2)
+    if systype == la_civil 
+        sys2.legalaid.civil = deepcopy(la2)
+    else
+        sys2.legalaid.aa = deepcopy(la2)
+    end
     allout = LegalAidRunner.do_one_run( DEFAULT_SETTINGS, [DEFAULT_PARAMS,sys2], obs )
     return allout
 end
 
-const DEFAULT_RUN = do_run( DEFAULT_PARAMS.legalaid.civil )
+function do_default_run()
+    global tot
+    allout = LegalAidRunner.do_one_run( 
+        DEFAULT_SETTINGS, 
+        [DEFAULT_PARAMS,DEFAULT_PARAMS], obs )
+    return allout
+end
+
+const DEFAULT_RUN = do_default_run()
 const DEFAULT_OUTPUT = results_to_html( DEFAULT_RUN )
+
+function get_default_output( systype :: SystemType )
+    return systype == la_civil ? DEFAULT_OUTPUT.civil : DEFAULT_OUTPUT.aa 
+end

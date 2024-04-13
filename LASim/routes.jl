@@ -4,6 +4,9 @@ route("/run", LASim.run, method=POST )
 
 route("/reset", LASim.reset, method=POST )
 
+route("/switch_system", LASim.switch_system, method=POST )
+
+
 route("/addincome-contribution/:n", method = POST) do 
   n::Int = parse(Int, payload(:n))
   LASim.addincome( n )

@@ -5,11 +5,16 @@ function spop!( s :: Set, thing )
       t = pop!( s, thing )
     end
 end
+
+function pars_from_payload( payload )
+  pars = JSON3.read( payload, LASubsys{Float64})
+  @show pars
+  pars
+end
   
 function sysfrompayload( payload ) :: Tuple
-    pars = JSON3.read( payload, LASubsys{Float64})
-    @show pars
     # make this swappable to aa
+    pars = pars_from_payload( payload )
     sys = nothing
     if pars.systype == sys_civil
       sys = deepcopy( DEFAULT_PARAMS.legalaid.civil )
@@ -81,19 +86,35 @@ function sysfrompayload( payload ) :: Tuple
 end
   
 function reset()
-    defaults = default_la_sys()
+    pars = pars_from_payload( rawpayload() )
+    defaults = default_la_sys( pars.systype )
     @info defaults
-    (; output=DEFAULT_OUTPUT, 
+    (; output=get_default_output( pars.systype ), 
        params = defaults,
        defaults = defaults ) |> json
+end
+
+function switch_system()
+    payload = rawpayload()
+    pars = JSON3.read( payload, LASubsys{Float64})
+    @show pars
+    # make this swappable to aa
+    lasys = nothing
+    if pars.systype == sys_civil
+      lasys = deepcopy( DEFAULT_PARAMS.legalaid.civil )
+    else
+      lasys = deepcopy( DEFAULT_PARAMS.legalaid.aa )
+    end
+
+    (; output, params, defaults ) |> json
 end
   
 function run()
     lasys, params = sysfrompayload( rawpayload()) 
-    lares = do_run( lasys )
+    lares = do_run( lasys; systype=params.systype )
     output = results_to_html( lares )
     # params = lasys
-    defaults = default_la_sys() #DEFAULT_PARAMS.legalaid.civil
+    defaults = default_la_sys( lasys.systype ) #DEFAULT_PARAMS.legalaid.civil
     (; output, params, defaults ) |> json
 end
 
@@ -147,7 +168,7 @@ function addincome( n :: Int )
         params.income_contribution_limits,
         n )
     @info "addincome; after = $(params.income_contribution_rates)"
-    defaults=default_la_sys()
+    defaults=default_la_sys( params.systype )
     (; params, defaults ) |> json
 end
 
@@ -159,7 +180,7 @@ function delincome( n )
         params.income_contribution_limits,
         n )
     println( "delincome; after = $(params.income_contribution_rates)" )
-    defaults=default_la_sys()
+    defaults=default_la_sys( params.systype )
     (; params, defaults ) |> json
 end
 
@@ -169,7 +190,7 @@ function addcapital( n :: Int )
         params.capital_contribution_rates, 
         params.capital_contribution_limits,
         n )
-    defaults=default_la_sys()
+    defaults=default_la_sys( params.systype )
     (; params, defaults ) |> json
 end
 
@@ -179,7 +200,7 @@ function delcapital( n )
         params.capital_contribution_rates, 
         params.capital_contribution_limits,
         n )
-    defaults=default_la_sys()
+    defaults=default_la_sys( params.systype )
     (; params, defaults ) |> json
 end
 
