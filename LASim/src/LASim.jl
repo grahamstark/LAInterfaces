@@ -43,4 +43,12 @@ function main()
   Genie.genie(; context = @__MODULE__)
 end
 
+#=
+to start from repl
+
+using Genie
+Genie.loadapp()
+up()
+=#
+
 end
