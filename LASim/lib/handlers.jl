@@ -61,15 +61,15 @@ function map_sys_from_subsys( subsys :: LASubsys )::OneLegalAidSys
     end
     println( "sys.income_contribution_rates was: $(fullsys.income_contribution_rates)")
     println( "sys.income_contribution_limit was: $(fullsys.income_contribution_limits)")
-    fullsys.income_contribution_rates = subsys.income_contribution_rates
+    fullsys.income_contribution_rates = copy(subsys.income_contribution_rates)
     println( "sys.income_contribution_rates now: $(fullsys.income_contribution_rates)")
-    fullsys.income_contribution_limits = subsys.income_contribution_limits
+    fullsys.income_contribution_limits = copy(subsys.income_contribution_limits)
     println( "sys.income_contribution_limit now: $(fullsys.income_contribution_limits)")
     println( "sys.capital_contribution_rates was: $(fullsys.capital_contribution_rates)")
-    fullsys.capital_contribution_rates = subsys.capital_contribution_rates
+    fullsys.capital_contribution_rates = copy(subsys.capital_contribution_rates)
     println( "sys.capital_contribution_rates now: $(fullsys.capital_contribution_rates)")
     println( "sys.capital_contribution_limits was: $(fullsys.capital_contribution_limits)")
-    fullsys.capital_contribution_limits = subsys.capital_contribution_limits
+    fullsys.capital_contribution_limits = copy(subsys.capital_contribution_limits)
     println( "sys.capital_contribution_limits now: $(fullsys.capital_contribution_limits)")
 
     fullsys.expenses.housing = Expense( subsys.housing_is_flat, subsys.housing_v, subsys.housing_max )
@@ -96,19 +96,6 @@ end
 
 function switch_system()
     reset()
-    #=
-    subsys = subsys_from_payload( rawpayload() )
-    @show pars
-    # make this swappable to aa
-    defaults = nothing
-    if subsys.systype == sys_civil
-      lasys = deepcopy( DEFAULT_PARAMS.legalaid.civil )
-    else
-      lasys = deepcopy( DEFAULT_PARAMS.legalaid.aa )
-    end
-    output = get_default_output( subsys.systype )
-    (; output, params, defaults ) |> json
-    =#
 end
   
 function run()
