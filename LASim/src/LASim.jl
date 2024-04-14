@@ -18,7 +18,6 @@ using UUIDs
 
 using ScottishTaxBenefitModel
 using .FRSHouseholdGetter
-using .GeneralTaxComponents: WEEKS_PER_YEAR
 using .Monitor: Progress
 using .RunSettings
 using .Results
