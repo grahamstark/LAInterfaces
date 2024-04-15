@@ -78,6 +78,7 @@ function map_sys_from_subsys( subsys :: LASubsys )::OneLegalAidSys
     fullsys.expenses.maintenance = Expense( subsys.maintenance_is_flat, subsys.maintenance_v, subsys.maintenance_max )
     fullsys.expenses.repayments = Expense( subsys.repayments_is_flat, subsys.repayments_v, subsys.repayments_max )
     weeklyise!( fullsys )
+    @show fullsys
     return fullsys
 end
   
