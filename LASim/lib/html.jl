@@ -29,17 +29,19 @@ function format_diff(; before :: Number, after :: Number, up_is_good = 1, prec=0
     (; colour, ds, before_s, after_s )
 end
 
+const CT_LABELS = ["Passported","Fully Entitled", "W/Contribution","Not Entitled", "Total"]
 
 function format_crosstab( 
     crosstab :: Matrix; 
+    examples :: AbstractArray,
     title="", 
     caption = "" ) :: AbstractString
     
     @argcheck size( crosstab ) == (5,5)
-    labels = ["Passported","Fully Entitled", "W/Contribution","Not Entitled", "Total"]
+    
 
     t = """
-    <table class='table'>
+    <table class='table table-hover'>
             <thead>
             <caption>$caption</caption>
             </thead>
@@ -47,14 +49,14 @@ function format_crosstab(
         """
         tr = "<tr><td></td><td colspan='5' style='text-align:center' class='justify-content-center'>Old System</td><tr><td rowspan='8' class='align-middle'>New System</td><tr><th></th>"
         for c in 1:5
-            cell = "<th>$(labels[c])</th>"
+            cell = "<th>$(CT_LABELS[c])</th>"
             tr *= cell
         end
         tr *= "</tr>"
         t *= tr
         for r in 1:5
             tr = """
-                <tr><th>$(labels[r])</th>
+                <tr><th>$(CT_LABELS[r])</th>
             """
             for c in 1:5
                 v = fmt( crosstab[r,c] )
@@ -69,7 +71,19 @@ function format_crosstab(
                 else # below the diagonal
                     "table-danger"
                 end
-                cell = "<td class='text-right $colour' style='text-align:right'>$v</td>"
+                cell = if length(examples[r,c]) > 0
+                    """
+                    <td class='text-right $colour' 
+                        style='text-align:right'
+                        data-bs-toggle='modal' 
+                        data-bs-target='#example-popup-$r-$c'>$v</td>
+                    """
+                else
+                    """
+                    <td class='text-right $colour' 
+                        style='text-align:right'>$v<td>
+                    """
+                end
                 tr *= cell
             end
             tr *= "</tr>"
@@ -151,24 +165,59 @@ end # frame to table
 
 # TOLIBRARY
 function results_to_html( 
-    results :: LegalOutput ) :: NamedTuple
+    results :: LegalOutput;
+    la2 :: OneLegalAidSys ) :: NamedTuple
     # table expects a tuple
-    k = "$(LegalAidData.PROBLEM_TYPES[1])-$(LegalAidData.ESTIMATE_TYPES[2])"
-    crosstab = format_crosstab( results.crosstab_pers[1][k]; 
+    # k = "$(LegalAidData.PROBLEM_TYPES[1])-$(LegalAidData.ESTIMATE_TYPES[2])"
+    crosstab = format_crosstab( 
+        results.crosstab_pers[1];
+        examples =  results.crosstab_pers_examples[1], 
         caption="Changes to elgibility: all Scottish Adults (click table for breakdowns)" )
-    crosstabtables = "<div>"
-    ctno = 1
+    
+    crosstab_examples = "<div>"
+    for r in 1:5
+        for c in 1:5
+            if length(results.crosstab_pers_examples[1][r,c])  > 0
+                examples = make_examples( 
+                    results.crosstab_pers_examples[1][r,c], 
+                    la2=la2 )
+                k = "example-popup-$r-$c"
+                from = CT_LABELS[r]
+                to = CT_LABELS[c]
+                crosstab_examples *= """
+                <div class='modal fade' id='$(k)' tabindex='-1' role='dialog' aria-labelledby='crosstab-label' aria-hidden='true'>
+                    <div class='modal-dialog modal-lg'  role='document'>
+                        <div class='modal-content'>
+                            <div class='modal-header'>
+                                <h5 class='modal-title' id='crosstab-table-label'/>Examples of changes from $from -> $to</h5>
+                                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                            </div> <!-- header -->
+                            <div class='modal-body'>
+                                <div id='$(k)-content'>
+                                    $(examples)
+                                </div>
+                            </div>
+                        </div><!-- content -->
+                    </div> <!--dialog -->
+                </div> <!-- big-table modal -->
+                """
+            end # any examples
+        end # cols
+    end # rows
+    crosstab_examples *= "</div>"
+    #=
     pc = format_crosstab( results.crosstab_bu[ctno]; 
         caption="Benefit Units", 
         title="Entilemment - Benefit Units"  )
     pc = wraptable( "Counts of Benefit Units", pc )
-    crosstabtables *= pc
-
+    crosstab_examples *= pc
+    =#
     
-    crosstabtables *= "<div class='row'><div class='col'><h3>Tables By Problem Type</h3></div></div>"
+    # crosstab_examples *= "<div class='row'><div class='col'><h3>Tables By Problem Type</h3></div></div>"
+    #=
     for p in LegalAidData.PROBLEM_TYPES[2:end]
         prettyprob = Utils.pretty(p)
-        crosstabtables *= "<div class='row'><div class='col'><h4>Personal Level Tables For Problem Type: $prettyprob</h4></div></div>"
+        crosstab_examples *= "<div class='row'><div class='col'><h4>Personal Level Tables For Problem Type: $prettyprob</h4></div></div>"
         for est in LegalAidData.ESTIMATE_TYPES
             prettyest = Utils.pretty(est)
             title = "Estimate $(prettyest)"
@@ -177,10 +226,12 @@ function results_to_html(
                 results.crosstab_pers[ctno][k];
                 caption = "Estimated number of Scottish adults experiencing $prettyprob in a 3-year period, by eligibility type; estimate: $prettyest" ) 
             pc = wraptable( title, pc )
-            crosstabtables *= pc
+            crosstab_examples *= pc
         end
     end
-    crosstabtables *= "</div>"
+    =#
+    
+
     tgts = LegalAidOutput.LA_TARGETS
     t = tgts[1]
     countstable = frame_to_table(
@@ -253,12 +304,14 @@ function results_to_html(
     allcosts *= "</div>"    
 
 
-    (; crosstab, crosstabtables, countstable, allcounts, coststable, allcosts, casestable, allcases )
+    (; crosstab, crosstab_examples, countstable, allcounts, coststable, allcosts, casestable, allcases )
 end
 
+
 function results_to_html( 
-    results      :: AllLegalOutput ) :: NamedTuple
-    civil = results_to_html( results.civil )
-    aa  = results_to_html( results.aa )
+    results      :: AllLegalOutput, 
+    legalaid::ScottishLegalAidSys ) :: NamedTuple
+    civil = results_to_html( results.civil, la2=legalaid.civil )
+    aa  = results_to_html( results.aa, la2=legalaid.aa )
     (; aa, civil )
 end

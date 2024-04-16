@@ -9,6 +9,7 @@ end
 function subsys_from_payload()
   return JSON3.read( rawpayload(), LASubsys{Float64})
 end
+
   
 function map_sys_from_subsys( subsys :: LASubsys )::OneLegalAidSys
     # make this swappable to aa
@@ -103,7 +104,7 @@ function run()
     subsys = subsys_from_payload()
     fullsys = map_sys_from_subsys( subsys ) 
     lares = do_run( fullsys; systype=subsys.systype )
-    alloutput = results_to_html( lares )
+    alloutput = results_to_html( lares, fullsys )
     output = if subsys.systype == sys_civil 
       alloutput.civil
     else

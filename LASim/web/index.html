@@ -271,9 +271,7 @@
                     <div class='col-4'></div>
                 </div>
                 <div class='row justify-content-center text-secondary pt-3 pb-3'>
-                    <div class="col table-responsive"
-                        data-bs-toggle='modal' 
-                        data-bs-target='#crosstab-popup'>                                    
+                    <div class="col">
                         <div id="crosstab"></div>
                     </div>  
                 </div>
@@ -305,6 +303,11 @@
             </div> <!-- container -->
         </form>
 
+        <div class='text-right $colour' 
+            style='text-align:right'
+            data-bs-toggle='modal' 
+            data-bs-target='#example-popup-1-1'>XXX</div>
+
         <p class="text-danger">Note: some features are not yet implemented.</p>
         
         <footer>
@@ -320,19 +323,8 @@
 
         </footer>
 
-        <div class='modal fade' id='crosstab-popup' tabindex='-1' role='dialog' aria-labelledby='crosstab-label' aria-hidden='true'>
-            <div class='modal-dialog modal-lg'  role='document'>
-                <div class='modal-content'>
-                    <div class='modal-header'>
-                        <h5 class='modal-title' id='crosstab-table-label'/>Detailed Changes to Entitlements</h5>
-                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                    </div> <!-- header -->
-                    <div class='modal-body'>
-                        <div id='crosstabtables'></div>
-                    </div>
-                </div><!-- content -->
-            </div> <!--dialog -->
-        </div> <!-- big-table modal -->
+        <div id="crosstabexamples"></div>
+
         <div class='modal fade' id='allcounts-popup' tabindex='-1' role='dialog' aria-labelledby='crosstab-label' aria-hidden='true'>
             <div class='modal-dialog modal-xl'  role='document'>
                 <div class='modal-content'>
@@ -710,7 +702,7 @@ function loadParams( params, defaults ){
 function createMainOutputs( result ){
     console.log( result.countstable );
     $("#crosstab").html( result.crosstab );
-    $("#crosstabtables").html( result.crosstabtables );
+    $("#crosstabexamples").html( result.crosstab_examples );
     $("#countstable").html( result.countstable );
     $("#allcounts").html( result.allcounts );
     $("#coststable").html( result.coststable );

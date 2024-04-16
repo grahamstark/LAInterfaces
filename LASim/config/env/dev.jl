@@ -1,4 +1,4 @@
-using Genie, Logging
+using Genie, Logging, Revise
 
 Genie.Configuration.config!(
   server_port                     = 8025,
