@@ -103,8 +103,8 @@ end
 function run()
     subsys = subsys_from_payload()
     fullsys = map_sys_from_subsys( subsys ) 
-    lares = do_run( fullsys; systype=subsys.systype )
-    alloutput = all_results_to_html( lares, fullsys )
+    lares, sys2 = do_run( fullsys; systype=subsys.systype )
+    alloutput = all_results_to_html( lares, sys2.legalaid )
     output = if subsys.systype == sys_civil 
       alloutput.civil
     else

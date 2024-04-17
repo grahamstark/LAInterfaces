@@ -60,7 +60,7 @@ Defined here to aviod nasty cross-dependency.
 Compile the list of hh `examples` into one massive stringfull of HTML.
 """
 function make_examples( 
-  examples :: Vector{Int};
+  examples :: AbstractVector;
   la2 :: OneLegalAidSys  )::String
   sys2 = deepcopy(DEFAULT_PARAMS)
   if la2.systype == sys_civil
@@ -70,11 +70,11 @@ function make_examples(
   end
   print = PrintControls()
   s = ""
-  for hno in examples 
-    hh = FRSHouseholdGetter.get_household( hno )
+  for oi in examples 
+    hh = FRSHouseholdGetter.get_household( oi )
     pre = do_one_calc( hh, DEFAULT_PARAMS )
     post = do_one_calc( hh, sys2 )
-    s *= "<h2>Household Results #$(hno)</h2>"
+    s *= "<h2>Household Results #$(oi.id) - $(oi.data_year)</h2>"
     s *= HTMLLibs.format( hh, pre, post; settings=DEFAULT_SETTINGS, print=print )
     s *= "<hr/>"
   end

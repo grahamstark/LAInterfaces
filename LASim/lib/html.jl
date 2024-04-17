@@ -190,8 +190,8 @@ function results_to_html(
                     results.crosstab_pers_examples[1][r,c], 
                     la2=la2 )
                 k = "example-popup-$r-$c"
-                from = CT_LABELS[r]
-                to = CT_LABELS[c]
+                from = CT_LABELS[c]
+                to = CT_LABELS[r]
                 crosstab_examples *= """
                 <div class='modal fade' id='$(k)' tabindex='-1' role='dialog' aria-labelledby='crosstab-label' aria-hidden='true'>
                     <div class='modal-dialog modal-lg'  role='document'>

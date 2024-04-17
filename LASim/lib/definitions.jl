@@ -111,7 +111,7 @@ end
 """
 FIXME: better place for this.
 """
-function do_run( la2 :: OneLegalAidSys; systype :: SystemType  )
+function do_run( la2 :: OneLegalAidSys; systype :: SystemType  )::Tuple
     global tot
     tot = 0
     sys2 = deepcopy(DEFAULT_PARAMS)
@@ -121,7 +121,7 @@ function do_run( la2 :: OneLegalAidSys; systype :: SystemType  )
         sys2.legalaid.aa = deepcopy(la2)
     end
     allout = LegalAidRunner.do_one_run( DEFAULT_SETTINGS, [DEFAULT_PARAMS,sys2], obs )
-    return allout
+    return allout, sys2
 end
 
 function do_default_run()
