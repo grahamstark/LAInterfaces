@@ -28,7 +28,7 @@ using .LegalAidData
 using .LegalAidOutput
 using .LegalAidRunner
 
-@testset "1" begin
+@testset "subsys mapping" begin
     @test 1+1 == 2
     @show aasub = LASim.default_la_subsys( sys_aa )
     @show civsub = LASim.default_la_subsys( sys_civil )
@@ -36,3 +36,10 @@ using .LegalAidRunner
     @show civsub = LASim.default_la_subsys( sys_civil )
     @show aafull = LASim.map_sys_from_subsys( aasub )
 end 
+
+@testset "crosstabs" begin
+    ct = rand(1:10000,5,5)
+    ex = fill(rand(1:2000,5),5,5)
+    @show ct
+    @show LASim.format_crosstab( ct; examples=ex )
+end

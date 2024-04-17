@@ -71,6 +71,13 @@ function format_crosstab(
                 else # below the diagonal
                     "table-danger"
                 end
+                cell = """
+                <td class='text-right $colour' 
+                    style='text-align:right'
+                    data-bs-toggle='modal' 
+                    data-bs-target='#example-popup-$r-$c'>$v</td>
+                """
+                #=
                 cell = if length(examples[r,c]) > 0
                     """
                     <td class='text-right $colour' 
@@ -84,6 +91,7 @@ function format_crosstab(
                         style='text-align:right'>$v<td>
                     """
                 end
+                =#
                 tr *= cell
             end
             tr *= "</tr>"
@@ -308,7 +316,7 @@ function results_to_html(
 end
 
 
-function results_to_html( 
+function all_results_to_html( 
     results      :: AllLegalOutput, 
     legalaid::ScottishLegalAidSys ) :: NamedTuple
     civil = results_to_html( results.civil, la2=legalaid.civil )
