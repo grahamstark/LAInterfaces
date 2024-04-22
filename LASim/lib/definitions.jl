@@ -28,7 +28,17 @@ mutable struct LASubsys{T}
     income_contribution_rates :: Vector{T}
     income_contribution_limits :: Vector{T}  
     capital_contribution_rates :: Vector{T}
-    capital_contribution_limits :: Vector{T}  
+    capital_contribution_limits :: Vector{T} 
+    
+    prem_family :: T # = 0.0 # 22.00 # FIXME this is not used??
+    prem_lone_parent :: T
+    prem_disabled_child :: T # = 64.19
+    prem_carer_single :: T # = 36.85
+    prem_carer_couple :: T # = 73.70 # FIXME is this used?
+    prem_disability_single :: T # = 34.35
+    prem_disability_couple :: RT # = 48.95
+    uc_limit :: RT
+    uc_limit_type :: UCLimitType
 
     housing_is_flat :: Bool
     housing_v :: T
@@ -71,6 +81,16 @@ function LASubsys( sys :: OneLegalAidSys )
       sys.capital_contribution_rates,
       sys.capital_contribution_limits,
 
+      sys.premia.family,
+      sys.premia.lone_parent,
+      sys.premia.disabled_child,
+      sys.premia.carer_single,
+      sys.premia.carer_couple,
+      sys.premia.disability_single,
+      sys.premia.disability_couple,
+      sys.uc_limit,
+      sys.uc_limit_type,
+  
       sys.expenses.housing.is_flat,
       sys.expenses.housing.v,
       sys.expenses.housing.max,

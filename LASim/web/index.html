@@ -245,7 +245,89 @@
                             <input id='repayments_max' type='number' name="repayments_max" min='0' max='99999999999' value='' step='1' size="8" class='form-control w-50'/>
                         </div>
                         </fieldset>                    
-                    
+
+                        <fieldset class="col border text-black m-1 p-2">
+                            <legend class="text-primary">Universal Credit: Maximum Amount/Min Income For Passporting</legend>
+                            <div>
+                                <div class="form-check">
+                                    <input class="form-check-input" 
+                                        type="radio" 
+                                        name="uc_limit_type" 
+                                        id="uc_no_limit"  
+                                        value="uc_no_limit"
+                                        checked='checked'>
+                                    <label 
+                                        class="form-check-label" 
+                                        for="uc_no_limit">
+                                      Don't Limit
+                                    </label>
+                                  </div>
+                                  <div class="form-check">
+                                    <input class="form-check-input" 
+                                        type="radio" 
+                                        name="uc_limit_type" 
+                                        id="uc_max_income"  
+                                        value="uc_max_income"
+                                        checked='checked'>
+                                    <label 
+                                        class="form-check-label" 
+                                        for="uc_max_income">
+                                      Maximum Assessed Income
+                                    </label>
+                                  </div>
+                                  <div class="form-check">
+                                    <input class="form-check-input" 
+                                        type="radio" 
+                                        name="uc_min_payment" 
+                                        id="uc_max_income"  
+                                        value="uc_min_payment"
+                                        checked='checked'>
+                                    <label 
+                                        class="form-check-label" 
+                                        for="uc_min_payment">
+                                      Minimum UC Entitlement
+                                    </label>
+                                  </div>
+                                  <br/>
+                                  <label for='uc_limit' id='uc_limit_l'  class='form-label'>Amount (£)</label>
+                                  <input id='uc_limit' type='number' name="uc_limit" min='0' max='2000' value='' step='0.01' size="8" class='form-control w-50'/>
+                            </div>
+                            </fieldset>
+                            <fieldset class="col border text-black m-1 p-2">
+                                <legend class="text-primary">Add-Ons for Family Types</legend>
+                                <label 
+                                    for='prem_family' 
+                                    id='prem_family_l'  class='form-label'>Families with Children</label>
+                                <input id='prem_family' type='number' name="prem_family" min='0' max='2000' value='' step='0.01' size="8" class='form-control w-50'/>
+                                <label 
+                                    for='prem_lone_parent' 
+                                    id='prem_lone_parent_l'  class='form-label'>Lone Parents</label>
+                                <input id='prem_lone_parent' type='number' name="prem_lone_parent" min='0' max='2000' value='' step='0.01' size="8" class='form-control w-50'/>
+                                <label 
+                                    for='prem_disabled_child' 
+                                    id='prem_disabled_child_l'  class='form-label'>Disabled Child</label>
+                                <input id='prem_disabled_child' type='number' name="prem_disabled_child" min='0' max='2000' value='' step='0.01' size="8" class='form-control w-50'/>
+                                <label 
+                                    for='prem_carer_single' 
+                                    id='prem_carer_single_l'  class='form-label'>Single Carer</label>
+                                <input id='prem_carer_single' type='number' name="prem_carer_single" min='0' max='2000' value='' step='0.01' size="8" class='form-control w-50'/>
+                                <label 
+                                    for='prem_carer_couple' 
+                                    id='prem_carer_couple_l'  class='form-label'>Couple Carer</label>
+                                <input id='prem_carer_couple' type='number' name="prem_carer_couple" min='0' max='2000' value='' step='0.01' size="8" class='form-control w-50'/>
+
+                                <label 
+                                    for='prem_disability_single' 
+                                    id='prem_disability_single_l'  class='form-label'>Single Disabled</label>
+                                <input id='prem_disablity_single' type='number' name="prem_disablity_single" min='0' max='2000' value='' step='0.01' size="8" class='form-control w-50'/>
+
+                                <label 
+                                    for='prem_disability_couple' 
+                                    id='prem_disability_couple_l'  class='form-label'>Single Disabled</label>
+                                <input id='prem_disablity_couple' type='number' name="prem_disablity_couple" min='0' max='2000' value='' step='0.01' size="8" class='form-control w-50'/>
+                                
+                            </fieldset>
+                        
                 </div>
                 <fieldset class="row">
                     <div class="col"></div>
@@ -558,6 +640,15 @@ function setCheck( id, val, def ){
     }
 }
 
+function setRadio( id, val, def ){
+    $('input:radio[name="'+id+'"][value="'+val+'"]').attr('checked',true);
+    if( val != def ){
+        $( "."+id ).addClass( 'changed');
+    } else {
+        $( "."+id ).removeClass( 'changed');
+    }
+}
+
 function loadTax( name, rates, bands, defrates, defbands ){
     var nr = rates.length;
     var nb = bands.length;
@@ -697,6 +788,18 @@ function loadParams( params, defaults ){
     setExpenseFields( "maintenance", false );
     setExpenseFields( "repayments", false );
 
+    setRadio( "uc_limit_type", params.uc_limit_type, defaults.uc_limit_type );
+    setVal( "uc_limit", params.uc_limit, defaults.uc_limit );
+
+    setVal( "prem_family", params.prem_family, defaults.prem_family );
+    setVal( "prem_lone_parent", params.prem_lone_parent, defaults.prem_lone_parent );
+    setVal( "prem_disabled_child", params.prem_disabled_child, defaults.prem_disabled_child );
+    setVal( "prem_carer_single", params.prem_carer_single, defaults.prem_carer_single );
+    setVal( "prem_carer_couple", params.prem_carer_couple, defaults.prem_carer_couple );
+    setVal( "prem_disability_single", params.prem_disability_single, defaults.prem_disability_single );
+    setVal( "prem_disability_couple", params.prem_disability_couple, defaults.prem_disability_couple );
+                        
+
 }
 
 function createMainOutputs( result ){
@@ -757,6 +860,15 @@ function loadFromForm(){
         repayments_v: parseFloat($('#repayments_v').val()),
         repayments_max: parseFloat($('#repayments_max').val()),
 
+        prem_family: parseFloat($('#prem_family').val()),
+        prem_lone_parent: parseFloat($('#prem_lone_parent').val()),
+        prem_disabled_child: parseFloat($('#prem_disabled_child').val()),
+        prem_carer_single: parseFloat($('#prem_carer_single').val()),
+        prem_carer_couple: parseFloat($('#prem_carer_couple').val()),
+        prem_disability_single: parseFloat($('#prem_disability_single').val()),
+        prem_disability_couple: parseFloat($('#prem_disability_couple').val()),
+        uc_limit: parseFloat($('#uc_limit').val()),
+        uc_limit_type: $('input[name="uc_limit_type"]:checked').val()
      }
 
     console.log( "loadFromForm data = %o", data );

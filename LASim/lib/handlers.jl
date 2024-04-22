@@ -78,6 +78,17 @@ function map_sys_from_subsys( subsys :: LASubsys )::OneLegalAidSys
     fullsys.expenses.work_expenses = Expense( subsys.work_expenses_is_flat, subsys.work_expenses_v, subsys.work_expenses_max )
     fullsys.expenses.maintenance = Expense( subsys.maintenance_is_flat, subsys.maintenance_v, subsys.maintenance_max )
     fullsys.expenses.repayments = Expense( subsys.repayments_is_flat, subsys.repayments_v, subsys.repayments_max )
+    
+    fullsys.premia.family = subsys.prem_family
+    fullsys.premia.lone_parent  = subsys.prem_lone_parent
+    fullsys.premia.disabled_child = subsys.prem_disabled_child
+    fullsys.premia.carer_single = subsys.prem_carer_single
+    fullsys.premia.carer_couple = subsys.prem_carer_couple
+    fullsys.premia.disability_single = subsys.prem.disability_single
+    fullsys.premia.disability_couple = subsys.prem_disability_couple
+    fullsys.uc_limit = subsys.fullsys_uc_limit
+    fullsys.uc_limit_type = subsys.uc_limit_type
+    
     weeklyise!( fullsys )
     @show fullsys
     return fullsys
