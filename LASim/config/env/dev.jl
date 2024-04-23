@@ -5,7 +5,7 @@ Genie.Configuration.config!(
   server_host                     = "127.0.0.1",
   log_level                       = Logging.Info,
   log_to_file                     = false,
-  path_log                        = "/tmp/"
+  path_log                        = "/tmp/",
   server_handle_static_files      = true,
   server_document_root            = "web/",
   path_build                      = "build",
