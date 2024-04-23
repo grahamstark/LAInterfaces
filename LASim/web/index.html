@@ -181,7 +181,7 @@
                             <caption>Rates in %, bands in &pound;s pw</caption>
                             <thead>
                                 <tr>
-                                    <th>Rate (%)</th>
+                                    <th id="income_contrib_rate">Rate (%)</th>
                                     <th>Limit (£pa)</th>
                                     <th></th>
                                     <th></th>
@@ -797,8 +797,12 @@ function loadParams( params, defaults ){
     setVal( "prem_carer_couple", params.prem_carer_couple, defaults.prem_carer_couple );
     setVal( "prem_disability_single", params.prem_disability_single, defaults.prem_disability_single );
     setVal( "prem_disability_couple", params.prem_disability_couple, defaults.prem_disability_couple );
-                        
-
+    
+    if(params.systype == 'sys_civil'){
+        $( "#income_contrib_rate" ).html( "Rate (%)" );
+    } else {
+        $( "#income_contrib_rate" ).html( "Contrib &pound;s" );
+    }
 }
 
 function createMainOutputs( result ){
