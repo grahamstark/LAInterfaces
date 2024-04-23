@@ -297,32 +297,32 @@
                                 <label 
                                     for='prem_family' 
                                     id='prem_family_l'  class='form-label'>Families with Children</label>
-                                <input id='prem_family' type='number' name="prem_family" min='0' max='10000' value='' step='0.01' size="8" class='form-control w-50'/>
+                                <input id='prem_family' type='number' name="prem_family" min='0' max='100000' value='' step='0.01' size="8" class='form-control w-50'/>
                                 <label 
                                     for='prem_family_lone_parent' 
                                     id='prem_family_lone_parent_l'  class='form-label'>Lone Parents</label>
-                                <input id='prem_family_lone_parent' type='number' name="prem_family_lone_parent" min='0' max='2000' value='' step='0.01' size="8" class='form-control w-50'/>
+                                <input id='prem_family_lone_parent' type='number' name="prem_family_lone_parent" min='0' max='100000' value='' step='0.01' size="8" class='form-control w-50'/>
                                 <label 
                                     for='prem_disabled_child' 
                                     id='prem_disabled_child_l'  class='form-label'>Disabled Child</label>
-                                <input id='prem_disabled_child' type='number' name="prem_disabled_child" min='0' max='10000' value='' step='0.01' size="8" class='form-control w-50'/>
+                                <input id='prem_disabled_child' type='number' name="prem_disabled_child" min='0' max='100000' value='' step='0.01' size="8" class='form-control w-50'/>
                                 <label 
                                     for='prem_carer_single' 
                                     id='prem_carer_single_l'  class='form-label'>Single Carer</label>
-                                <input id='prem_carer_single' type='number' name="prem_carer_single" min='0' max='10000' value='' step='0.01' size="8" class='form-control w-50'/>
+                                <input id='prem_carer_single' type='number' name="prem_carer_single" min='0' max='100000' value='' step='0.01' size="8" class='form-control w-50'/>
                                 <label 
                                     for='prem_carer_couple' 
                                     id='prem_carer_couple_l'  class='form-label'>Couple Carer</label>
-                                <input id='prem_carer_couple' type='number' name="prem_carer_couple" min='0' max='10000' value='' step='0.01' size="8" class='form-control w-50'/>
+                                <input id='prem_carer_couple' type='number' name="prem_carer_couple" min='0' max='100000' value='' step='0.01' size="8" class='form-control w-50'/>
                                 <label 
                                     for='prem_disability_single'                                         
                                     id='prem_disability_single_l'  class='form-label'>Single Disabled</label>
-                                <input id='prem_disability_single' type='number' name='prem_disablity_single' min='0' max='10000' value='' step='0.01' size="8" class='form-control w-50'/>
+                                <input id='prem_disability_single' type='number' name='prem_disablity_single' min='0' max='100000' value='' step='0.01' size="8" class='form-control w-50'/>
 
                                 <label 
                                     for='prem_disability_couple' 
                                     id='prem_disability_couple_l'  class='form-label'>Couple Disabled</label>
-                                <input id='prem_disability_couple' type='number' name="prem_disablity_couple" min='0' max='10000' value='' step='0.01' size="8" class='form-control w-50'/>
+                                <input id='prem_disability_couple' type='number' name="prem_disablity_couple" min='0' max='100000' value='' step='0.01' size="8" class='form-control w-50'/>
                                 
                             </fieldset>
                         
@@ -630,7 +630,7 @@ function setVal( id, val, def ){
 
 function setCheck( id, val, def ){
     $( "#"+id ).prop('checked', val );
-    console.log( "setCheck for #%s val=%s def=%s", id, val, def )
+    console.log( "setCheck for #%s val=%s def=%s", id, val, def );
     if( val != def ){
         $( "."+id ).addClass( 'changed');
     } else {
@@ -639,7 +639,8 @@ function setCheck( id, val, def ){
 }
 
 function setRadio( id, val, def ){
-    $('input:radio[name="'+id+'"][value="'+val+'"]').attr('checked',true);
+    $('input[name="'+id+'"][value="'+val+'"]').prop('checked',true);
+    console.log( "setRadio for #%s val=%s def=%s", id, val, def );
     if( val != def ){
         $( "."+id ).addClass( 'changed');
     } else {

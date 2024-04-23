@@ -91,6 +91,7 @@ function map_sys_from_subsys( subsys :: LASubsys )::OneLegalAidSys
     
     weeklyise!( fullsys )
     @show fullsys
+    @show fullsys.premia
     return fullsys
 end
   

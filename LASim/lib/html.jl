@@ -120,7 +120,6 @@ function add_col_totals!( df::DataFrame, add_label = false )
     newrow = deepcopy( df[1,:])
     for c in 1:ncols
         col = df[:,c]
-        println( "eltype col[$col] $(eltype( col ))")
         if eltype( col ) <: Number 
             newrow[c] = sum( col )
         end
