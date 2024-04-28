@@ -29,7 +29,12 @@ function format_diff(; before :: Number, after :: Number, up_is_good = 1, prec=0
     (; colour, ds, before_s, after_s )
 end
 
-const CT_LABELS = ["Passported","Fully Entitled", "W/Contribution","Not Entitled", "Total"]
+const CT_LABELS = [
+    "Passported",
+    "Fully Entitled", 
+    "W/Contribution",
+    "Not Entitled", 
+    "Total"]
 
 function format_crosstab( 
     crosstab :: Matrix; 
@@ -171,7 +176,11 @@ end # frame to table
 
 function crosstab_to_frame( crosstab :: Matrix ) :: DataFrame
     d = DataFrame()
-    d.a=[1,2,3]
+    d.pre=CT_LABELS
+    for col = 1:5
+        colname = Symbol( CT_LABELS[col])
+        d[!,colname] = crosstab[:,col]
+    end
     d
 end
 
