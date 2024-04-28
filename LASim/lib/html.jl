@@ -169,6 +169,17 @@ function frame_to_table(
     return table
 end # frame to table
 
+function crosstab_to_frame( crosstab :: Matrix ) :: DataFrame
+    d = DataFrame()
+    d.a=[1,2,3]
+    d
+end
+
+function enum_to_string!( df :: DataFrame )
+    col1=df[!,1]
+    col1 = pretty.(string.(col1))
+    df[!,1] = col1
+end
 
 # TOLIBRARY
 function results_to_html( 

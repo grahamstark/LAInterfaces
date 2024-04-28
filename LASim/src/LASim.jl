@@ -15,6 +15,7 @@ using StatsBase
 using Observables
 using ArgCheck
 using UUIDs
+using XLSX 
 
 using ScottishTaxBenefitModel
 using .FRSHouseholdGetter
@@ -81,10 +82,10 @@ function make_examples(
   return s
 end
 
+include( "../lib/exporter.jl")
 include("../lib/html.jl")
 include("../lib/definitions.jl")
 include("../lib/handlers.jl")
-
 
 const up = Genie.up
 export up

@@ -102,10 +102,13 @@ function reset()
     systype = rp["systype"] == "sys_aa" ? sys_aa : sys_civil
     # subsys = subsys_from_payload()
     defaults = default_la_subsys( systype )
+    output=get_default_output( systype )
+    xlsxfile = export_xlsx( get_default_results( systype ) ) # FIXME no need to repeat this here.
     @info defaults
-    (; output=get_default_output( systype ), 
+    (; output=output, 
        params = defaults,
-       defaults = defaults ) |> json
+       defaults = defaults,
+       xlsxfile ) |> json
 end
 
 function switch_system()
@@ -117,14 +120,18 @@ function run()
     fullsys = map_sys_from_subsys( subsys ) 
     lares, sys2 = do_run( fullsys; systype=subsys.systype )
     alloutput = all_results_to_html( lares, sys2.legalaid )
-    output = if subsys.systype == sys_civil 
-      alloutput.civil
+    output = nothing
+    xlsxfile = nothing
+    if subsys.systype == sys_civil 
+      output = alloutput.civil
+      xlsxfile = export_xlsx( lares.civil )
     else
-      alloutput.aa
+      output = alloutput.aa
+      xlsxfile = export_xlsx( lares.aa )
     end
     # params = lasys
     defaults = default_la_subsys( subsys.systype )
-    (; output, params=subsys, defaults ) |> json
+    (; output, params=subsys, defaults, xlsxfile ) |> json
 end
 
 function delonerb!( 

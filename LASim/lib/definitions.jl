@@ -158,3 +158,7 @@ const DEFAULT_OUTPUT = all_results_to_html( DEFAULT_RUN, DEFAULT_PARAMS.legalaid
 function get_default_output( systype :: SystemType )
     return systype == sys_civil ? DEFAULT_OUTPUT.civil : DEFAULT_OUTPUT.aa 
 end
+
+function get_default_results( systype :: SystemType )
+    return systype == sys_civil ? DEFAULT_RUN.civil : DEFAULT_RUN.aa
+end
