@@ -188,6 +188,7 @@ function enum_to_string!( df :: DataFrame )
     col1=df[!,1]
     col1 = pretty.(string.(col1))
     df[!,1] = col1
+    df[end,1] = "Total"
 end
 
 # TOLIBRARY
