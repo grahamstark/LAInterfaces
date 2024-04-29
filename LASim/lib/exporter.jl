@@ -10,7 +10,7 @@ const PRE_POST = Dict(
     ["Pre" => "Base Case", "Post"=>"After Your Changes"]
 )
 
-function insert_sheet!( xf, typ, prepost, df :: DataFrame )
+function insert_sheet!( xf, typ, prepost, df :: Vector{AbstractDataFrame} )
     @show "adding sheet $typ $bd $prepost"
     sheet = XLSX.addsheet!( xf )
     sheetname = "$typ $prepost"
@@ -43,12 +43,12 @@ function export_xlsx( results :: LegalOutput )::String
                 results.crosstab_pers[1]);
                 anchor_cell=XLSX.CellRef("A3"))  
            # sheetname="Person Crosstab")        
-        insert_sheet!( xf, "Elig", "Pre", results.breakdown_pers[1][t])
-        insert_sheet!( xf, "Elig", "Post", results.breakdown_pers[2][t])
-        insert_sheet!( xf, "Cases", "Pre", results.cases_pers[1][t])
-        insert_sheet!( xf, "Cases", "Post", results.cases_pers[2][t])
-        insert_sheet!( xf, "Costs", "Pre", results.costs_pers[1][t])
-        insert_sheet!( xf, "Costs", "Post", results.costs_pers[2][t])
+        insert_sheet!( xf, "Elig", "Pre", results.breakdown_pers[1])
+        insert_sheet!( xf, "Elig", "Post", results.breakdown_pers[2])
+        insert_sheet!( xf, "Cases", "Pre", results.cases_pers[1])
+        insert_sheet!( xf, "Cases", "Post", results.cases_pers[2])
+        insert_sheet!( xf, "Costs", "Pre", results.costs_pers[1])
+        insert_sheet!( xf, "Costs", "Post", results.costs_pers[2])
     end # xlsx do
     return urlname
 end
