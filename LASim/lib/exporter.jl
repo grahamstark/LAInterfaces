@@ -22,11 +22,8 @@ function insert_sheet!( xf, typ, prepost, df :: Vector{AbstractDataFrame} )
         sheet["A$row"] = caption
         enum_to_string!( df ) # TRANSLate enums tp strings; xslx doesn't do enums
         row += 2
-        XLSX.writetable!( sheet, df; anchor_cell=XLSX.CellRef("A$row"))
+        XLSX.writetable!( sheet, df[bd]; anchor_cell=XLSX.CellRef("A$row"))
         row += nrows+2
-        sheet["A$row"] = caption
-        row += 2
-        XLSX.writetable!( sheet, df; anchor_cell=XLSX.CellRef("A$row"))
     end
 end
 
