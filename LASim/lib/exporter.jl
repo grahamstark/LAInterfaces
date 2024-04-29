@@ -10,14 +10,17 @@ const PRE_POST = Dict(
     ["Pre" => "Base Case", "Post"=>"After Your Changes"]
 )
 
-function insert_sheet!( xf, typ, prepost, frames :: Dict )
+function insert_sheet!( xf, 
+    typ::String, 
+    prepost::String, 
+    tables :: Dict )
     @show "adding sheet $typ $prepost"
     sheet = XLSX.addsheet!( xf )
     sheetname = "$typ - $prepost"
     XLSX.rename!( sheet, sheetname )
     row = 1
     for bd in LegalAidOutput.LA_TARGETS
-        tab = frames[bd]
+        tab = tables[bd]
         nrows, ncols = size(tab)
         caption = "$(TYP_LABELS[typ]), broken down by $bd, $(PRE_POST[prepost])"
         sheet["A$row"] = caption
