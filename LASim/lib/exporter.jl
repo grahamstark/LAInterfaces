@@ -11,7 +11,7 @@ const PRE_POST = Dict(
 )
 
 function insert_sheet!( xf, typ, prepost, df :: Dict )
-    @show "adding sheet $typ $bd $prepost"
+    @show "adding sheet $typ $prepost"
     sheet = XLSX.addsheet!( xf )
     sheetname = "$typ $prepost"
     XLSX.rename!( sheet, sheetname )
