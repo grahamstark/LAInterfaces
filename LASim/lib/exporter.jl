@@ -10,7 +10,7 @@ const PRE_POST = Dict(
     ["Pre" => "Base Case", "Post"=>"After Your Changes"]
 )
 
-function insert_sheet!( xf, typ, prepost, df :: Vector{AbstractDataFrame} )
+function insert_sheet!( xf, typ, prepost, df :: Dict )
     @show "adding sheet $typ $bd $prepost"
     sheet = XLSX.addsheet!( xf )
     sheetname = "$typ $prepost"
