@@ -10,19 +10,20 @@ const PRE_POST = Dict(
     ["Pre" => "Base Case", "Post"=>"After Your Changes"]
 )
 
-function insert_sheet!( xf, typ, prepost, df :: Dict )
-    @show "adding sheet $typ $bd $prepost"
+function insert_sheet!( xf, typ, prepost, frames :: Dict )
+    @show "adding sheet $typ $prepost"
     sheet = XLSX.addsheet!( xf )
-    sheetname = "$typ $prepost"
+    sheetname = "$typ - $prepost"
     XLSX.rename!( sheet, sheetname )
-    nrows, ncols = size(df)
     row = 1
     for bd in LegalAidOutput.LA_TARGETS
+        tab = frames[bd]
+        nrows, ncols = size(tab)
         caption = "$(TYP_LABELS[typ]), broken down by $bd, $(PRE_POST[prepost])"
         sheet["A$row"] = caption
-        enum_to_string!( df ) # TRANSLate enums tp strings; xslx doesn't do enums
+        enum_to_string!( tab ) # TRANSLate enums tp strings; xslx doesn't do enums
         row += 2
-        XLSX.writetable!( sheet, df[bd]; anchor_cell=XLSX.CellRef("A$row"))
+        XLSX.writetable!( sheet, tab; anchor_cell=XLSX.CellRef("A$row"))
         row += nrows+2
     end
 end

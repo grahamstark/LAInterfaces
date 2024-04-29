@@ -1,7 +1,3 @@
-# get around weird bug similar to: https://github.com/GenieFramework/Genie.jl/issues/433
-## __precompile__(false)
-
-
 module LASim
 
 using Genie
