@@ -146,7 +146,7 @@ end
 
 function do_default_run()
     global tot
-    allout = LegalAidRunner.do_one_run( 
+    allout = LegalAidRunner.initialise( 
         DEFAULT_SETTINGS, 
         [DEFAULT_PARAMS,DEFAULT_PARAMS], obs )
     return allout
