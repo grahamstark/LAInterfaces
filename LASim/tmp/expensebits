@@ -1,0 +1,192 @@
+
+housing_is_flat: $('#housing_is_flat').is(':checked'),
+housing_v: parseFloat($('#housing_v').val()),
+housing_max: parseFloat($('#housing_max').val()),
+
+
+childcare_is_flat: $('#childcare_is_flat').is(':checked'),
+childcare_v: parseFloat($('#childcare_v').val()),
+childcare_max: parseFloat($('#childcare_max').val()),
+
+
+work_expenses_is_flat: $('#work_expenses_is_flat').is(':checked'),
+work_expenses_v: parseFloat($('#work_expenses_v').val()),
+work_expenses_max: parseFloat($('#work_expenses_max').val()),
+
+
+maintenance_is_flat: $('#maintenance_is_flat').is(':checked'),
+maintenance_v: parseFloat($('#maintenance_v').val()),
+maintenance_max: parseFloat($('#maintenance_max').val()),
+
+
+repayments_is_flat: $('#repayments_is_flat').is(':checked'),
+repayments_v: parseFloat($('#repayments_v').val()),
+repayments_max: parseFloat($('#repayments_max').val()),
+
+
+
+<fieldset class="col border text-black m-1 p-2">
+<legend class="text-primary">Housing</legend>
+<div>
+    <input onchange='setExpenseFields( "housing", true )' class='form-check-input ' type='checkbox' id='housing_is_flat' />
+    <label class='form-check-label housing_is_flat' for='housing_is_flat'>
+        Treat as Flat Rate?
+    </label>
+    <br/>
+    <label for='housing_v' id='housing_vlabel'  class='form-label'>% Applicable or Absolute amount (£)</label>
+    <input id='housing_v' type='number' name="housing_v" min='0' max='2000' value='' step='0.01' size="8" class='form-control w-50'/>
+    <label for='housing_max' class='form-label'>Maximum Amount (£)</label>
+    <input id='housing_max' type='number' name="housing_max" min='0' max='99999999999' value='' step='1' size="8" class='form-control w-50'/>
+</div>
+</fieldset>
+
+<fieldset class="col border text-black m-1 p-2">
+<legend class="text-primary">Childcare</legend>
+<div>
+    <input onchange='setExpenseFields( "childcare", true )' class='form-check-input ' type='checkbox' id='childcare_is_flat' />
+    <label class='form-check-label childcare_is_flat' for='childcare_is_flat'>
+        Treat as Flat Rate?
+    </label>
+    <br/>
+    <label for='childcare_v' id='childcare_vlabel'  class='form-label'>% Applicable or Absolute amount (£)</label>
+    <input id='childcare_v' type='number' name="childcare_v" min='0' max='2000' value='' step='0.01' size="8" class='form-control w-50'/>
+    <label for='childcare_max' class='form-label'>Maximum Amount (£)</label>
+    <input id='childcare_max' type='number' name="childcare_max" min='0' max='99999999999' value='' step='1' size="8" class='form-control w-50'/>
+</div>
+</fieldset>
+
+<fieldset class="col border text-black m-1 p-2">
+<legend class="text-primary">Work Expenses</legend>
+<div>
+    <input onchange='setExpenseFields( "work_expenses", true )' class='form-check-input ' type='checkbox' id='work_expenses_is_flat' />
+    <label class='form-check-label work_expenses_is_flat' for='work_expenses_is_flat'>
+        Treat as Flat Rate?
+    </label>
+    <br/>
+    <label for='work_expenses_v' id='work_expenses_vlabel'  class='form-label'>% Applicable or Absolute amount (£)</label>
+    <input id='work_expenses_v' type='number' name="work_expenses_v" min='0' max='2000' value='' step='0.01' size="8" class='form-control w-50'/>
+    <label for='work_expenses_max' class='form-label'>Maximum Amount (£)</label>
+    <input id='work_expenses_max' type='number' name="work_expenses_max" min='0' max='99999999999' value='' step='1' size="8" class='form-control w-50'/>
+</div>
+</fieldset>
+
+<fieldset class="col border text-black m-1 p-2">
+<legend class="text-primary">Maintenance</legend>
+<div>
+    <input onchange='setExpenseFields( "maintenance", true )' class='form-check-input ' type='checkbox' id='maintenance_is_flat' />
+    <label class='form-check-label maintenance_is_flat' for='maintenance_is_flat'>
+        Treat as Flat Rate?
+    </label>
+    <br/>
+    <label for='maintenance_v' id='maintenance_vlabel'  class='form-label'>% Applicable or Absolute amount (£)</label>
+    <input id='maintenance_v' type='number' name="maintenance_v" min='0' max='2000' value='' step='0.01' size="8" class='form-control w-50'/>
+    <label for='maintenance_max' class='form-label'>Maximum Amount (£)</label>
+    <input id='maintenance_max' type='number' name="maintenance_max" min='0' max='99999999999' value='' step='1' size="8" class='form-control w-50'/>
+</div>
+</fieldset>
+
+<fieldset class="col border text-black m-1 p-2">
+<legend class="text-primary">Repayments</legend>
+<div>
+    <input onchange='setExpenseFields( "repayments", true )' class='form-check-input ' type='checkbox' id='repayments_is_flat' />
+    <label class='form-check-label repayments_is_flat' for='repayments_is_flat'>
+        Treat as Flat Rate?
+    </label>
+    <br/>
+    <label for='repayments_v' id='repayments_vlabel'  class='form-label'>% Applicable or Absolute amount (£)</label>
+    <input id='repayments_v' type='number' name="repayments_v" min='0' max='2000' value='' step='0.01' size="8" class='form-control w-50'/>
+    <label for='repayments_max' class='form-label'>Maximum Amount (£)</label>
+    <input id='repayments_max' type='number' name="repayments_max" min='0' max='99999999999' value='' step='1' size="8" class='form-control w-50'/>
+</div>
+</fieldset>
+
+housing_is_flat :: Bool
+housing_v :: T
+housing_max :: T
+
+childcare_is_flat :: Bool
+childcare_v :: T
+childcare_max :: T
+
+work_expenses_is_flat :: Bool
+work_expenses_v :: T
+work_expenses_max :: T
+
+maintenance_is_flat :: Bool
+maintenance_v :: T
+maintenance_max :: T
+
+repayments_is_flat :: Bool
+repayments_v :: T
+repayments_max :: T
+
+
+sys.expenses.housing.is_flat,
+sys.expenses.housing.v,
+sys.expenses.housing.max,
+
+sys.expenses.childcare.is_flat,
+sys.expenses.childcare.v,
+sys.expenses.childcare.max,
+
+sys.expenses.work_expenses.is_flat,
+sys.expenses.work_expenses.v,
+sys.expenses.work_expenses.max,
+
+sys.expenses.maintenance.is_flat,
+sys.expenses.maintenance.v,
+sys.expenses.maintenance.max,
+
+sys.expenses.repayments.is_flat,
+sys.expenses.repayments.v,
+sys.expenses.repayments.max,
+
+
+sys.expenses.housing = Expense( pars.housing_is_flat, pars.housing_v, pars.housing_max )
+sys.expenses.childcare = Expense( pars.childcare_is_flat, pars.childcare_v, pars.childcare_max )
+sys.expenses.work_expenses = Expense( pars.work_expenses_is_flat, pars.work_expenses_v, pars.work_expenses_max )
+sys.expenses.maintenance = Expense( pars.maintenance_is_flat, pars.maintenance_v, pars.maintenance_max )
+sys.expenses.repayments = Expense( pars.repayments_is_flat, pars.repayments_v, pars.repayments_max )
+
+setCheck(
+    "housing_is_flat",
+    params.housing_is_flat,
+    defaults.housing_is_flat );
+setVal( "housing_v", params.housing_v, defaults.housing_v );
+setVal( "housing_max", params.housing_max, defaults.housing_max );
+
+setCheck(
+    "childcare_is_flat",
+    params.childcare_is_flat,
+    defaults.childcare_is_flat );
+setVal( "childcare_v", params.childcare_v, defaults.childcare_v );
+setVal( "childcare_max", params.childcare_max, defaults.childcare_max );
+
+setCheck(
+    "work_expenses_is_flat",
+    params.work_expenses_is_flat,
+    defaults.work_expenses_is_flat );
+setVal( "work_expenses_v", params.work_expenses_v, defaults.work_expenses_v );
+setVal( "work_expenses_max", params.work_expenses_max, defaults.work_expenses_max );
+
+setCheck(
+    "maintenance_is_flat",
+    params.maintenance_is_flat,
+    defaults.maintenance_is_flat );
+setVal( "maintenance_v", params.maintenance_v, defaults.maintenance_v );
+setVal( "maintenance_max", params.maintenance_max, defaults.maintenance_max );
+
+setCheck(
+    "repayments_is_flat",
+    params.repayments_is_flat,
+    defaults.repayments_is_flat );
+setVal( "repayments_v", params.repayments_v, defaults.repayments_v );
+setVal( "repayments_max", params.repayments_max, defaults.repayments_max );
+
+
+setExpenseFields( "housing", false );
+setExpenseFields( "childcare", false );
+setExpenseFields( "work_expenses", false );
+setExpenseFields( "maintenance", false );
+setExpenseFields( "repayments", false );
+
