@@ -1,1 +1,1 @@
-"/vms/opt/julia-1.10.0/bin/julia" --color=yes --depwarn=no --project=@. -q -i -- "%~dp0..\bootstrap.jl" -s=true %*
+julia --color=yes --depwarn=no --project=@. -q -i -- "%~dp0..\bootstrap.jl" -s=true %*
