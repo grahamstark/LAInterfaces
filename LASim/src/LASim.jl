@@ -7,6 +7,7 @@ import Genie.Renderer.Json: json
 using CSV 
 using DataFrames
 using Format
+using Preferences
 using StatsBase 
 using Observables
 using ArgCheck
