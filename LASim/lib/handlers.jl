@@ -10,6 +10,16 @@ function subsys_from_payload()
   return JSON3.read( rawpayload(), LASubsys{Float64})
 end
 
+function map_settings_from_subsys!( settings :: Settings, subsys :: LASubsys )::Bool
+
+  if settings.wealth_method != subsys.wealth_method
+    settings.wealth_method = subsys.wealth_method
+    if subsys.reset_all_if_changed
+
+    end
+  end
+
+end
   
 function map_sys_from_subsys( subsys :: LASubsys )::OneLegalAidSys
     # make this swappable to aa

@@ -61,6 +61,8 @@ mutable struct LASubsys{T}
     repayments_v :: T
     repayments_max :: T
 
+    wealth_method :: ExtraDataMethod
+    reset_all_if_changed :: Bool
 end
   
 function LASubsys( sys :: OneLegalAidSys )
@@ -111,8 +113,10 @@ function LASubsys( sys :: OneLegalAidSys )
       
       sys.expenses.repayments.is_flat,
       sys.expenses.repayments.v,
-      sys.expenses.repayments.max )
+      sys.expenses.repayments.max,
       
+      DEFAULT_SETTINGS.wealth_method,
+      false )
 end
   
 

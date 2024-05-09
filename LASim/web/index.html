@@ -337,6 +337,54 @@
                             </fieldset>
                         
                 </div>
+                <div class="row">
+                    <fieldset class="col-12">
+                        <legend class="text-primary">Run Settings</legend>
+                        <div class="form-check">
+                            <input class="form-check-input" 
+                                type="radio" 
+                                name="wealth_method" 
+                                id="imputation"  
+                                value="imputation"
+                                checked='checked'>
+                            <label 
+                                class="form-check-label" 
+                                for="imputation">
+                            Use Imputations from the Wealth and Assets Survey
+                            </label>
+                        </div>
+                        <div class="form-check">
+                            <input class="form-check-input" 
+                                type="radio" 
+                                name="wealth_method" 
+                                id="no_method"  
+                                value="no_method">
+                            <label 
+                                class="form-check-label" 
+                                for="no_method">
+                            Use FRS Assets Data (Financial Assets Only, much lower than WAS)
+                            </label>
+                        </div>
+                        <div class="form-check">
+                            <input class="form-check-input" 
+                                type="radio" 
+                                name="wealth_method" 
+                                id="other_method_1"  
+                                value="other_method_1">
+                            <label 
+                                class="form-check-label" 
+                                for="other_method_1">
+                            Hybrid Method (Financial and Physical Only); higher than raw FRS, lower than WAS.
+                            </label>
+                        </div>
+                        <br/>
+                        <input class='form-check-input ' type='checkbox' id='reset_all_if_changed' />
+                        <label class="form-check-label reset_all_if_changed" for="reset_all_if_changed">
+                            Reset Everthing? (May Take a While; needed to make things completely consistent)
+                        </label>
+                    </fieldset>
+                </div>
+
                 <fieldset class="row">
                     <div class="col"></div>
                     <div class="col"></div>
@@ -818,6 +866,12 @@ function loadParams( params, defaults ){
     setVal( "prem_carer_couple", params.prem_carer_couple, defaults.prem_carer_couple );
     setVal( "prem_disability_single", params.prem_disability_single, defaults.prem_disability_single );
     setVal( "prem_disability_couple", params.prem_disability_couple, defaults.prem_disability_couple );
+
+    setRadio( "wealth_method", params.wealth_method, defaults.wealth_method )
+    setCheck(
+        "reset_all_if_changed",
+        params.reset_all_if_changed,
+        defaults.reset_all_if_changed );
     
     if(params.systype == 'sys_civil'){
         $( "#income_contrib_rate" ).html( "Rate (%)" );
@@ -895,8 +949,9 @@ function loadFromForm(){
         prem_disability_couple: parseFloat($('#prem_disability_couple').val()),
         uc_limit: parseFloat($('#uc_limit').val()),
         uc_limit_type: $('input[name="uc_limit_type"]:checked').val(),
-        uc_use_earnings: $('#uc_use_earnings').is(':checked')
-        
+        uc_use_earnings: $('#uc_use_earnings').is(':checked'),
+        wealth_method: $('input[name="wealth_method"]:checked').val(),
+        reset_all_if_changed: $('#reset_all_if_changed').is(':checked')        
      }
 
     console.log( "loadFromForm data = %o", data );
