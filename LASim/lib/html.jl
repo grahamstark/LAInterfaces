@@ -135,6 +135,37 @@ function add_col_totals!( df::DataFrame, add_label = false )
     push!( df, newrow )
 end
 
+
+function frame_to_table(
+    df :: DataFrame;
+    up_is_good :: Vector{Int},
+    prec :: Int = 0, 
+    caption :: String = "",
+    totals_col :: Int = -1 )
+    table = "<table class='table table-sm'>"
+    table *= "<thead>
+        <tr>
+            <th></th><th style='text-align:right'>Baseline Policy</th><th style='text-align:right'>Your Policy</th><th style='text-align:right'>Change</th>            
+        </tr>
+        </thead>"
+    table *= "<caption>$caption</caption>"
+    i = 0
+    for r in eachrow( df )
+        i += 1
+        fmtd = format_diff( before=r[2], after=r[3], up_is_good=up_is_good[i], prec=prec )
+        row_style = i == totals_col ? "class='text-bold table-info' " : ""
+        row = "<tr $row_style><th class='text-left'>$(r[1])</th>
+                  <td style='text-align:right'>$(fmtd.before_s)</td>
+                  <td style='text-align:right'>$(fmtd.after_s)</td>
+                  <td style='text-align:right' class='$(fmtd.colour)'>$(fmtd.ds)</td>
+                </tr>"
+        table *= row
+    end
+    table *= "</tbody></table>"
+    return table
+end
+
+
 function frame_to_table(
     ;
     pre_df  :: DataFrame,
@@ -330,9 +361,12 @@ function results_to_html(
         allcosts *= "</div></div>"
     end
     allcosts *= "</div>"    
-
-
-    (; crosstab, crosstab_examples, countstable, allcounts, coststable, allcosts, casestable, allcases )
+    summary_table = 
+        frame_to_table(
+            results.summary_tables[1];
+            up_is_good = [0,0,1,0],
+            prec = 0 )
+    (; crosstab, crosstab_examples, countstable, allcounts, coststable, allcosts, casestable, allcases, summary_table )
 end
 
 

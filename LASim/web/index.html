@@ -378,7 +378,7 @@
                             </label>
                         </div>
                         <br/>
-                        <input class='form-check-input ' type='checkbox' id='reset_all_if_changed' />
+                        <input class='form-check-input ' type='checkbox' id='reset_all_if_changed' name='reset_all_if_changed'/>
                         <label class="form-check-label reset_all_if_changed" for="reset_all_if_changed">
                             Reset Everthing? (May Take a While; needed to make things completely consistent)
                         </label>
@@ -419,6 +419,11 @@
                 <div class='row justify-content-center text-secondary pt-3 pb-3'>
                     <div class="col">
                         <div id="crosstab"></div>
+                    </div>  
+                </div>
+                <div class='row justify-content-center text-secondary pt-3 pb-3'>
+                    <div class="col">
+                        <div id="summarytable"></div>
                     </div>  
                 </div>
                 <div class='row justify-content-center text-secondary pt-3 pb-3'>
@@ -884,6 +889,7 @@ function loadParams( params, defaults ){
 function createMainOutputs( result, xlsxfile ){
     console.log( xlsxfile );
     $("#crosstab").html( result.crosstab );
+    $("#summarytable").html( result.summary_table );
     $("#crosstabexamples").html( result.crosstab_examples );
     $("#countstable").html( result.countstable );
     $("#allcounts").html( result.allcounts );

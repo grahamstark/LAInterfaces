@@ -44,6 +44,11 @@ function export_xlsx( results :: LegalOutput )::String
                 results.crosstab_pers[1]);
                 anchor_cell=XLSX.CellRef("A3"))  
            # sheetname="Person Crosstab")        
+        sheet["A12"] = "Kieren's Summary Table"
+           XLSX.writetable!( sheet,                
+                   results.summary_tables[1];
+                   anchor_cell=XLSX.CellRef("A14"))  
+              
         insert_sheet!( xf, "Elig", "Pre", results.breakdown_pers[1])
         insert_sheet!( xf, "Elig", "Post", results.breakdown_pers[2])
         insert_sheet!( xf, "Cases", "Pre", results.cases_pers[1])

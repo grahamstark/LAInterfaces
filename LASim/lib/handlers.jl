@@ -10,15 +10,13 @@ function subsys_from_payload()
   return JSON3.read( rawpayload(), LASubsys{Float64})
 end
 
-function map_settings_from_subsys!( settings :: Settings, subsys :: LASubsys )::Bool
-
+function map_settings_from_subsys!( settings :: Settings, subsys :: LASubsys )
   if settings.wealth_method != subsys.wealth_method
     settings.wealth_method = subsys.wealth_method
     if subsys.reset_all_if_changed
-
+      do_default_run()
     end
   end
-
 end
   
 function map_sys_from_subsys( subsys :: LASubsys )::OneLegalAidSys
@@ -129,6 +127,8 @@ end
 function run()
     subsys = subsys_from_payload()
     fullsys = map_sys_from_subsys( subsys ) 
+    map_settings_from_subsys!( DEFAULT_SETTINGS, subsys )
+
     lares, sys2 = do_run( fullsys; systype=subsys.systype )
     alloutput = all_results_to_html( lares, sys2.legalaid )
     output = nothing

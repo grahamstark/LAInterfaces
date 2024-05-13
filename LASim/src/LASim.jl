@@ -38,6 +38,7 @@ function make_default_settings() :: Settings
   settings.do_legal_aid = true
   settings.do_marginal_rates = false
   settings.requested_threads = 4
+  settings.wealth_method = other_method_1
   settings.num_households, settings.num_people, nhh2 = 
       FRSHouseholdGetter.initialise( settings; reset=true ) # force Scottish dataset 
   # ExampleHouseholdGetter.initialise( settings ) # force a reload for reasons I don't quite understand.
@@ -51,7 +52,7 @@ function make_default_sys()
 end 
 
 const DEFAULT_PARAMS = make_default_sys()
-const DEFAULT_SETTINGS = make_default_settings()
+DEFAULT_SETTINGS = make_default_settings() # not a const so we can persistently change wealth_imputation
 
 """
 Defined here to aviod nasty cross-dependency.
