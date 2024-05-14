@@ -100,7 +100,9 @@ function map_sys_from_subsys( subsys :: LASubsys )::OneLegalAidSys
     fullsys.uc_limit = subsys.uc_limit
     fullsys.uc_limit_type = subsys.uc_limit_type
     fullsys.uc_use_earnings = subsys.uc_use_earnings
-    
+    println( "before ben pushes")
+    @show subsys
+    @show fullsys.incomes.included
     if subsys.FRIENDLY_SOCIETY_BENEFITS_disregarded 
       spop!(fullsys.incomes.included, FRIENDLY_SOCIETY_BENEFITS )
     else
@@ -351,6 +353,9 @@ function map_sys_from_subsys( subsys :: LASubsys )::OneLegalAidSys
     else
         push!( fullsys.incomes.included, OTHER_BENEFITS )
     end
+    println( "after ben pushes")
+    @show fullsys.incomes.included
+    
     weeklyise!( fullsys )
     @show fullsys
     @show fullsys.premia

@@ -64,58 +64,56 @@ mutable struct LASubsys{T}
     wealth_method :: ExtraDataMethod
     reset_all_if_changed :: Bool
 
-    INCAPACITY_BENEFIT_disregarded :: Bool
-    SCOTTISH_DISABILITY_ASSISTANCE_CHILDREN_MOBILITY_disregarded :: Bool
-    WAR_WIDOWS_PENSION_disregarded :: Bool
-    FOSTER_CARE_PAYMENTS_disregarded :: Bool
-    BASIC_INCOME_disregarded :: Bool
-    WORKING_TAX_CREDIT_disregarded :: Bool
-    FREE_SCHOOL_MEALS_disregarded :: Bool
-    DLA_SELF_CARE_disregarded :: Bool
-    GOVERNMENT_TRAINING_ALLOWANCES_disregarded :: Bool
-    UNIVERSAL_CREDIT_disregarded :: Bool
-    STUDENT_LOANS_disregarded :: Bool
-    CONTRIB_EMPLOYMENT_AND_SUPPORT_ALLOWANCE_disregarded :: Bool
-    NON_CONTRIB_EMPLOYMENT_AND_SUPPORT_ALLOWANCE_disregarded :: Bool
-    CARERS_ALLOWANCE_disregarded :: Bool
-    INCOME_SUPPORT_disregarded :: Bool
-    HOUSING_BENEFIT_disregarded :: Bool
-    COUNCIL_TAX_BENEFIT_disregarded :: Bool
-    CHILD_BENEFIT_disregarded :: Bool
-    STATE_PENSION_disregarded :: Bool
-    SCOTTISH_DISABILITY_ASSISTANCE_OLDER_PEOPLE_disregarded :: Bool
-    CONTRIB_JOBSEEKERS_ALLOWANCE_disregarded :: Bool
-    NON_CONTRIB_JOBSEEKERS_ALLOWANCE_disregarded :: Bool
-    SCOTTISH_DISABILITY_ASSISTANCE_CHILDREN_DAILY_LIVING_disregarded :: Bool
-    SCOTTISH_DISABILITY_ASSISTANCE_WORKING_AGE_DAILY_LIVING_disregarded :: Bool
     ANY_OTHER_NI_OR_STATE_BENEFIT_disregarded :: Bool
-    MATERNITY_GRANT_disregarded :: Bool
-    FUNERAL_GRANT_disregarded :: Bool
-    PENSION_CREDIT_disregarded :: Bool
-    SAVINGS_CREDIT_disregarded :: Bool
-    SEVERE_DISABILITY_ALLOWANCE_disregarded :: Bool
-    INDUSTRIAL_INJURY_BENEFIT_disregarded :: Bool
     ARMED_FORCES_COMPENSATION_SCHEME_disregarded :: Bool
-    GUARDIANS_ALLOWANCE_disregarded :: Bool
-    STUDENT_GRANTS_disregarded :: Bool
-    CHILD_TAX_CREDIT_disregarded :: Bool
-    EDUCATION_ALLOWANCES_disregarded :: Bool
-    OTHER_BENEFITS_disregarded :: Bool
-    FRIENDLY_SOCIETY_BENEFITS_disregarded :: Bool
-    PERSONAL_INDEPENDENCE_PAYMENT_DAILY_LIVING_disregarded :: Bool
-    BEREAVEMENT_ALLOWANCE_disregarded :: Bool
     ATTENDANCE_ALLOWANCE_disregarded :: Bool
-    PERSONAL_INDEPENDENCE_PAYMENT_MOBILITY_disregarded :: Bool
-    WIDOWS_PAYMENT_disregarded :: Bool
-    DLA_MOBILITY_disregarded :: Bool
-    MATERNITY_ALLOWANCE_disregarded :: Bool
-    WINTER_FUEL_PAYMENTS_disregarded :: Bool
-    SCOTTISH_CARERS_SUPPLEMENT_disregarded :: Bool
-    SCOTTISH_DISABILITY_ASSISTANCE_WORKING_AGE_MOBILITY_disregarded :: Bool
+    BASIC_INCOME_disregarded :: Bool
+    BEREAVEMENT_ALLOWANCE_disregarded :: Bool
+    CARERS_ALLOWANCE_disregarded :: Bool
+    CHILD_BENEFIT_disregarded :: Bool
+    CHILD_TAX_CREDIT_disregarded :: Bool
+    CONTRIB_EMPLOYMENT_AND_SUPPORT_ALLOWANCE_disregarded :: Bool
+    CONTRIB_JOBSEEKERS_ALLOWANCE_disregarded :: Bool
+    COUNCIL_TAX_BENEFIT_disregarded :: Bool
     DISCRESIONARY_HOUSING_PAYMENT_disregarded :: Bool
+    DLA_MOBILITY_disregarded :: Bool
+    DLA_SELF_CARE_disregarded :: Bool
+    EDUCATION_ALLOWANCES_disregarded :: Bool
+    FOSTER_CARE_PAYMENTS_disregarded :: Bool
+    FREE_SCHOOL_MEALS_disregarded :: Bool
+    FRIENDLY_SOCIETY_BENEFITS_disregarded :: Bool
+    FUNERAL_GRANT_disregarded :: Bool
+    GOVERNMENT_TRAINING_ALLOWANCES_disregarded :: Bool
+    GUARDIANS_ALLOWANCE_disregarded :: Bool
+    HOUSING_BENEFIT_disregarded :: Bool
+    INCAPACITY_BENEFIT_disregarded :: Bool
+    INCOME_SUPPORT_disregarded :: Bool
+    INDUSTRIAL_INJURY_BENEFIT_disregarded :: Bool
+    MATERNITY_ALLOWANCE_disregarded :: Bool
+    MATERNITY_GRANT_disregarded :: Bool
+    NON_CONTRIB_EMPLOYMENT_AND_SUPPORT_ALLOWANCE_disregarded :: Bool
+    NON_CONTRIB_JOBSEEKERS_ALLOWANCE_disregarded :: Bool
+    OTHER_BENEFITS_disregarded :: Bool
+    PENSION_CREDIT_disregarded :: Bool
+    PERSONAL_INDEPENDENCE_PAYMENT_DAILY_LIVING_disregarded :: Bool
+    PERSONAL_INDEPENDENCE_PAYMENT_MOBILITY_disregarded :: Bool
+    SAVINGS_CREDIT_disregarded :: Bool
+    SCOTTISH_CARERS_SUPPLEMENT_disregarded :: Bool
     SCOTTISH_CHILD_PAYMENT_disregarded :: Bool
-    
-
+    SCOTTISH_DISABILITY_ASSISTANCE_CHILDREN_DAILY_LIVING_disregarded :: Bool
+    SCOTTISH_DISABILITY_ASSISTANCE_CHILDREN_MOBILITY_disregarded :: Bool
+    SCOTTISH_DISABILITY_ASSISTANCE_OLDER_PEOPLE_disregarded :: Bool
+    SCOTTISH_DISABILITY_ASSISTANCE_WORKING_AGE_DAILY_LIVING_disregarded :: Bool
+    SCOTTISH_DISABILITY_ASSISTANCE_WORKING_AGE_MOBILITY_disregarded :: Bool
+    SEVERE_DISABILITY_ALLOWANCE_disregarded :: Bool
+    STATE_PENSION_disregarded :: Bool
+    STUDENT_GRANTS_disregarded :: Bool
+    STUDENT_LOANS_disregarded :: Bool
+    UNIVERSAL_CREDIT_disregarded :: Bool
+    WAR_WIDOWS_PENSION_disregarded :: Bool
+    WIDOWS_PAYMENT_disregarded :: Bool
+    WINTER_FUEL_PAYMENTS_disregarded :: Bool
+    WORKING_TAX_CREDIT_disregarded :: Bool
 end
   
 function LASubsys( sys :: OneLegalAidSys )
@@ -170,56 +168,56 @@ function LASubsys( sys :: OneLegalAidSys )
 
     DEFAULT_SETTINGS.wealth_method,
     false,
-    ! (FRIENDLY_SOCIETY_BENEFITS in sys.incomes.included),
-    ! (PERSONAL_INDEPENDENCE_PAYMENT_DAILY_LIVING in sys.incomes.included),
-    ! (BEREAVEMENT_ALLOWANCE in sys.incomes.included),
-    ! (ATTENDANCE_ALLOWANCE in sys.incomes.included),
-    ! (PERSONAL_INDEPENDENCE_PAYMENT_MOBILITY in sys.incomes.included),
-    ! (WIDOWS_PAYMENT in sys.incomes.included),
-    ! (DLA_MOBILITY in sys.incomes.included),
-    ! (MATERNITY_ALLOWANCE in sys.incomes.included),
-    ! (WINTER_FUEL_PAYMENTS in sys.incomes.included),
-    ! (SCOTTISH_CARERS_SUPPLEMENT in sys.incomes.included),
-    ! (SCOTTISH_DISABILITY_ASSISTANCE_WORKING_AGE_MOBILITY in sys.incomes.included),
-    ! (DISCRESIONARY_HOUSING_PAYMENT in sys.incomes.included),
-    ! (SCOTTISH_CHILD_PAYMENT in sys.incomes.included),
-    ! (INCAPACITY_BENEFIT in sys.incomes.included),
-    ! (SCOTTISH_DISABILITY_ASSISTANCE_CHILDREN_MOBILITY in sys.incomes.included),
-    ! (WAR_WIDOWS_PENSION in sys.incomes.included),
-    ! (FOSTER_CARE_PAYMENTS in sys.incomes.included),
-    ! (BASIC_INCOME in sys.incomes.included),
-    ! (WORKING_TAX_CREDIT in sys.incomes.included),
-    ! (FREE_SCHOOL_MEALS in sys.incomes.included),
-    ! (DLA_SELF_CARE in sys.incomes.included),
-    ! (GOVERNMENT_TRAINING_ALLOWANCES in sys.incomes.included),
-    ! (UNIVERSAL_CREDIT in sys.incomes.included),
-    ! (STUDENT_LOANS in sys.incomes.included),
-    ! (CONTRIB_EMPLOYMENT_AND_SUPPORT_ALLOWANCE in sys.incomes.included),
-    ! (NON_CONTRIB_EMPLOYMENT_AND_SUPPORT_ALLOWANCE in sys.incomes.included),
-    ! (CARERS_ALLOWANCE in sys.incomes.included),
-    ! (INCOME_SUPPORT in sys.incomes.included),
-    ! (HOUSING_BENEFIT in sys.incomes.included),
-    ! (COUNCIL_TAX_BENEFIT in sys.incomes.included),
-    ! (CHILD_BENEFIT in sys.incomes.included),
-    ! (STATE_PENSION in sys.incomes.included),
-    ! (SCOTTISH_DISABILITY_ASSISTANCE_OLDER_PEOPLE in sys.incomes.included),
-    ! (CONTRIB_JOBSEEKERS_ALLOWANCE in sys.incomes.included),
-    ! (NON_CONTRIB_JOBSEEKERS_ALLOWANCE in sys.incomes.included),
-    ! (SCOTTISH_DISABILITY_ASSISTANCE_CHILDREN_DAILY_LIVING in sys.incomes.included),
-    ! (SCOTTISH_DISABILITY_ASSISTANCE_WORKING_AGE_DAILY_LIVING in sys.incomes.included),
     ! (ANY_OTHER_NI_OR_STATE_BENEFIT in sys.incomes.included),
-    ! (MATERNITY_GRANT in sys.incomes.included),
-    ! (FUNERAL_GRANT in sys.incomes.included),
-    ! (PENSION_CREDIT in sys.incomes.included),
-    ! (SAVINGS_CREDIT in sys.incomes.included),
-    ! (SEVERE_DISABILITY_ALLOWANCE in sys.incomes.included),
-    ! (INDUSTRIAL_INJURY_BENEFIT in sys.incomes.included),
     ! (ARMED_FORCES_COMPENSATION_SCHEME in sys.incomes.included),
-    ! (GUARDIANS_ALLOWANCE in sys.incomes.included),
-    ! (STUDENT_GRANTS in sys.incomes.included),
+    ! (ATTENDANCE_ALLOWANCE in sys.incomes.included),
+    ! (BASIC_INCOME in sys.incomes.included),
+    ! (BEREAVEMENT_ALLOWANCE in sys.incomes.included),
+    ! (CARERS_ALLOWANCE in sys.incomes.included),
+    ! (CHILD_BENEFIT in sys.incomes.included),
     ! (CHILD_TAX_CREDIT in sys.incomes.included),
+    ! (CONTRIB_EMPLOYMENT_AND_SUPPORT_ALLOWANCE in sys.incomes.included),
+    ! (CONTRIB_JOBSEEKERS_ALLOWANCE in sys.incomes.included),
+    ! (COUNCIL_TAX_BENEFIT in sys.incomes.included),
+    ! (DISCRESIONARY_HOUSING_PAYMENT in sys.incomes.included),
+    ! (DLA_MOBILITY in sys.incomes.included),
+    ! (DLA_SELF_CARE in sys.incomes.included),
     ! (EDUCATION_ALLOWANCES in sys.incomes.included),
-    ! (OTHER_BENEFITS in sys.incomes.included))
+    ! (FOSTER_CARE_PAYMENTS in sys.incomes.included),
+    ! (FREE_SCHOOL_MEALS in sys.incomes.included),
+    ! (FRIENDLY_SOCIETY_BENEFITS in sys.incomes.included),
+    ! (FUNERAL_GRANT in sys.incomes.included),
+    ! (GOVERNMENT_TRAINING_ALLOWANCES in sys.incomes.included),
+    ! (GUARDIANS_ALLOWANCE in sys.incomes.included),
+    ! (HOUSING_BENEFIT in sys.incomes.included),
+    ! (INCAPACITY_BENEFIT in sys.incomes.included),
+    ! (INCOME_SUPPORT in sys.incomes.included),
+    ! (INDUSTRIAL_INJURY_BENEFIT in sys.incomes.included),
+    ! (MATERNITY_ALLOWANCE in sys.incomes.included),
+    ! (MATERNITY_GRANT in sys.incomes.included),
+    ! (NON_CONTRIB_EMPLOYMENT_AND_SUPPORT_ALLOWANCE in sys.incomes.included),
+    ! (NON_CONTRIB_JOBSEEKERS_ALLOWANCE in sys.incomes.included),
+    ! (OTHER_BENEFITS in sys.incomes.included),
+    ! (PENSION_CREDIT in sys.incomes.included),
+    ! (PERSONAL_INDEPENDENCE_PAYMENT_DAILY_LIVING in sys.incomes.included),
+    ! (PERSONAL_INDEPENDENCE_PAYMENT_MOBILITY in sys.incomes.included),
+    ! (SAVINGS_CREDIT in sys.incomes.included),
+    ! (SCOTTISH_CARERS_SUPPLEMENT in sys.incomes.included),
+    ! (SCOTTISH_CHILD_PAYMENT in sys.incomes.included),
+    ! (SCOTTISH_DISABILITY_ASSISTANCE_CHILDREN_DAILY_LIVING in sys.incomes.included),
+    ! (SCOTTISH_DISABILITY_ASSISTANCE_CHILDREN_MOBILITY in sys.incomes.included),
+    ! (SCOTTISH_DISABILITY_ASSISTANCE_OLDER_PEOPLE in sys.incomes.included),
+    ! (SCOTTISH_DISABILITY_ASSISTANCE_WORKING_AGE_DAILY_LIVING in sys.incomes.included),
+    ! (SCOTTISH_DISABILITY_ASSISTANCE_WORKING_AGE_MOBILITY in sys.incomes.included),
+    ! (SEVERE_DISABILITY_ALLOWANCE in sys.incomes.included),
+    ! (STATE_PENSION in sys.incomes.included),
+    ! (STUDENT_GRANTS in sys.incomes.included),
+    ! (STUDENT_LOANS in sys.incomes.included),
+    ! (UNIVERSAL_CREDIT in sys.incomes.included),
+    ! (WAR_WIDOWS_PENSION in sys.incomes.included),
+    ! (WIDOWS_PAYMENT in sys.incomes.included),
+    ! (WINTER_FUEL_PAYMENTS in sys.incomes.included),
+    ! (WORKING_TAX_CREDIT in sys.incomes.included))
 end
   
 
