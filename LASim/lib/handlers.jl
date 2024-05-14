@@ -1,6 +1,6 @@
 #
 
-function spop!( s :: Set, thing )
+function spop!( s :: AbstractSet, thing )
     if thing in s
       t = pop!( s, thing )
     end
@@ -98,6 +98,256 @@ function map_sys_from_subsys( subsys :: LASubsys )::OneLegalAidSys
     fullsys.uc_limit_type = subsys.uc_limit_type
     fullsys.uc_use_earnings = subsys.uc_use_earnings
     
+    if subsys.FRIENDLY_SOCIETY_BENEFITS_disregarded 
+      spop!(fullsys.incomes.included, FRIENDLY_SOCIETY_BENEFITS )
+    else
+        push!( fullsys.incomes.included, FRIENDLY_SOCIETY_BENEFITS )
+    end
+    if subsys.PERSONAL_INDEPENDENCE_PAYMENT_DAILY_LIVING_disregarded 
+        spop!(fullsys.incomes.included, PERSONAL_INDEPENDENCE_PAYMENT_DAILY_LIVING )
+    else
+        push!( fullsys.incomes.included, PERSONAL_INDEPENDENCE_PAYMENT_DAILY_LIVING )
+    end
+    if subsys.BEREAVEMENT_ALLOWANCE_disregarded 
+        spop!(fullsys.incomes.included, BEREAVEMENT_ALLOWANCE )
+    else
+        push!( fullsys.incomes.included, BEREAVEMENT_ALLOWANCE )
+    end
+    if subsys.ATTENDANCE_ALLOWANCE_disregarded 
+        spop!(fullsys.incomes.included, ATTENDANCE_ALLOWANCE )
+    else
+        push!( fullsys.incomes.included, ATTENDANCE_ALLOWANCE )
+    end
+    if subsys.PERSONAL_INDEPENDENCE_PAYMENT_MOBILITY_disregarded 
+        spop!(fullsys.incomes.included, PERSONAL_INDEPENDENCE_PAYMENT_MOBILITY )
+    else
+        push!( fullsys.incomes.included, PERSONAL_INDEPENDENCE_PAYMENT_MOBILITY )
+    end
+    if subsys.WIDOWS_PAYMENT_disregarded 
+        spop!(fullsys.incomes.included, WIDOWS_PAYMENT )
+    else
+        push!( fullsys.incomes.included, WIDOWS_PAYMENT )
+    end
+    if subsys.DLA_MOBILITY_disregarded 
+        spop!(fullsys.incomes.included, DLA_MOBILITY )
+    else
+        push!( fullsys.incomes.included, DLA_MOBILITY )
+    end
+    if subsys.MATERNITY_ALLOWANCE_disregarded 
+        spop!(fullsys.incomes.included, MATERNITY_ALLOWANCE )
+    else
+        push!( fullsys.incomes.included, MATERNITY_ALLOWANCE )
+    end
+    if subsys.WINTER_FUEL_PAYMENTS_disregarded 
+        spop!(fullsys.incomes.included, WINTER_FUEL_PAYMENTS )
+    else
+        push!( fullsys.incomes.included, WINTER_FUEL_PAYMENTS )
+    end
+    if subsys.SCOTTISH_CARERS_SUPPLEMENT_disregarded 
+        spop!(fullsys.incomes.included, SCOTTISH_CARERS_SUPPLEMENT )
+    else
+        push!( fullsys.incomes.included, SCOTTISH_CARERS_SUPPLEMENT )
+    end
+    if subsys.SCOTTISH_DISABILITY_ASSISTANCE_WORKING_AGE_MOBILITY_disregarded 
+        spop!(fullsys.incomes.included, SCOTTISH_DISABILITY_ASSISTANCE_WORKING_AGE_MOBILITY )
+    else
+        push!( fullsys.incomes.included, SCOTTISH_DISABILITY_ASSISTANCE_WORKING_AGE_MOBILITY )
+    end
+    if subsys.DISCRESIONARY_HOUSING_PAYMENT_disregarded 
+        spop!(fullsys.incomes.included, DISCRESIONARY_HOUSING_PAYMENT )
+    else
+        push!( fullsys.incomes.included, DISCRESIONARY_HOUSING_PAYMENT )
+    end
+    if subsys.SCOTTISH_CHILD_PAYMENT_disregarded 
+        spop!(fullsys.incomes.included, SCOTTISH_CHILD_PAYMENT )
+    else
+        push!( fullsys.incomes.included, SCOTTISH_CHILD_PAYMENT )
+    end
+    if subsys.INCAPACITY_BENEFIT_disregarded 
+        spop!(fullsys.incomes.included, INCAPACITY_BENEFIT )
+    else
+        push!( fullsys.incomes.included, INCAPACITY_BENEFIT )
+    end
+    if subsys.SCOTTISH_DISABILITY_ASSISTANCE_CHILDREN_MOBILITY_disregarded 
+        spop!(fullsys.incomes.included, SCOTTISH_DISABILITY_ASSISTANCE_CHILDREN_MOBILITY )
+    else
+        push!( fullsys.incomes.included, SCOTTISH_DISABILITY_ASSISTANCE_CHILDREN_MOBILITY )
+    end
+    if subsys.WAR_WIDOWS_PENSION_disregarded 
+        spop!(fullsys.incomes.included, WAR_WIDOWS_PENSION )
+    else
+        push!( fullsys.incomes.included, WAR_WIDOWS_PENSION )
+    end
+    if subsys.FOSTER_CARE_PAYMENTS_disregarded 
+        spop!(fullsys.incomes.included, FOSTER_CARE_PAYMENTS )
+    else
+        push!( fullsys.incomes.included, FOSTER_CARE_PAYMENTS )
+    end
+    if subsys.BASIC_INCOME_disregarded 
+        spop!(fullsys.incomes.included, BASIC_INCOME )
+    else
+        push!( fullsys.incomes.included, BASIC_INCOME )
+    end
+    if subsys.WORKING_TAX_CREDIT_disregarded 
+        spop!(fullsys.incomes.included, WORKING_TAX_CREDIT )
+    else
+        push!( fullsys.incomes.included, WORKING_TAX_CREDIT )
+    end
+    if subsys.FREE_SCHOOL_MEALS_disregarded 
+        spop!(fullsys.incomes.included, FREE_SCHOOL_MEALS )
+    else
+        push!( fullsys.incomes.included, FREE_SCHOOL_MEALS )
+    end
+    if subsys.DLA_SELF_CARE_disregarded 
+        spop!(fullsys.incomes.included, DLA_SELF_CARE )
+    else
+        push!( fullsys.incomes.included, DLA_SELF_CARE )
+    end
+    if subsys.GOVERNMENT_TRAINING_ALLOWANCES_disregarded 
+        spop!(fullsys.incomes.included, GOVERNMENT_TRAINING_ALLOWANCES )
+    else
+        push!( fullsys.incomes.included, GOVERNMENT_TRAINING_ALLOWANCES )
+    end
+    if subsys.UNIVERSAL_CREDIT_disregarded 
+        spop!(fullsys.incomes.included, UNIVERSAL_CREDIT )
+    else
+        push!( fullsys.incomes.included, UNIVERSAL_CREDIT )
+    end
+    if subsys.STUDENT_LOANS_disregarded 
+        spop!(fullsys.incomes.included, STUDENT_LOANS )
+    else
+        push!( fullsys.incomes.included, STUDENT_LOANS )
+    end
+    if subsys.CONTRIB_EMPLOYMENT_AND_SUPPORT_ALLOWANCE_disregarded 
+        spop!(fullsys.incomes.included, CONTRIB_EMPLOYMENT_AND_SUPPORT_ALLOWANCE )
+    else
+        push!( fullsys.incomes.included, CONTRIB_EMPLOYMENT_AND_SUPPORT_ALLOWANCE )
+    end
+    if subsys.NON_CONTRIB_EMPLOYMENT_AND_SUPPORT_ALLOWANCE_disregarded 
+        spop!(fullsys.incomes.included, NON_CONTRIB_EMPLOYMENT_AND_SUPPORT_ALLOWANCE )
+    else
+        push!( fullsys.incomes.included, NON_CONTRIB_EMPLOYMENT_AND_SUPPORT_ALLOWANCE )
+    end
+    if subsys.CARERS_ALLOWANCE_disregarded 
+        spop!(fullsys.incomes.included, CARERS_ALLOWANCE )
+    else
+        push!( fullsys.incomes.included, CARERS_ALLOWANCE )
+    end
+    if subsys.INCOME_SUPPORT_disregarded 
+        spop!(fullsys.incomes.included, INCOME_SUPPORT )
+    else
+        push!( fullsys.incomes.included, INCOME_SUPPORT )
+    end
+    if subsys.HOUSING_BENEFIT_disregarded 
+        spop!(fullsys.incomes.included, HOUSING_BENEFIT )
+    else
+        push!( fullsys.incomes.included, HOUSING_BENEFIT )
+    end
+    if subsys.COUNCIL_TAX_BENEFIT_disregarded 
+        spop!(fullsys.incomes.included, COUNCIL_TAX_BENEFIT )
+    else
+        push!( fullsys.incomes.included, COUNCIL_TAX_BENEFIT )
+    end
+    if subsys.CHILD_BENEFIT_disregarded 
+        spop!(fullsys.incomes.included, CHILD_BENEFIT )
+    else
+        push!( fullsys.incomes.included, CHILD_BENEFIT )
+    end
+    if subsys.STATE_PENSION_disregarded 
+        spop!(fullsys.incomes.included, STATE_PENSION )
+    else
+        push!( fullsys.incomes.included, STATE_PENSION )
+    end
+    if subsys.SCOTTISH_DISABILITY_ASSISTANCE_OLDER_PEOPLE_disregarded 
+        spop!(fullsys.incomes.included, SCOTTISH_DISABILITY_ASSISTANCE_OLDER_PEOPLE )
+    else
+        push!( fullsys.incomes.included, SCOTTISH_DISABILITY_ASSISTANCE_OLDER_PEOPLE )
+    end
+    if subsys.CONTRIB_JOBSEEKERS_ALLOWANCE_disregarded 
+        spop!(fullsys.incomes.included, CONTRIB_JOBSEEKERS_ALLOWANCE )
+    else
+        push!( fullsys.incomes.included, CONTRIB_JOBSEEKERS_ALLOWANCE )
+    end
+    if subsys.NON_CONTRIB_JOBSEEKERS_ALLOWANCE_disregarded 
+        spop!(fullsys.incomes.included, NON_CONTRIB_JOBSEEKERS_ALLOWANCE )
+    else
+        push!( fullsys.incomes.included, NON_CONTRIB_JOBSEEKERS_ALLOWANCE )
+    end
+    if subsys.SCOTTISH_DISABILITY_ASSISTANCE_CHILDREN_DAILY_LIVING_disregarded 
+        spop!(fullsys.incomes.included, SCOTTISH_DISABILITY_ASSISTANCE_CHILDREN_DAILY_LIVING )
+    else
+        push!( fullsys.incomes.included, SCOTTISH_DISABILITY_ASSISTANCE_CHILDREN_DAILY_LIVING )
+    end
+    if subsys.SCOTTISH_DISABILITY_ASSISTANCE_WORKING_AGE_DAILY_LIVING_disregarded 
+        spop!(fullsys.incomes.included, SCOTTISH_DISABILITY_ASSISTANCE_WORKING_AGE_DAILY_LIVING )
+    else
+        push!( fullsys.incomes.included, SCOTTISH_DISABILITY_ASSISTANCE_WORKING_AGE_DAILY_LIVING )
+    end
+    if subsys.ANY_OTHER_NI_OR_STATE_BENEFIT_disregarded 
+        spop!(fullsys.incomes.included, ANY_OTHER_NI_OR_STATE_BENEFIT )
+    else
+        push!( fullsys.incomes.included, ANY_OTHER_NI_OR_STATE_BENEFIT )
+    end
+    if subsys.MATERNITY_GRANT_disregarded 
+        spop!(fullsys.incomes.included, MATERNITY_GRANT )
+    else
+        push!( fullsys.incomes.included, MATERNITY_GRANT )
+    end
+    if subsys.FUNERAL_GRANT_disregarded 
+        spop!(fullsys.incomes.included, FUNERAL_GRANT )
+    else
+        push!( fullsys.incomes.included, FUNERAL_GRANT )
+    end
+    if subsys.PENSION_CREDIT_disregarded 
+        spop!(fullsys.incomes.included, PENSION_CREDIT )
+    else
+        push!( fullsys.incomes.included, PENSION_CREDIT )
+    end
+    if subsys.SAVINGS_CREDIT_disregarded 
+        spop!(fullsys.incomes.included, SAVINGS_CREDIT )
+    else
+        push!( fullsys.incomes.included, SAVINGS_CREDIT )
+    end
+    if subsys.SEVERE_DISABILITY_ALLOWANCE_disregarded 
+        spop!(fullsys.incomes.included, SEVERE_DISABILITY_ALLOWANCE )
+    else
+        push!( fullsys.incomes.included, SEVERE_DISABILITY_ALLOWANCE )
+    end
+    if subsys.INDUSTRIAL_INJURY_BENEFIT_disregarded 
+        spop!(fullsys.incomes.included, INDUSTRIAL_INJURY_BENEFIT )
+    else
+        push!( fullsys.incomes.included, INDUSTRIAL_INJURY_BENEFIT )
+    end
+    if subsys.ARMED_FORCES_COMPENSATION_SCHEME_disregarded 
+        spop!(fullsys.incomes.included, ARMED_FORCES_COMPENSATION_SCHEME )
+    else
+        push!( fullsys.incomes.included, ARMED_FORCES_COMPENSATION_SCHEME )
+    end
+    if subsys.GUARDIANS_ALLOWANCE_disregarded 
+        spop!(fullsys.incomes.included, GUARDIANS_ALLOWANCE )
+    else
+        push!( fullsys.incomes.included, GUARDIANS_ALLOWANCE )
+    end
+    if subsys.STUDENT_GRANTS_disregarded 
+        spop!(fullsys.incomes.included, STUDENT_GRANTS )
+    else
+        push!( fullsys.incomes.included, STUDENT_GRANTS )
+    end
+    if subsys.CHILD_TAX_CREDIT_disregarded 
+        spop!(fullsys.incomes.included, CHILD_TAX_CREDIT )
+    else
+        push!( fullsys.incomes.included, CHILD_TAX_CREDIT )
+    end
+    if subsys.EDUCATION_ALLOWANCES_disregarded 
+        spop!(fullsys.incomes.included, EDUCATION_ALLOWANCES )
+    else
+        push!( fullsys.incomes.included, EDUCATION_ALLOWANCES )
+    end
+    if subsys.OTHER_BENEFITS_disregarded 
+        spop!(fullsys.incomes.included, OTHER_BENEFITS )
+    else
+        push!( fullsys.incomes.included, OTHER_BENEFITS )
+    end
     weeklyise!( fullsys )
     @show fullsys
     @show fullsys.premia
