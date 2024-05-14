@@ -261,8 +261,9 @@ function do_default_run()
     return allout
 end
 
-const DEFAULT_RUN = do_default_run()
-const DEFAULT_OUTPUT = all_results_to_html( DEFAULT_RUN, DEFAULT_PARAMS.legalaid )
+# can't be constants since we sometimes reset them 
+DEFAULT_RUN = do_default_run()
+DEFAULT_OUTPUT = all_results_to_html( DEFAULT_RUN, DEFAULT_PARAMS.legalaid )
 
 function get_default_output( systype :: SystemType )
     return systype == sys_civil ? DEFAULT_OUTPUT.civil : DEFAULT_OUTPUT.aa 

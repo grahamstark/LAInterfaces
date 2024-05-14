@@ -10,11 +10,14 @@ function subsys_from_payload()
   return JSON3.read( rawpayload(), LASubsys{Float64})
 end
 
-function map_settings_from_subsys!( settings :: Settings, subsys :: LASubsys )
-  if settings.wealth_method != subsys.wealth_method
-    settings.wealth_method = subsys.wealth_method
+function map_settings_from_subsys!( subsys :: LASubsys )
+  if DEFAULT_SETTINGS.wealth_method != subsys.wealth_method
+    DEFAULT_SETTINGS.wealth_method = subsys.wealth_method
     if subsys.reset_all_if_changed
-      do_default_run()
+      global DEFAULT_RUN
+      global DEFAULT_OUTPUT 
+      DEFAULT_RUN = do_default_run()
+      DEFAULT_OUTPUT = all_results_to_html( DEFAULT_RUN, DEFAULT_PARAMS.legalaid )
     end
   end
 end
@@ -377,7 +380,7 @@ end
 function run()
     subsys = subsys_from_payload()
     fullsys = map_sys_from_subsys( subsys ) 
-    map_settings_from_subsys!( DEFAULT_SETTINGS, subsys )
+    map_settings_from_subsys!( subsys )
 
     lares, sys2 = do_run( fullsys; systype=subsys.systype )
     alloutput = all_results_to_html( lares, sys2.legalaid )
