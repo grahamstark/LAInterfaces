@@ -2,15 +2,20 @@ module LASim
 
 using Genie
 using Genie.Requests
-import JSON3
 import Genie.Renderer.Json: json
+using GenieSession 
+using GenieSessionFileSession
+
+import JSON3
+using ArgCheck
 using CSV 
 using DataFrames
 using Format
+using Logging, LoggingExtras
+using LRUCache
+using Observables
 using Preferences
 using StatsBase 
-using Observables
-using ArgCheck
 using UUIDs
 using XLSX 
 
@@ -30,6 +35,11 @@ using .LegalAidCalculations: calc_legal_aid!
 using .LegalAidData
 using .LegalAidOutput
 using .LegalAidRunner
+
+
+logger = FileLogger("log/conjapp_log.txt")
+global_logger(logger)
+LogLevel( Logging.Debug )
 
 
 function make_default_settings() :: Settings
