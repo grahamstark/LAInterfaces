@@ -30,3 +30,9 @@ end
 route("/") do
   serve_static_file("indexloc.html")
 end
+
+
+route( "/progress", LASim.getprogress, method = POST )
+
+route( "/output", LASim.getoutput, method = POST )
+

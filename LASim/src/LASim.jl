@@ -95,8 +95,6 @@ include( "../lib/definitions.jl")
 include( "../lib/handlers.jl")
 include( "../lib/queues_and_sessions.jl")
 
-
-
 const up = Genie.up
 export up
 

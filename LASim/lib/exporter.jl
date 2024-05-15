@@ -14,7 +14,7 @@ function insert_sheet!( xf,
     typ::String, 
     prepost::String, 
     tables :: Dict )
-    @show "adding sheet $typ $prepost"
+    @debug "adding sheet $typ $prepost"
     sheet = XLSX.addsheet!( xf )
     sheetname = "$typ - $prepost"
     XLSX.rename!( sheet, sheetname )
