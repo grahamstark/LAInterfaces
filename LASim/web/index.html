@@ -41,7 +41,7 @@
                     </div>
                     <div class='col-4'></div>
                 </div> <!-- row -->
-                <div class='row  justify-content-center text-secondary pt-3 pb-3'><!-- input row -->
+                <div class='row justify-content-center text-secondary pt-3 pb-3'><!-- input row -->
                     <div class='col-5'></div>
                     <fieldset class="col border text-black m-1 p-2">
                         <legend class="text-primary">Civil or A&amp;A</legend>
@@ -52,7 +52,9 @@
                     </fieldset>
                     <div class='col-5'></div>
                 </div><!-- row -->
-
+                <div class="row">
+                    <p class='col fs-5 text-right mb-0 pb-0 mt-0 pt-0 text-muted' id="units_label">Money Amounts in Annual &pound;s</p>
+                </div>
                 <div class='row justify-content-center text-secondary pt-3 pb-3'>
                     <fieldset class="col border text-black m-1 p-2">
                         <legend class="text-primary">Allowance Levels</legend>
@@ -336,10 +338,6 @@
                                 
                             </fieldset>
                         
-                </div>
-
-                <div class="row">
-                    
                 </div>
                 <fieldset class="row border text-black m-1 p-2">
 
@@ -723,7 +721,10 @@
                         </ul>
                     </div>
                 </fieldset> <!-- submission row -->
-                
+
+                <div class="row">
+                    <p class='col fs-5 text-right mb-0 pb-0 mt-0 pt-0 text-muted'>Money Amounts in Tables are Annual &pound;s</p>
+                </div>                
                 <div class='row justify-content-center text-secondary pt-3 pb-3'>
                     <div class='col-4'></div>
                     <div class='col-4 text-center'>
@@ -756,7 +757,7 @@
                     <div class="col  table-responsive"
                         data-bs-toggle='modal' 
                         data-bs-target='#allcosts-popup'>
-                        <h3>Costs (£000s)</h3>
+                        <h3>Gross Costs (£000s)</h3>
                         <div id="coststable"></div>
                     </div>  <!-- costs col -->
                 </div> <!-- row -->
@@ -1206,8 +1207,10 @@ function loadParams( params, defaults ){
     
     if(params.systype == 'sys_civil'){
         $( "#income_contrib_rate" ).html( "Rate (%)" );
+        $( "#units_label").html( "Money Amounts in Annual &pound;s" )
     } else {
         $( "#income_contrib_rate" ).html( "Contrib &pound;s" );
+        $( "#units_label").html( "Money Amounts in Weekly &pound;s" )
     }
 
 

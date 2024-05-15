@@ -165,6 +165,19 @@ function frame_to_table(
     return table
 end
 
+const FIRST_COL_RENAMES = Dict(
+    ["Missing_ILO_Employment"=>"Children", 
+     "Missing Ilo Employment"=>"Children", 
+      Missing_ILO_Employment=>"Children"])
+
+"""
+"Missing_Marital_Status" => "Missing Marital Status", but
+"Missing_ILO_Employment"=>"Children" since it's in FIRST_COL_RENAMES
+"""
+function first_col_rename( thing )::String
+    println( "thing $thing typeof(thing) $(typeof(thing))")
+    return get( FIRST_COL_RENAMES, thing, Utils.pretty( thing ))
+end
 
 function frame_to_table(
     ;
@@ -190,7 +203,7 @@ function frame_to_table(
         prer = pre_df[r,:]
         postr = post_df[r,:]
         row_style = r == nrows ? "class='text-bold table-info' " : ""
-        rowlabel = r == nrows ? "Totals" : Utils.pretty(prer[1])
+        rowlabel = r == nrows ? "Totals" : first_col_rename( prer[1] )
         row = "<tr $row_style><th>$rowlabel</th>"
         for c in 2:ncols
             fmtd = format_diff( before=prer[c], after=postr[c] )
@@ -217,7 +230,7 @@ end
 
 function enum_to_string!( df :: DataFrame )
     col1=df[!,1]
-    col1 = pretty.(string.(col1))
+    col1 = first_col_rename.(string.(col1))
     df[!,1] = col1
     df[end,1] = "Total"
 end
@@ -264,33 +277,6 @@ function results_to_html(
         end # cols
     end # rows
     crosstab_examples *= "</div>"
-    #=
-    pc = format_crosstab( results.crosstab_bu[ctno]; 
-        caption="Benefit Units", 
-        title="Entilemment - Benefit Units"  )
-    pc = wraptable( "Counts of Benefit Units", pc )
-    crosstab_examples *= pc
-    =#
-    
-    # crosstab_examples *= "<div class='row'><div class='col'><h3>Tables By Problem Type</h3></div></div>"
-    #=
-    for p in LegalAidData.PROBLEM_TYPES[2:end]
-        prettyprob = Utils.pretty(p)
-        crosstab_examples *= "<div class='row'><div class='col'><h4>Personal Level Tables For Problem Type: $prettyprob</h4></div></div>"
-        for est in LegalAidData.ESTIMATE_TYPES
-            prettyest = Utils.pretty(est)
-            title = "Estimate $(prettyest)"
-            k = "$(p)-$(est)"
-            pc =  format_crosstab( 
-                results.crosstab_pers[ctno][k];
-                caption = "Estimated number of Scottish adults experiencing $prettyprob in a 3-year period, by eligibility type; estimate: $prettyest" ) 
-            pc = wraptable( title, pc )
-            crosstab_examples *= pc
-        end
-    end
-    =#
-    
-
     tgts = LegalAidOutput.LA_TARGETS
     t = tgts[1]
     countstable = frame_to_table(
@@ -308,7 +294,7 @@ function results_to_html(
             ;    
             pre_df = results.breakdown_pers[1][t],
             post_df = results.breakdown_pers[2][t],
-            caption =  "Eligibility Counts of all Scottish adults, by $prett." )
+            caption =  "Eligibility Counts of all Scottish people, by $prett." )
         allcounts *= "<div class='row'><div class='col'><h4>Assessment Unit Level</h4></div></div>"
         allcounts *= frame_to_table(
             ;    
