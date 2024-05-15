@@ -41,7 +41,6 @@ logger = FileLogger("log/conjapp_log.txt")
 global_logger(logger)
 LogLevel( Logging.Debug )
 
-
 function make_default_settings() :: Settings
   settings = Settings()
   settings.export_full_results = true
@@ -91,9 +90,12 @@ function make_examples(
 end
 
 include( "../lib/exporter.jl")
-include("../lib/html.jl")
-include("../lib/definitions.jl")
-include("../lib/handlers.jl")
+include( "../lib/html.jl")
+include( "../lib/definitions.jl")
+include( "../lib/handlers.jl")
+include( "../lib/queues_and_sessions.jl")
+
+
 
 const up = Genie.up
 export up
