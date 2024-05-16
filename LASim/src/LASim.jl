@@ -69,7 +69,7 @@ Compile the list of hh `examples` into one massive stringfull of HTML.
 """
 function make_examples( 
   examples :: AbstractVector;
-  la2 :: OneLegalAidSys  )::String
+  la2      :: OneLegalAidSys  )::String
   sys2 = deepcopy(DEFAULT_PARAMS)
   if la2.systype == sys_civil
     sys2.legalaid.civil = deepcopy(la2)

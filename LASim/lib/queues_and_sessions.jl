@@ -1,6 +1,8 @@
 
 # ==== Queue stuff
 
+const CACHED_RESULTS = LRU{AllLASubsys,Any}(maxsize=25)
+
 function getprogress() 
     sess = GenieSession.session()
     @info "getprogress entered"
@@ -13,33 +15,6 @@ function getprogress()
         GenieSession.set!( sess, :progress, progress )
     end
     ( response=has_progress, data=progress) |> json
-  end
-
-
-"""
-
-"""
-function get_output_from_cache() # removed bacause json doesn't like ::Union{NamedTuple,String}
-    facs = factorsfromsession()
-    @info "getoutput facs=" facs
-    nvc = NonVariableFacts( facs )
-    @info "getoutput; nvc = " nvc 
-    @info "getoutput keys are " keys(CACHED_RESULTS)
-    if haskey(CACHED_RESULTS, nvc )
-      @info "got results from CACHED_RESULTS " 
-      output = CACHED_RESULTS[nvc]
-      return ( response=output_ready, data=output)
-    end
-    @info "responding with bad_request" 
-    return( response=bad_request, data="" )  
-end 
-
-  
-  """
-  return output for the 
-  """
-function getoutput() 
-    return get_output_from_cache()|> json 
 end
   
 function session_obs(session::GenieSession.Session)::Observable
@@ -69,49 +44,103 @@ function screen_obs()::Observable
     return obs
 end
   
+function get_params_from_session()::AllLASubsys
+    session = GenieSession.session()
+    allsubsys = nothing
+    if( GenieSession.isset( session, :allsubsys ))
+        allsubsys = GenieSession.get( session, :allsubsys )
+    else
+        allsubsys = AllLASubSys( DEFAULT_PARAMS.legalaid )
+        GenieSession.set!( session, :allsubsys, allsubsys )
+    end
+    return allsubsys
+end
+
+function reset()
+    session = GenieSession.session()
+    allsubsus = AllLASubsys( DEFAULT_PARAMS.legalaid )
+    GenieSession.set!( session, :allsubsys, allsubsys )
+
+end
+
 """
 Execute a run from the queue.
 """
-function dorun( session::Session, subsys :: LASubsys )
-settings = make_default_settings()  
-@info "dorun entered subsys is " subsys
-obs = session_obs(session)
-#=
-results = do_one_conjoint_run!( facs, obs; settings = settings )  
-exres = calc_examples( results.sys1, results.sys2, results.settings ) 
-obs[]=Progress( settings.uuid, "results-generation", 0, 0, 0, 0 )   
-output = results_to_html_conjoint( settings, ( results..., examples=exres  ))  
-GenieSession.set!( :facs, facs ) # save again since poverty, etc. is overwritten in doonerun!
-save_output_to_cache( facs, output )
-=#
-obs[]= Progress( settings.uuid, "end", -99, -99, -99, -99 )
+function dorun( session::Session, allsubsys :: AllLASubsys )
+    settings = make_default_settings()  
+    lasys = map_sys_from_subsys( subsys )
+    sys2 = deepcopy( DEFAULT_PARAMS )
+    # allsubsys = get_params_from_session()
+    if subsys.systype == sys_civil 
+        sys2.legalaid.civil = lasys
+        allsubsys.civil = subsys
+    else 
+        sys2.legalaid.aa = lasys
+        allsubsys.aa = subsys
+    end
+    GenieSession.set!( session, :allsubsys, allsubsys )
+    default_subsys =AllLASubSys( DEFAULT_PARAMS.legalaid )
+    map_settings_from_subsys!( settings, subsys )
+    @info "dorun entered subsys is " subsys
+    obs = session_obs(session)
+    results = Runner.do_one_run( settings, [DEFAULT_PARAMS,sys2], obs )
+    outf = summarise_frames!( results, settings )
+    html = all_results_to_html( outf, sys2.legalaid ) 
+    output = (; html, xlsfile, params=sys2.legalaid, defaults=default_subsys )
+    obs[]=Progress( settings.uuid, "results-generation", 0, 0, 0, 0 )   
+    CACHED_RESULTS[allsubsys]=output
+    GenieSession.set!( :allsubsys, allsubsys ) 
+    obs[]= Progress( settings.uuid, "end", -99, -99, -99, -99 )
+end
+
+function get_output_from_cache()
+    params = get_params_from_session()         
+    if has_key( CACHED_RESULTS, params )
+        @info "found cached results"
+        output = CACHED_RESULTS[params]
+        return ( response=output_ready, data=output)  
+    end
+    @info "responding with bad_request" 
+    return( response=bad_request, data="" )  
+end
+
+"""
+return output for the 
+"""
+function getoutput() 
+    return get_output_from_cache()|> json 
 end
   
 function submit_job()
     session = GenieSession.session() #  :: GenieSession.Session 
-    facs = facsfrompayload( rawpayload() )
-    GenieSession.set!( session, :facs, facs )
-    
+    subsys = subsys_from_payload()
+    allsubsys = get_params_from_session()
+    if subsys.systype == sys_civil 
+        allsubsys.civil = subsys
+    else 
+        allsubsys.aa = subsys
+    end
+    GenieSession.set!( session, :allsubsys, allsubsys )    
     @info "submit_job facs=" facs
-    if ! haskey( CACHED_RESULTS, NonVariableFacts(facs))    
-    put!( IN_QUEUE, FactorAndSession( facs, session ))
-    qp = ( phase="queued" ,completed=0, size=0 )
-    GenieSession.set!( session, :progress, qp )
-    return ( response=has_progress, data=qp ) |> json
+    if ! haskey( CACHED_RESULTS, allsubsys )    
+        put!( IN_QUEUE, allsubsys )
+        qp = ( phase="queued" ,completed=0, size=0 )
+        GenieSession.set!( session, :progress, qp )    
+        return ( response=has_progress, data=qp ) |> json
     else
-    GenieSession.set!( session, :progress, (phase="end",completed=0, size=0 ))
-    return ( response=output_ready, data=get_output_from_cache()) |> json      
+        GenieSession.set!( session, :progress, (phase="end",completed=0, size=0 ))
+        return ( response=output_ready, data=get_output_from_cache()) |> json      
     end
 end
   
 struct SubsysAndSession{T}
-    subsys     :: LASubsys{T}
-    session  :: GenieSession.Session
+    subsys  :: AllLASubsys{T}
+    session :: GenieSession.Session
 end
   
 # this many simultaneous (sp) runs
 #
-const NUM_HANDLERS = 4
+const NUM_HANDLERS = 2
 #
 # This number of submissions
 #

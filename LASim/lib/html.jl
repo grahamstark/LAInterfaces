@@ -357,8 +357,8 @@ end
 
 
 function all_results_to_html( 
-    results      :: AllLegalOutput, 
-    legalaid::ScottishLegalAidSys ) :: NamedTuple
+    results  :: AllLegalOutput, 
+    legalaid :: ScottishLegalAidSys ) :: NamedTuple
     civil = results_to_html( results.civil, la2=legalaid.civil )
     aa  = results_to_html( results.aa, la2=legalaid.aa )
     (; aa, civil )
