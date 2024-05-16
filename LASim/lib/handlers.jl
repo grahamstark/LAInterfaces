@@ -384,6 +384,7 @@ function switch_system()
     reset()
 end
   
+#=
 function run()
     subsys = subsys_from_payload()
     fullsys = map_sys_from_subsys( subsys ) 
@@ -404,6 +405,7 @@ function run()
     defaults = default_la_subsys( subsys.systype )
     (; output, params=subsys, defaults, xlsxfile ) |> json
 end
+=#
 
 function delonerb!( 
     rates::AbstractVector, 

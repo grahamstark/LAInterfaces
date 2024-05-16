@@ -225,7 +225,7 @@ function LASubsys( sys :: OneLegalAidSys )
     ! (WORKING_TAX_CREDIT in sys.incomes.included))
 end
 
-function AllLASubsys( sys :: LegalAidSys )
+function AllLASubsys( sys :: ScottishLegalAidSys )
     AllLASubsys( LASubsys( sys.civil), LASubsys( sys.aa ))
 end
 
@@ -261,24 +261,24 @@ end
 
 function do_default_run()
     global tot
-    allout = LegalAidRunner.do_one_run( 
+    allout = Runner.do_one_run( 
         DEFAULT_SETTINGS, 
         [DEFAULT_PARAMS,DEFAULT_PARAMS], 
-        obs,
-        reset_data = true,
-        reset_results = true,
-        reset_propensities = true )
+        obs )
+    
     return allout
 end
 
 # can't be constants since we sometimes reset them 
-DEFAULT_RUN = do_default_run()
-DEFAULT_OUTPUT = all_results_to_html( DEFAULT_RUN, DEFAULT_PARAMS.legalaid )
+# DEFAULT_RUN = do_default_run()
+# DEFAULT_OUTPUT = all_results_to_html( DEFAULT_RUN, DEFAULT_PARAMS.legalaid )
 
+#=
 function get_default_output( systype :: SystemType )
     return systype == sys_civil ? DEFAULT_OUTPUT.civil : DEFAULT_OUTPUT.aa 
 end
 
 function get_default_results( systype :: SystemType )
     return systype == sys_civil ? DEFAULT_RUN.civil : DEFAULT_RUN.aa
-end
+en0
+=#

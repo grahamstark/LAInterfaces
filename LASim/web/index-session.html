@@ -1548,6 +1548,57 @@ function loadFromForm(){
     return data;
 }
 
+function updateProgress( result ){
+    console.log( "updateSTB  result.phase = " + result.progress.phase );
+    switch( result.progress.phase ){
+        case 'missing':
+            $("#progress-indicator").html( "<div class='alert alert-info' role='alert'>Run is waiting to start found.</div>");
+            break;
+        case 'start':
+            $("#progress-indicator").html( "<div class='alert alert-info' role='alert'>Run starting: starting pre-run routines.</div>");
+            break;
+        case 'weights':
+            $("#progress-indicator").html( "<div class='alert alert-info' role='alert'>Generating sample weights (may take some time..).</div>");
+            break;
+        case 'disability_eligibility':
+            $("#progress-indicator").html( "<div class='alert alert-info' role='alert'>Calibrating Disability Benefits.</div>");
+            break;
+        case 'starting':
+            $("#progress-indicator").html( "<div class='alert alert-info' role='alert'>Pre-routines completed; run starting.</div>");
+            break;
+        case 'run':
+            drawRunProgress( result.progress );
+            break;
+        case 'dumping_frames':
+            $("#progress-indicator").html( "<div class='alert alert-info' role='alert'>Calculations complete; now generating output.</div>");
+            break;
+        case 'end':
+            $("#progress-indicator").html( "<div></div>" );
+            updater.stop();
+            $.ajax(
+                { url: "/lasim/output",
+                method: 'post',
+                dataType: 'json',
+                contentType: "application/json",
+                data: result.system 
+                }).done(
+                    function( outp ){
+                        console.log( "submitForm; result %o", outp);
+                        createMainOutputs( outp.html );
+                    }
+                );
+                
+        break;  
+        case 'na':
+            updater.stop();
+            break;  
+        default:
+            $("#progress-indicator").html( "<div class='alert alert-danger' role='alert'>Problem: run "+result.uuid+" can't be found.</div>");
+            break;                                      
+    }
+}
+
+
 function submitForm( action, target ){
      var url = "/lasim/"+action; // url = "/lasim/"+action;
      if( target != null ){

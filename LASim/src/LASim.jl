@@ -34,7 +34,7 @@ using .SingleHouseholdCalculations:do_one_calc
 using .LegalAidCalculations: calc_legal_aid!
 using .LegalAidData
 using .LegalAidOutput
-using .LegalAidRunner
+# using .LegalAidRunner
 
 
 logger = FileLogger("log/conjapp_log.txt")
@@ -56,7 +56,6 @@ end
 
 function make_default_sys()
   sys = STBParameters.get_default_system_for_fin_year( 2023, scotland=true )
-  # sys.legalaid.civil.included_capital = WealthSet([net_financial_wealth])
   return sys
 end 
 
