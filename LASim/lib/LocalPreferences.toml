@@ -1,0 +1,6 @@
+windows-datadir = "c:\\users\\user\\data\\"
+windows-tmpdir = "c:\\users\\user\tmp\\output"
+
+unix-datadir = ""
+
+
