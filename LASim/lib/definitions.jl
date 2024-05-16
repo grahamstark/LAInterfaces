@@ -115,6 +115,11 @@ mutable struct LASubsys{T}
     WINTER_FUEL_PAYMENTS_disregarded :: Bool
     WORKING_TAX_CREDIT_disregarded :: Bool
 end
+
+mutable struct AllLASubsys{T}
+    civil :: LASubsys{T}
+    aa    :: LASubsys{T}
+end
   
 function LASubsys( sys :: OneLegalAidSys )
     LASubsys(
@@ -219,7 +224,10 @@ function LASubsys( sys :: OneLegalAidSys )
     ! (WINTER_FUEL_PAYMENTS in sys.incomes.included),
     ! (WORKING_TAX_CREDIT in sys.incomes.included))
 end
-  
+
+function AllLASubsys( sys :: LegalAidSys )
+    AllLASubsys( LASubsys( sys.civil), LASubsys( sys.aa ))
+end
 
 """
 reload from source so we're correctly annualised CAREFUL change load

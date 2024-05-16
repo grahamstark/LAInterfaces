@@ -1,6 +1,6 @@
 using Genie.Router
 
-route("/run", LASim.run, method=POST )
+route("/run", LASim.submit_job, method=POST )
 
 route("/reset", LASim.reset, method=POST )
 
