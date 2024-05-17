@@ -34,8 +34,7 @@ end
 
 route( "/progress", LASim.getprogress, method = POST )
 
-route( "/output/:which", method = POST ) do 
-  systype = payload( :systype )
-  LASim.getoutput( systype )
+route( "/output", method = POST ) do 
+  LASim.get_output()
 end
 

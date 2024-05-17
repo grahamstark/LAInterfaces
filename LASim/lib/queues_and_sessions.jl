@@ -135,7 +135,7 @@ function reset()
     return ( response=output_ready, data = OneResponse( systype, resp)) |> json``
 end
 
-function switch()
+function switch_system()
     systype = systype_from_session()
     systype = systype == civil ? aa : civil
     GenieSession.set!( session, :systype, systype )
@@ -146,17 +146,16 @@ end
 """
 return output for the 
 """
-function getoutput() 
+function get_output() 
     systype = systype_from_session()
     resp = from_session()
     return ( response=output_ready, data = OneResponse( systype, resp)) |> json``
-    # fixme addd 1 session & reuse 
 end
 
 """
 Execute a run from the queue.
 """
-function dorun( session::Session, allsubsys :: AllLASubsys )
+function do_session_run( session::Session, allsubsys :: AllLASubsys )
     systype = systype_from_session()
     settings = make_default_settings()  
     lasys = map_sys_from_subsys( subsys )
@@ -229,10 +228,9 @@ end
 function grab_runs_from_queue()
     while true
         params = take!( IN_QUEUE )
-        dorun( params.session, params.subsys ) 
+        do_session_run( params.session, params.subsys ) 
     end
 end
-
 
 #
 # Run the job queues
