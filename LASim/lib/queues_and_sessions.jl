@@ -5,7 +5,7 @@
 # what's sent to the client: a set for civil or aa
 struct OneResponse{T}
     systype :: SystemType
-    xlsfile :: String
+    xlsxfile :: String
     html    :: NamedTuple
     default_params :: LASubsys{T}
     params  :: LASubsys{T}
@@ -13,14 +13,14 @@ end
 
 # what;s cached/saved in session: a set of both aa and civil 
 struct CompleteResponse{T}
-    xlsfile :: NamedTuple
+    xlsxfile :: NamedTuple
     html    :: NamedTuple
     default_params :: AllLASubsys{T}
     params  :: AllLASubsys{T}
 end
 
 const DEFAULT_COMPLETE_RESPONSE = CompleteResponse(
-    DEFAULT_XLSFILE,
+    DEFAULT_XLSXFILE,
     DEFAULT_HTML,
     DEFAULT_SUBSYS,
     DEFAULT_SUBSYS
@@ -28,16 +28,16 @@ const DEFAULT_COMPLETE_RESPONSE = CompleteResponse(
 
 function OneResponse( systype :: SystemType, resp :: CompleteResponse ) :: OneResponse
     return if systype == civil
-        OneResponse( systype, xlsfile.civil, html.civil, default_params.civil, params.civil )
+        OneResponse( systype, xlsxfile.civil, html.civil, default_params.civil, params.civil )
     else
-        OneResponse( systype, xlsfile.aa, html.aa, default_params.aa, params.aa )
+        OneResponse( systype, xlsxfile.aa, html.aa, default_params.aa, params.aa )
     end
 end
 
 function to_session( res :: CompleteResponse )
     session = GenieSession.session()
     GenieSession.set!( session, :systype, res.systype )
-    GenieSession.set!( session, :xlsfile, res.xlsfile )
+    GenieSession.set!( session, :xlsxfile, res.xlsxfile )
     GenieSession.set!( session, :html, res.html )
     GenieSession.set!( session, :allsubsys, res.parans )
 end
@@ -101,19 +101,6 @@ function session_obs(session::GenieSession.Session)::Observable
     return obs
 end 
   
-function screen_obs()::Observable
-    obs = Observable( Progress(settings.uuid, "",0,0,0,0))
-    completed = 0
-    of = on(obs) do p
-        if p.phase == "do-one-run-end"
-        completed = 0
-        end
-        completed += p.step
-        @info "monitor completed=$completed p = $(p)"
-    end
-    return obs
-end
-  
 function get_params_from_session()::AllLASubsys
     session = GenieSession.session()
     systype = systype_from_session()
@@ -171,11 +158,11 @@ function do_session_run( session::Session, allsubsys :: AllLASubsys )
     @info "dorun entered subsys is " subsys
     obs = session_obs(session)
     res.do_la_run( settings, DEFAULT_PARAMS, sys2, obs )
-    # output = (; html, xlsfile, params=allsubsys, defaults=default_subsys )
+    # output = (; html, xlsxfile, params=allsubsys, defaults=default_subsys )
     obs[]=Progress( settings.uuid, "results-generation", 0, 0, 0, 0 )
     resp = CompleteResponse(
         systype,
-        res.xlsfile,
+        res.xlsxfile,
         res.html,
         DEFAULT_SUBSYS,
         all_subsys )       

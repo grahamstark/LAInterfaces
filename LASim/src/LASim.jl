@@ -29,7 +29,8 @@ using .STBIncomes
 using .STBParameters
 using .Utils
 using .HTMLLibs
-using .SingleHouseholdCalculations:do_one_calc
+using .STBOutput: summarise_frames!
+using .SingleHouseholdCalculations: do_one_calc
 
 using .LegalAidCalculations: calc_legal_aid!
 using .LegalAidData
@@ -58,6 +59,24 @@ function make_default_sys()
   sys = STBParameters.get_default_system_for_fin_year( 2023, scotland=true )
   return sys
 end 
+
+const DEFAULT_UUID = UUID("c2ae9c83-d24a-431c-b04f-74662d2ba07e")
+
+function make_screen_obs()::Observable
+  obs = Observable( Progress( DEFAULT_UUID, "",0,0,0,0))
+  completed = 0
+  of = on(obs) do p
+      if p.phase == "do-one-run-end"
+      completed = 0
+      end
+      completed += p.step
+      @info "monitor completed=$completed p = $(p)"
+  end
+  return obs
+end
+screen_obs = make_screen_obs()
+
+
 
 const DEFAULT_PARAMS = make_default_sys()
 DEFAULT_SETTINGS = make_default_settings() # not a const so we can persistently change wealth_imputation

@@ -379,26 +379,6 @@ function reset()
        defaults = defaults,
        xlsxfile ) |> json
 end
-
-function switch_system()
-    reset()
-end
-
-
-function do_la_run( 
-    settings :: RunSettings, 
-    sys1 :: ParameterSystem, 
-    sys2 :: ParameterSystem,
-    obs  :: Observer)::NamedTuple
-    results = Runner.do_one_run( settings, [sys1, sys2], obs )
-    outf = summarise_frames!( results, settings )
-    html = all_results_to_html( outf.legalaid, sys2.legalaid ) 
-    xlsxfile_civil = export_xlsx( results.legalaid.civil )
-    xlsxfile_aa = export_xlsx( results.legalaid.aa )
-    xlsfile = (; aa=xlsfile_aa, civil=xlsfile_civil )
-    (; xlsfile, html )
-end
-
   
 #=
 function run()

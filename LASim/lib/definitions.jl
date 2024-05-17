@@ -242,11 +242,26 @@ function default_la_subsys( systype :: SystemType )::LASubsys
   return LASubsys(subs)
 end
 
-const DEFAULT_SUBSYS = AllLASubSys( DEFAULT_PARAMS.legalaid )
+function do_la_run( 
+    settings :: Settings, 
+    sys1 :: TaxBenefitSystem, 
+    sys2 :: TaxBenefitSystem,
+    obs  :: Observable )::NamedTuple
+    results = Runner.do_one_run( settings, [sys1, sys2], obs )
+    outf = summarise_frames!( results, settings )
+    html = all_results_to_html( outf.legalaid, sys2.legalaid ) 
+    xlsxfile_civil = export_xlsx( results.legalaid.civil )
+    xlsxfile_aa = export_xlsx( results.legalaid.aa )
+    xlsxfile = (; aa=xlsxfile_aa, civil=xlsxfile_civil )
+    return (; xlsxfile, html )
+end
+
+const DEFAULT_SUBSYS = AllLASubsys( DEFAULT_PARAMS.legalaid )
 const DEFAULT_XLSXFILE, DEFAULT_HTML = do_la_run(
     DEFAULT_SETTINGS,
     DEFAULT_PARAMS,
-    DEFAULT_PARAMS )
+    DEFAULT_PARAMS,
+    screen_obs  )
 #=
 function do_run( la2 :: OneLegalAidSys; systype :: SystemType  )::Tuple
     global tot
