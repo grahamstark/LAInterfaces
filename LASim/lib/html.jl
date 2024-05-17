@@ -175,7 +175,6 @@ const FIRST_COL_RENAMES = Dict(
 "Missing_ILO_Employment"=>"Children" since it's in FIRST_COL_RENAMES
 """
 function first_col_rename( thing )::String
-    println( "thing $thing typeof(thing) $(typeof(thing))")
     return get( FIRST_COL_RENAMES, thing, Utils.pretty( thing ))
 end
 
