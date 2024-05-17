@@ -1,7 +1,67 @@
 
 # ==== Queue stuff
 
-const CACHED_RESULTS = LRU{AllLASubsys,Any}(maxsize=25)
+#
+# what's sent to the client: a set for civil or aa
+struct OneResponse{T}
+    systype :: SystemType
+    xlsfile :: String
+    html    :: NamedTuple
+    default_params :: LASubsys{T}
+    params  :: LASubsys{T}
+end
+
+# what;s cached/saved in session: a set of both aa and civil 
+struct CompleteResponse{T}
+    xlsfile :: NamedTuple
+    html    :: NamedTuple
+    default_params :: AllLASubsys{T}
+    params  :: AllLASubsys{T}
+end
+
+const DEFAULT_COMPLETE_RESPONSE = CompleteResponse(
+    DEFAULT_XLSFILE,
+    DEFAULT_HTML,
+    DEFAULT_SUBSYS,
+    DEFAULT_SUBSYS
+)
+
+function OneResponse( systype :: SystemType, resp :: CompleteResponse ) :: OneResponse
+    return if systype == civil
+        OneResponse( systype, xlsfile.civil, html.civil, default_params.civil, params.civil )
+    else
+        OneResponse( systype, xlsfile.aa, html.aa, default_params.aa, params.aa )
+    end
+end
+
+function to_session( res :: CompleteResponse )
+    session = GenieSession.session()
+    GenieSession.set!( session, :systype, res.systype )
+    GenieSession.set!( session, :xlsfile, res.xlsfile )
+    GenieSession.set!( session, :html, res.html )
+    GenieSession.set!( session, :allsubsys, res.parans )
+end
+
+function from_session( )::CompleteResponse 
+    session = GenieSession.session()
+    if( GenieSession.isset( session, :html ))
+        return CompleteResponse(
+            GenieSession.get( session, :systype ),
+            GenieSession.get( session, :xlsxfile ),
+            GenieSession.get( session, :html),
+            GenieSession.get( session, :allsubsys ),
+            DEFAULT_SUBSYS
+        )
+    else
+        resp = deepcopy( DEFAULT_COMPLETE_RESPONSE )
+        to_session( DEFAULT_COMPLETE_RESPONSE )
+        return resp
+    end
+end
+
+
+
+const CACHED_RESULTS = LRU{AllLASubsys,CompleteResponse}(maxsize=25)
 
 function systype_from_session()
     session = GenieSession.session()
@@ -26,7 +86,6 @@ function getprogress()
         @info "getprogress: no progress"
         GenieSession.set!( sess, :progress, progress )
     end
-    
     ( response=has_progress, data=progress, systype=systype ) |> json
 end
   
@@ -73,9 +132,18 @@ end
 function reset()
     session = GenieSession.session()
     systype = systype_from_session()
-    allsubsys = AllLASubsys( DEFAULT_PARAMS.legalaid )
+    
     GenieSession.set!( session, :allsubsys, allsubsys )
 
+    return (html="")
+end
+
+function switch()
+    systype = systype_from_session()
+    systype = systype == civil ? aa : civil
+
+    GenieSession.set!( session, :systype, systype )
+    get_output() |> json 
 end
 
 """
@@ -94,45 +162,36 @@ function dorun( session::Session, allsubsys :: AllLASubsys )
         sys2.legalaid.aa = lasys
         allsubsys.aa = subsys
     end
-    GenieSession.set!( session, :systype, subsys.systype )
-    GenieSession.set!( session, :allsubsys, allsubsys )
-    default_subsys =AllLASubSys( DEFAULT_PARAMS.legalaid )
     map_settings_from_subsys!( settings, subsys )
     @info "dorun entered subsys is " subsys
     obs = session_obs(session)
-    results = Runner.do_one_run( settings, [DEFAULT_PARAMS,sys2], obs )
-    outf = summarise_frames!( results, settings )
-    html = all_results_to_html( outf.legalaid, sys2.legalaid ) 
-    if subsys.systype == sys_civil 
-        xlsxfile = export_xlsx( results.legalaid.civil )
-    else
-        xlsxfile = export_xlsx( results.legalaid.aa )
-    end
-    output = (; html, xlsfile, params=allsubsys, defaults=default_subsys )
+    res.do_la_run( settings, DEFAULT_PARAMS, sys2, obs )
+    # output = (; html, xlsfile, params=allsubsys, defaults=default_subsys )
     obs[]=Progress( settings.uuid, "results-generation", 0, 0, 0, 0 )   
-    CACHED_RESULTS[allsubsys]=output
-    GenieSession.set!( :allsubsys, allsubsys ) 
-    GenieSession.set!( :output, output )
+    CACHED_RESULTS[allsubsys] = CompleteResponse(
+        systype,
+        res.xlsfile,
+        res.html,
+        DEFAULT_SUBSYS,
+        all_subsys )    
+    GenieSession.set!( session, :systype, subsys.systype )
+    GenieSession.set!( session, :allsubsys, allsubsys )
+    GenieSession.set!( session, :html, res.html )
+    GenieSession.set!( session, :xlsfile, res.xlsfile )
     obs[]= Progress( settings.uuid, "end", -99, -99, -99, -99 )
 end
 
-function get_output_from_cache()
-    systype = systype_from_session()
-    params = get_params_from_session()         
-    if has_key( CACHED_RESULTS, params )
-        @info "found cached results"
-        output = CACHED_RESULTS[params]
-        return ( response=output_ready, data=output)  
-    end
-    @info "responding with bad_request" 
-    return( response=bad_request, data="" )  
-end
-
-function get_output_from_session()
-    systype = systype_from_session()
-    if systype == civil
-        
+function get_output_from_session()::CompleteResponse
+    if( GenieSession.isset( session, :html ))
+        allsubsys = GenieSession.get( session, :allsubsys )
+        systype = GenieSession.get( session, :systype, )
+        allsubsys = GenieSession.get( session, :allsubsys )
+        html = GenieSession.get( session, :html )
+        xlsfile - GenieSession.get( session, res.xlsfile )
+        return CompleteResponse( )
     else
+        allsubsys = AllLASubSys( DEFAULT_PARAMS.legalaid )
+        GenieSession.set!( session, :allsubsys, allsubsys )
 
     end
 end
@@ -153,12 +212,6 @@ function getoutput()
     end
 end
 
-function switch()
-    systype = systype_from_session()
-    systype = systype == civil ? aa : civil
-    GenieSession.set!( session, :systype, systype )
-     |> json 
-end
   
 function submit_job()
     systype = systype_from_session()
@@ -179,7 +232,7 @@ function submit_job()
         return ( response=has_progress, data=qp ) |> json
     else
         GenieSession.set!( session, :progress, (phase="end",completed=0, size=0 ))
-        return ( response=output_ready, data=get_output_from_cache()) |> json      
+        return ( response=output_ready, data=CACHED_RESULTS[allsubsys]) |> json      
     end
 end
   

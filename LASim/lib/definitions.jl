@@ -242,10 +242,12 @@ function default_la_subsys( systype :: SystemType )::LASubsys
   return LASubsys(subs)
 end
 
-
-"""
-FIXME: better place for this.
-"""
+const DEFAULT_SUBSYS = AllLASubSys( DEFAULT_PARAMS.legalaid )
+const DEFAULT_XLSXFILE, DEFAULT_HTML = do_la_run(
+    DEFAULT_SETTINGS,
+    DEFAULT_PARAMS,
+    DEFAULT_PARAMS )
+#=
 function do_run( la2 :: OneLegalAidSys; systype :: SystemType  )::Tuple
     global tot
     tot = 0
@@ -268,6 +270,7 @@ function do_default_run()
     
     return allout
 end
+=#
 
 # can't be constants since we sometimes reset them 
 # DEFAULT_RUN = do_default_run()
