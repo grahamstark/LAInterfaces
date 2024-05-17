@@ -1604,7 +1604,7 @@ function submitForm( action, target ){
      if( target != null ){
         url += "/"+target;
      }
-     $("#mainform").validate();
+     // $("#mainform").validate();
      var dataset = JSON.stringify(loadFromForm());
      console.log( "submitForm; data = %o", dataset );
      $.ajax(

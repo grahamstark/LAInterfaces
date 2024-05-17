@@ -364,45 +364,6 @@ function map_sys_from_subsys( subsys :: LASubsys )::OneLegalAidSys
     return fullsys
 end
   
-function reset()
-    # don't try to load all of it since it might be unset, just sys type
-    rp = jsonpayload()
-    @debug rp
-    systype = rp["systype"] == "sys_aa" ? sys_aa : sys_civil
-    # subsys = subsys_from_payload()
-    defaults = default_la_subsys( systype )
-    output=get_default_output( systype )
-    xlsxfile = export_xlsx( get_default_results( systype ) ) # FIXME no need to repeat this here.
-    @info defaults
-    (; output=output, 
-       params = defaults,
-       defaults = defaults,
-       xlsxfile ) |> json
-end
-  
-#=
-function run()
-    subsys = subsys_from_payload()
-    fullsys = map_sys_from_subsys( subsys ) 
-    map_settings_from_subsys!( subsys )
-
-    lares, sys2 = do_run( fullsys; systype=subsys.systype )
-    alloutput = all_results_to_html( lares, sys2.legalaid )
-    output = nothing
-    xlsxfile = nothing
-    if subsys.systype == sys_civil 
-      output = alloutput.civil
-      xlsxfile = export_xlsx( lares.civil )
-    else
-      output = alloutput.aa
-      xlsxfile = export_xlsx( lares.aa )
-    end
-    # params = lasys
-    defaults = default_la_subsys( subsys.systype )
-    (; output, params=subsys, defaults, xlsxfile ) |> json
-end
-=#
-
 function delonerb!( 
     rates::AbstractVector, 
     bands::AbstractVector, 
