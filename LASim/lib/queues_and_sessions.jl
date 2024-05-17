@@ -27,26 +27,23 @@ const DEFAULT_COMPLETE_RESPONSE = CompleteResponse(
 )
 
 function OneResponse( systype :: SystemType, resp :: CompleteResponse ) :: OneResponse
-    return if systype == civil
-        OneResponse( systype, xlsxfile.civil, html.civil, default_params.civil, params.civil )
+    return if systype == sys_civil
+        OneResponse( systype, resp.xlsxfile.civil, resp.html.civil, resp.default_params.civil, resp.params.civil )
     else
-        OneResponse( systype, xlsxfile.aa, html.aa, default_params.aa, params.aa )
+        OneResponse( systype, resp.xlsxfile.aa, resp.html.aa, resp.default_params.aa, resp.params.aa )
     end
 end
 
-function to_session( res :: CompleteResponse )
-    session = GenieSession.session()
-    GenieSession.set!( session, :systype, res.systype )
+function to_session( session, res :: CompleteResponse )
+    # GenieSession.set!( session, :systype, res.systype )
     GenieSession.set!( session, :xlsxfile, res.xlsxfile )
     GenieSession.set!( session, :html, res.html )
-    GenieSession.set!( session, :allsubsys, res.parans )
+    GenieSession.set!( session, :allsubsys, res.params )
 end
 
-function from_session()::CompleteResponse 
-    session = GenieSession.session()
+function from_session(session)::CompleteResponse 
     if( GenieSession.isset( session, :html ))
         return CompleteResponse(
-            GenieSession.get( session, :systype ),
             GenieSession.get( session, :xlsxfile ),
             GenieSession.get( session, :html),
             GenieSession.get( session, :allsubsys ),
@@ -54,16 +51,15 @@ function from_session()::CompleteResponse
         )
     else
         resp = deepcopy( DEFAULT_COMPLETE_RESPONSE )
-        to_session( resp )
+        to_session( session, resp )
         return resp
     end
 end
 
 const CACHED_RESULTS = LRU{AllLASubsys,CompleteResponse}(maxsize=25)
 
-function systype_from_session()
-    session = GenieSession.session()
-    systype = civil
+function systype_from_session( session ::GenieSession.Session )
+    systype = sys_civil
     if( GenieSession.isset( session, :systype ))
         systype = GenieSession.get( session, :systype )
     else
@@ -74,7 +70,7 @@ end
 
 function getprogress() 
     sess = GenieSession.session()
-    systype = systype_from_session()
+    systype = systype_from_session(sess)
     @info "getprogress entered"
     progress = ( phase="missing", completed = 0, size=0 )
     if( GenieSession.isset( sess, :progress ))
@@ -101,9 +97,8 @@ function session_obs(session::GenieSession.Session)::Observable
     return obs
 end 
   
-function get_params_from_session()::AllLASubsys
-    session = GenieSession.session()
-    systype = systype_from_session()
+function get_params_from_session(session::GenieSession.Session)::AllLASubsys
+    systype = systype_from_session( session )
     allsubsys = nothing
     if( GenieSession.isset( session, :allsubsys ))
         allsubsys = GenieSession.get( session, :allsubsys )
@@ -116,17 +111,18 @@ end
 
 function reset()
     session = GenieSession.session()
-    systype = systype_from_session()
+    systype = systype_from_session(session)
     resp = deepcopy( DEFAULT_COMPLETE_RESPONSE )
-    to_session( resp )
+    to_session( session, resp )
     return ( response=output_ready, data = OneResponse( systype, resp)) |> json
 end
 
 function switch_system()
-    systype = systype_from_session()
-    systype = systype == civil ? aa : civil
+    session = GenieSession.session()
+    systype = systype_from_session(session)
+    systype = systype == sys_civil ? sys_aa : sys_civil
     GenieSession.set!( session, :systype, systype )
-    resp = from_session()
+    resp = from_session(session)
     return ( response=output_ready, data = OneResponse( systype, resp)) |> json
 end
 
@@ -134,8 +130,9 @@ end
 return output for the 
 """
 function get_output() 
-    systype = systype_from_session()
-    resp = from_session()
+    session = GenieSession.session()
+    systype = systype_from_session(session)
+    resp = from_session(session)
     return ( response=output_ready, data = OneResponse( systype, resp)) |> json
 end
 
@@ -143,7 +140,7 @@ end
 Execute a run from the queue.
 """
 function do_session_run( session::Session, allsubsys :: AllLASubsys )
-    systype = systype_from_session()
+    systype = systype_from_session(session)
     settings = make_default_settings()  
     lasys = map_sys_from_subsys( subsys )
     sys2 = deepcopy( DEFAULT_PARAMS )
@@ -161,43 +158,50 @@ function do_session_run( session::Session, allsubsys :: AllLASubsys )
     # output = (; html, xlsxfile, params=allsubsys, defaults=default_subsys )
     obs[]=Progress( settings.uuid, "results-generation", 0, 0, 0, 0 )
     resp = CompleteResponse(
-        systype,
         res.xlsxfile,
         res.html,
         DEFAULT_SUBSYS,
         all_subsys )       
     CACHED_RESULTS[allsubsys] = resp
-    to_session( resp )
+    to_session( session, resp )
     obs[]= Progress( settings.uuid, "end", -99, -99, -99, -99 )
 end
   
-struct SubsysAndSession{T}
-    subsys  :: AllLASubsys{T}
-    session :: GenieSession.Session
-end
-  
+#=
+ Implement a job queue. 
+ see: https://docs.julialang.org/en/v1/manual/asynchronous-programming/
+ for how to set this up.
+ !!! NOTE !!! You need __precompile__(false) with Julia 10.x in the 
+ module header for this to work.
+=# 
+
+#
 # this many simultaneous (sp) runs
 #
-const NUM_HANDLERS = 2
+const NUM_HANDLERS = 4
 #
 # This number of submissions
 #
 const QSIZE = 32
+struct SubsysAndSession{T}
+  subsys  :: AllLASubsys{T}
+  session :: GenieSession.Session
+end
 
-IN_QUEUE = Channel{SubsysAndSession}(QSIZE)
+IN_QUEUE = Channel{Any}(QSIZE) # SubsysAndSession{Float64}}
 
 function submit_job()
-    systype = systype_from_session()
-    session = GenieSession.session() #  :: GenieSession.Session 
+    session = GenieSession.session() 
+    systype = systype_from_session(session)
     subsys = subsys_from_payload()
-    allsubsys = get_params_from_session()
+    allsubsys = get_params_from_session(session)
     if subsys.systype == sys_civil 
         allsubsys.civil = subsys
     else 
         allsubsys.aa = subsys
     end
     GenieSession.set!( session, :allsubsys, allsubsys )    
-    @info "submit_job facs=" facs
+    @info "submit_job subsys=" subsys
     if ! haskey( CACHED_RESULTS, allsubsys )    
         put!( IN_QUEUE, allsubsys )
         qp = ( phase="queued" ,completed=0, size=0 )
@@ -210,12 +214,11 @@ function submit_job()
     end
 end
 
-"""
-"""
 function grab_runs_from_queue()
     while true
-        params = take!( IN_QUEUE )
-        do_session_run( params.session, params.subsys ) 
+        onejob = take!( IN_QUEUE )
+        println( "rtrr")
+        do_session_run( onejob.session, onejob.subsys ) 
     end
 end
 
@@ -223,7 +226,6 @@ end
 # Run the job queues
 #
 for i in 1:NUM_HANDLERS # start n tasks to process requests in parallel
-    @info "starting handler $i" 
-    errormonitor(@async grab_runs_from_queue())
+  @info "starting handler $i"   
+  errormonitor( @async grab_runs_from_queue())
 end
-

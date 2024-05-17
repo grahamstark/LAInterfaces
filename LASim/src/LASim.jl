@@ -1,5 +1,6 @@
-module LASim
 
+module LASim
+__precompile__(false)
 using Genie
 using Genie.Requests
 import Genie.Renderer.Json: json
@@ -37,8 +38,11 @@ using .LegalAidData
 using .LegalAidOutput
 # using .LegalAidRunner
 
+const HOME_DIR = joinpath(dirname(pathof( LASim )),".." )
+logger = FileLogger( joinpath( HOME_DIR, "log", "conjapp_log.txt"))
 
-logger = FileLogger("log/conjapp_log.txt")
+@enum Responses output_ready has_progress load_params bad_request
+
 global_logger(logger)
 LogLevel( Logging.Debug )
 
@@ -75,7 +79,6 @@ function make_screen_obs()::Observable
   return obs
 end
 screen_obs = make_screen_obs()
-
 
 
 const DEFAULT_PARAMS = make_default_sys()
@@ -129,4 +132,5 @@ Genie.loadapp()
 up()
 =#
 
-end
+
+end # module

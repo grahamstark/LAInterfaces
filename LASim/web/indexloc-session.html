@@ -706,6 +706,12 @@
                     </fieldset>
                 </div>
 
+                <div class="row"> <!-- progress bar -->
+                    <div class="col"></div>
+                    <div class='col-4' id="progress-indicator"></div>
+                    <div class="col"></div>
+                </div> 
+
                 <fieldset class="row">
                     <div class="col"></div>
                     <div class="col"></div>
@@ -1549,8 +1555,8 @@ function loadFromForm(){
 }
 
 function updateProgress( result ){
-    console.log( "updateSTB  result.phase = " + result.progress.phase );
-    switch( result.progress.phase ){
+    console.log( "updateSTB  result.phase = " + result.data.phase );
+    switch( result.data.phase ){
         case 'missing':
             $("#progress-indicator").html( "<div class='alert alert-info' role='alert'>Run is waiting to start found.</div>");
             break;
@@ -1567,7 +1573,7 @@ function updateProgress( result ){
             $("#progress-indicator").html( "<div class='alert alert-info' role='alert'>Pre-routines completed; run starting.</div>");
             break;
         case 'run':
-            drawRunProgress( result.progress );
+            drawRunProgress( result.data );
             break;
         case 'dumping_frames':
             $("#progress-indicator").html( "<div class='alert alert-info' role='alert'>Calculations complete; now generating output.</div>");
@@ -1604,7 +1610,7 @@ function submitForm( action, target ){
      if( target != null ){
         url += "/"+target;
      }
-     $("#mainform").validate();
+     // $("#mainform").validate();
      var dataset = JSON.stringify(loadFromForm());
      console.log( "submitForm; data = %o", dataset );
      $.ajax(
@@ -1614,20 +1620,77 @@ function submitForm( action, target ){
          contentType: "application/json",
          data: dataset
         }).done(
-            function( initialResult ){
-                console.log( "submitForm; initialResult%o", initialResult);
+        function( resp ){
+                console.log( "submitForm; resp%o", resp);
                 console.log( "target " + target );
-                loadParams( initialResult.params, initialResult.defaults );
                 switch( action ){
-                    case 'run':
-                    case 'reset':
-                    case 'switch_system':
-                        createMainOutputs( initialResult.output, initialResult.xlsxfile );
-                        break;
-                    case 'del':
-                        break;
+                case'run':
+                    // start updater if no immediate output
+                    if( resp.response != "output_ready" ){
+                        console.log( "starting run and timer");               
+                        console.log( "resp" + resp);
+                        var uri = '/progress/';
+                        updater = $.PeriodicalUpdater('/conjoint/progress', {
+                            url: uri,         // URL of ajax request
+                            cache: false,     // By default, don't allow caching
+                            method: 'POST',    // method; get or post
+                            data: '',         // array of values to be passed to the page - e.g. {name: "John", greeting: "hello"}
+                            minTimeout: 1000, // starting value for the timeout in milliseconds
+                            maxTimeout:64000, // maximum length of time between requests
+                            multiplier: 2,    // if set to 2, timerInterval will double each time the response hasn't changed (up to maxTimeout)
+                            maxCalls: 0,      // maximum number of calls. 0 = no limit.
+                            maxCallsCallback: null, // The callback to execute when we reach our max number of calls
+                            autoStop: 0,      // automatically stop requests after this many returns of the same data. 0 = disabled
+                            autoStopCallback: null, // The callback to execute when we autoStop
+                            cookie: false,    // whether (and how) to store a cookie
+                            runatonce: false, // Whether to fire initially or wait
+                            verbose: 0        // The level to be logging at: 0 = none; 1 = some; 2 = all
+                        }, function( responseFromUpdater, success, xhr, handle) {
+                            console.log( "progress: got %o", responseFromUpdater );
+                            switch( responseFromUpdater.response ){
+                                case 'output_ready':
+                                    updater.stop();
+                                    console.log( "updater stopped; main; loading output" );
+                                    createMainOutputs( 
+                                        responseFromUpdater.data.html, 
+                                        responseFromUpdater.data.xslxfile );
+                                    // createMainOutputs( responseFromUpdater.data );
+                                break;
+                                case 'has_progress':
+                                    updateProgress( responseFromUpdater );
+                                break;
+                                case 'load_params':
+                                    updateParams( 
+                                        responseFromUpdater.data.params, 
+                                        responseFromUpdater.data.default_params, );
+                                break;
+                                case 'bad_request':
+                                    console.log( "bad request %o", responseFromUpdater );
+                                break;
+                            }
+                        });
+                    } else {
+                        loadOutput();
+                        // createMainOutputs( resp.data );
+                    }
+                    break;
+                case 'addcapital-contribution':
+                    break;
+                case 'reset':
+                case 'switch_system':
+                    // FIXME something to reset parameters
+                    // createMainOutputs( result.data );                    
+                    loadParams( 
+                        resp.data.params, 
+                        resp.data.default_params );
+                    createMainOutputs( 
+                        resp.data.html, 
+                        resp.data.xslxfile );
+                    break;
                 }
             }
+
+
         ).fail(
             function( jqXHR, textStatus, errorThrown ){
                 console.log( "failed with " + textStatus + " errorThrown "+errorThrown );
@@ -1637,7 +1700,7 @@ function submitForm( action, target ){
 }
 
 $(document).ready(function(){
-        $("mainform").submit(function(e){
+        $("mainform").submit(function(e){ // stop the form from loading on conventional submit
                 alert('submit intercepted');
                 e.preventDefault(e);
         });
