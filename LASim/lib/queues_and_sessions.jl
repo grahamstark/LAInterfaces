@@ -119,7 +119,7 @@ function reset()
     systype = systype_from_session()
     resp = deepcopy( DEFAULT_COMPLETE_RESPONSE )
     to_session( resp )
-    return ( response=output_ready, data = OneResponse( systype, resp)) |> json``
+    return ( response=output_ready, data = OneResponse( systype, resp)) |> json
 end
 
 function switch_system()
@@ -127,7 +127,7 @@ function switch_system()
     systype = systype == civil ? aa : civil
     GenieSession.set!( session, :systype, systype )
     resp = from_session()
-    return ( response=output_ready, data = OneResponse( systype, resp)) |> json``
+    return ( response=output_ready, data = OneResponse( systype, resp)) |> json
 end
 
 """
@@ -136,7 +136,7 @@ return output for the
 function get_output() 
     systype = systype_from_session()
     resp = from_session()
-    return ( response=output_ready, data = OneResponse( systype, resp)) |> json``
+    return ( response=output_ready, data = OneResponse( systype, resp)) |> json
 end
 
 """
