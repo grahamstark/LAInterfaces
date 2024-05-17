@@ -42,7 +42,7 @@ function to_session( res :: CompleteResponse )
     GenieSession.set!( session, :allsubsys, res.parans )
 end
 
-function from_session( )::CompleteResponse 
+function from_session()::CompleteResponse 
     session = GenieSession.session()
     if( GenieSession.isset( session, :html ))
         return CompleteResponse(
@@ -54,12 +54,10 @@ function from_session( )::CompleteResponse
         )
     else
         resp = deepcopy( DEFAULT_COMPLETE_RESPONSE )
-        to_session( DEFAULT_COMPLETE_RESPONSE )
+        to_session( resp )
         return resp
     end
 end
-
-
 
 const CACHED_RESULTS = LRU{AllLASubsys,CompleteResponse}(maxsize=25)
 
@@ -132,18 +130,27 @@ end
 function reset()
     session = GenieSession.session()
     systype = systype_from_session()
-    
-    GenieSession.set!( session, :allsubsys, allsubsys )
-
-    return (html="")
+    resp = deepcopy( DEFAULT_COMPLETE_RESPONSE )
+    to_session( resp )
+    return ( response=output_ready, data = OneResponse( systype, resp)) |> json``
 end
 
 function switch()
     systype = systype_from_session()
     systype = systype == civil ? aa : civil
-
     GenieSession.set!( session, :systype, systype )
-    get_output() |> json 
+    resp = from_session()
+    return ( response=output_ready, data = OneResponse( systype, resp)) |> json``
+end
+
+"""
+return output for the 
+"""
+function getoutput() 
+    systype = systype_from_session()
+    resp = from_session()
+    return ( response=output_ready, data = OneResponse( systype, resp)) |> json``
+    # fixme addd 1 session & reuse 
 end
 
 """
@@ -154,7 +161,6 @@ function dorun( session::Session, allsubsys :: AllLASubsys )
     settings = make_default_settings()  
     lasys = map_sys_from_subsys( subsys )
     sys2 = deepcopy( DEFAULT_PARAMS )
-    # allsubsys = get_params_from_session()
     if subsys.systype == sys_civil 
         sys2.legalaid.civil = lasys
         allsubsys.civil = subsys
@@ -167,52 +173,33 @@ function dorun( session::Session, allsubsys :: AllLASubsys )
     obs = session_obs(session)
     res.do_la_run( settings, DEFAULT_PARAMS, sys2, obs )
     # output = (; html, xlsfile, params=allsubsys, defaults=default_subsys )
-    obs[]=Progress( settings.uuid, "results-generation", 0, 0, 0, 0 )   
-    CACHED_RESULTS[allsubsys] = CompleteResponse(
+    obs[]=Progress( settings.uuid, "results-generation", 0, 0, 0, 0 )
+    resp = CompleteResponse(
         systype,
         res.xlsfile,
         res.html,
         DEFAULT_SUBSYS,
-        all_subsys )    
-    GenieSession.set!( session, :systype, subsys.systype )
-    GenieSession.set!( session, :allsubsys, allsubsys )
-    GenieSession.set!( session, :html, res.html )
-    GenieSession.set!( session, :xlsfile, res.xlsfile )
+        all_subsys )       
+    CACHED_RESULTS[allsubsys] = resp
+    to_session( resp )
     obs[]= Progress( settings.uuid, "end", -99, -99, -99, -99 )
 end
-
-function get_output_from_session()::CompleteResponse
-    if( GenieSession.isset( session, :html ))
-        allsubsys = GenieSession.get( session, :allsubsys )
-        systype = GenieSession.get( session, :systype, )
-        allsubsys = GenieSession.get( session, :allsubsys )
-        html = GenieSession.get( session, :html )
-        xlsfile - GenieSession.get( session, res.xlsfile )
-        return CompleteResponse( )
-    else
-        allsubsys = AllLASubSys( DEFAULT_PARAMS.legalaid )
-        GenieSession.set!( session, :allsubsys, allsubsys )
-
-    end
-end
-
-"""
-return output for the 
-"""
-function getoutput() 
-    # fixme addd 1 session & reuse 
-    systype = systype_from_session()
-    alloutput = get_output_from_session()
-    allsubsys = get_subsys_from_session()
-    # utput = (; html, xlsfile, params=allsubsys, defaults=default_subsys )
-    if systype == civil
-        return (; html=html.civil, subsys=allsubsys.civil, defaults=defaults.civil, xlsfile=xlsfile, systype=systype ) |> json
-    else
-        return (; html=html.aa, subsys=allsubsys.aa, defaults=defaults.aa, xlsfile=aa, systype=systype ) |> json
-    end
-end
-
   
+struct SubsysAndSession{T}
+    subsys  :: AllLASubsys{T}
+    session :: GenieSession.Session
+end
+  
+# this many simultaneous (sp) runs
+#
+const NUM_HANDLERS = 2
+#
+# This number of submissions
+#
+const QSIZE = 32
+
+IN_QUEUE = Channel{SubsysAndSession}(QSIZE)
+
 function submit_job()
     systype = systype_from_session()
     session = GenieSession.session() #  :: GenieSession.Session 
@@ -232,24 +219,10 @@ function submit_job()
         return ( response=has_progress, data=qp ) |> json
     else
         GenieSession.set!( session, :progress, (phase="end",completed=0, size=0 ))
-        return ( response=output_ready, data=CACHED_RESULTS[allsubsys]) |> json      
+        resp = CACHED_RESULTS[allsubsys]
+        return ( response=output_ready, data=OneResponse( systype, resp)) |> json      
     end
 end
-  
-struct SubsysAndSession{T}
-    subsys  :: AllLASubsys{T}
-    session :: GenieSession.Session
-end
-  
-# this many simultaneous (sp) runs
-#
-const NUM_HANDLERS = 2
-#
-# This number of submissions
-#
-const QSIZE = 32
-
-IN_QUEUE = Channel{SubsysAndSession}(QSIZE)
 
 """
 """
