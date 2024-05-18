@@ -81,6 +81,8 @@ end
 screen_obs = make_screen_obs()
 
 const DEFAULT_PARAMS = make_default_sys()
+const DEFAULT_CIVIL = STBParameters.default_civil_sys( 2023, Float64 )
+const DEFAULT_AA =  STBParameters.default_aa_sys( 2023, Float64 )
 const DEFAULT_SETTINGS = make_default_settings() 
 
 """
