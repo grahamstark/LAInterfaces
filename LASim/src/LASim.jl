@@ -39,7 +39,7 @@ using .LegalAidOutput
 # using .LegalAidRunner
 
 const HOME_DIR = joinpath(dirname(pathof( LASim )),".." )
-logger = FileLogger( joinpath( HOME_DIR, "log", "conjapp_log.txt"))
+logger = FileLogger( joinpath( HOME_DIR, "log", "lasim_log.txt"))
 
 @enum Responses output_ready has_progress load_params bad_request
 
@@ -54,7 +54,7 @@ function make_default_settings() :: Settings
   settings.requested_threads = 4
   settings.wealth_method = other_method_1
   settings.num_households, settings.num_people, nhh2 = 
-      FRSHouseholdGetter.initialise( settings; reset=true ) # force Scottish dataset 
+      FRSHouseholdGetter.initialise( settings; reset=false ) # force Scottish dataset 
   # ExampleHouseholdGetter.initialise( settings ) # force a reload for reasons I don't quite understand.
   return settings
 end

@@ -83,7 +83,9 @@ function getprogress()
     ( response=has_progress, data=progress, systype=systype ) |> json
 end
   
-function session_obs(session::GenieSession.Session)::Observable
+function session_obs(
+    session  :: GenieSession.Session,
+    settings :: Settings )::Observable
     obs = Observable( Progress(settings.uuid, "",0,0,0,0))
     completed = 0
     of = on(obs) do p
@@ -140,28 +142,23 @@ end
 Execute a run from the queue.
 """
 function do_session_run( session::Session, allsubsys :: AllLASubsys )
-    systype = systype_from_session(session)
+    systype = systype_from_session( session )
+    activesubsys = systype == sys_civil ? allsubsys.civil : allsubsys.aa    
     settings = make_default_settings()  
-    lasys = map_sys_from_subsys( subsys )
     sys2 = deepcopy( DEFAULT_PARAMS )
-    if subsys.systype == sys_civil 
-        sys2.legalaid.civil = lasys
-        allsubsys.civil = subsys
-    else 
-        sys2.legalaid.aa = lasys
-        allsubsys.aa = subsys
-    end
-    map_settings_from_subsys!( settings, subsys )
-    @info "dorun entered subsys is " subsys
-    obs = session_obs(session)
-    res.do_la_run( settings, DEFAULT_PARAMS, sys2, obs )
+    sys2.legalaid.civil = map_sys_from_subsys( allsubsys.civil )
+    sys2.legalaid.aa = map_sys_from_subsys( allsubsys.aa )
+    map_settings_from_subsys!( settings, activesubsys )
+    @info "dorun entered activesubsys is " activesubsys
+    obs = session_obs( session, settings )
+    res = do_la_run( settings, DEFAULT_PARAMS, sys2, obs )
     # output = (; html, xlsxfile, params=allsubsys, defaults=default_subsys )
     obs[]=Progress( settings.uuid, "results-generation", 0, 0, 0, 0 )
     resp = CompleteResponse(
         res.xlsxfile,
         res.html,
         DEFAULT_SUBSYS,
-        all_subsys )       
+        allsubsys )       
     CACHED_RESULTS[allsubsys] = resp
     to_session( session, resp )
     obs[]= Progress( settings.uuid, "end", -99, -99, -99, -99 )
@@ -188,7 +185,7 @@ struct SubsysAndSession{T}
   session :: GenieSession.Session
 end
 
-IN_QUEUE = Channel{Any}(QSIZE) # SubsysAndSession{Float64}}
+IN_QUEUE = Channel{SubsysAndSession{Float64}}(QSIZE) # 
 
 function submit_job()
     session = GenieSession.session() 
@@ -202,14 +199,15 @@ function submit_job()
     end
     GenieSession.set!( session, :allsubsys, allsubsys )    
     @info "submit_job subsys=" subsys
-    if ! haskey( CACHED_RESULTS, allsubsys )    
-        put!( IN_QUEUE, allsubsys )
+    sas = SubsysAndSession(allsubsys,session)
+    if ! haskey( CACHED_RESULTS, sas )    
+        put!( IN_QUEUE, sas )
         qp = ( phase="queued" ,completed=0, size=0 )
         GenieSession.set!( session, :progress, qp )    
         return ( response=has_progress, data=qp ) |> json
     else
         GenieSession.set!( session, :progress, (phase="end",completed=0, size=0 ))
-        resp = CACHED_RESULTS[allsubsys]
+        resp = CACHED_RESULTS[sas]
         return ( response=output_ready, data=OneResponse( systype, resp)) |> json      
     end
 end
