@@ -1590,7 +1590,7 @@ function updateProgress( result ){
                 }).done(
                     function( outp ){
                         console.log( "submitForm; result %o", outp);
-                        createMainOutputs( outp.html );
+                        createMainOutputs( outp.data.html, outp.data.xlsxfile );
                     }
                 );
                 
@@ -1653,7 +1653,7 @@ function submitForm( action, target ){
                                     console.log( "updater stopped; main; loading output" );
                                     createMainOutputs( 
                                         responseFromUpdater.data.html, 
-                                        responseFromUpdater.data.xslxfile );
+                                        responseFromUpdater.data.xlsxfile);
                                     // createMainOutputs( responseFromUpdater.data );
                                 break;
                                 case 'has_progress':
@@ -1670,7 +1670,9 @@ function submitForm( action, target ){
                             }
                         });
                     } else {
-                        loadOutput();
+                        createMainOutputs( 
+                        resp.data.html, 
+                        resp.data.xlsxfile);
                         // createMainOutputs( resp.data );
                     }
                     break;
@@ -1685,7 +1687,7 @@ function submitForm( action, target ){
                         resp.data.default_params );
                     createMainOutputs( 
                         resp.data.html, 
-                        resp.data.xslxfile );
+                        resp.data.xlsxfile);
                     break;
                 }
             }

@@ -38,11 +38,12 @@ using .LegalAidData
 using .LegalAidOutput
 # using .LegalAidRunner
 
-const HOME_DIR = joinpath(dirname(pathof( LASim )),".." )
-logger = FileLogger( joinpath( HOME_DIR, "log", "lasim_log.txt"))
-
 @enum Responses output_ready has_progress load_params bad_request
 
+const DEFAULT_UUID = UUID("c2ae9c83-d24a-431c-b04f-74662d2ba07e")
+const HOME_DIR = joinpath(dirname(pathof( LASim )),".." )
+
+logger = FileLogger( joinpath( HOME_DIR, "log", "lasim_log.txt"))
 global_logger(logger)
 LogLevel( Logging.Debug )
 
@@ -64,8 +65,6 @@ function make_default_sys()
   return sys
 end 
 
-const DEFAULT_UUID = UUID("c2ae9c83-d24a-431c-b04f-74662d2ba07e")
-
 function make_screen_obs()::Observable
   obs = Observable( Progress( DEFAULT_UUID, "",0,0,0,0))
   completed = 0
@@ -78,11 +77,11 @@ function make_screen_obs()::Observable
   end
   return obs
 end
+
 screen_obs = make_screen_obs()
 
-
 const DEFAULT_PARAMS = make_default_sys()
-DEFAULT_SETTINGS = make_default_settings() # not a const so we can persistently change wealth_imputation
+const DEFAULT_SETTINGS = make_default_settings() 
 
 """
 Defined here to aviod nasty cross-dependency.
@@ -131,6 +130,5 @@ using Revise
 Genie.loadapp()
 up()
 =#
-
 
 end # module

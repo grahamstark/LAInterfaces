@@ -47,8 +47,7 @@ function from_session(session)::CompleteResponse
             GenieSession.get( session, :xlsxfile ),
             GenieSession.get( session, :html),
             GenieSession.get( session, :allsubsys ),
-            DEFAULT_SUBSYS
-        )
+            DEFAULT_SUBSYS )
     else
         resp = deepcopy( DEFAULT_COMPLETE_RESPONSE )
         to_session( session, resp )
