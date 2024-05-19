@@ -29,7 +29,7 @@ route("/delcapital-contribution/:n", method = POST ) do
 end
 
 route("/") do
-  serve_static_file("indexloc.html")
+  serve_static_file("index.html")
 end
 
 route( "/progress", LASim.getprogress, method = POST )
