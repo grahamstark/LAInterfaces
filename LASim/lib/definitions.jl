@@ -122,6 +122,8 @@ mutable struct AllLASubsys{T}
 end
   
 function LASubsys( sys :: OneLegalAidSys )
+    @info sys.systype
+    @info sys.incomes
     LASubsys(
     sys.systype,
     sys.income_living_allowance,
@@ -229,6 +231,10 @@ function AllLASubsys( sys :: ScottishLegalAidSys )
     AllLASubsys( LASubsys( sys.civil), LASubsys( sys.aa ))
 end
 
+function AllLASubsys( civil :: OneLegalAidSys, aa :: OneLegalAidSys )
+    AllLASubsys( LASubsys( civil), LASubsys( aa ))
+end
+
 """
 reload from source so we're correctly annualised CAREFUL change load
 as default params change
@@ -256,7 +262,7 @@ function do_la_run(
     return (; xlsxfile, html )
 end
 
-const DEFAULT_SUBSYS = AllLASubsys( DEFAULT_PARAMS.legalaid )
+const DEFAULT_SUBSYS = AllLASubsys( DEFAULT_CIVIL, DEFAULT_AA )
 const DEFAULT_XLSXFILE, DEFAULT_HTML = do_la_run(
     DEFAULT_SETTINGS,
     DEFAULT_PARAMS,

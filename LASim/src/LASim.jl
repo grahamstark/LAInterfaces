@@ -87,9 +87,9 @@ const DEFAULT_CIVIL = STBParameters.default_civil_sys( 2023, Float64 )
 const DEFAULT_AA =  STBParameters.default_aa_sys( 2023, Float64 )
 const DEFAULT_SETTINGS = make_default_settings() 
 
-pix( DEFAULT_CIVIL.incomes )
+pix( "DEFAULT_CIVIL.incomes", DEFAULT_CIVIL.incomes )
+pix( "DEFAULT_AA.incomes", DEFAULT_AA.incomes )
 
-pix( DEFAULT_AA.incomes )
 
 """
 Defined here to aviod nasty cross-dependency.
