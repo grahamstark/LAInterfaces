@@ -254,6 +254,7 @@ function do_la_run(
     sys2 :: TaxBenefitSystem,
     obs  :: Observable )::NamedTuple
     results = Runner.do_one_run( settings, [sys1, sys2], obs )
+    obs[]=Progress( settings.uuid, "results-generation", 0, 0, 0, 0 )
     outf = summarise_frames!( results, settings )
     html = all_results_to_html( outf.legalaid, sys2.legalaid ) 
     xlsxfile_civil = export_xlsx( results.legalaid.civil )
