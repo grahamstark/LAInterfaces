@@ -56,6 +56,86 @@ function from_session(session)::CompleteResponse
     end
 end
 
+function get_single_subsys_from_session( systype :: SystemType, session::GenieSession.Session):: LASubsys
+    allsubsys = get_params_from_session( session )
+    # params = subsys_from_payload()
+    if systype == sys_civil 
+        params = allsubsys.civil
+    else 
+        params = allsubsys.aa
+    end
+end
+
+function put_single_subsys_to_session( 
+    systype :: SystemType, 
+    session ::GenieSession.Session,
+    params  :: LASubsys )
+    allsubsys = get_params_from_session( session )
+    if systype == sys_civil 
+        allsubsys.civil = params
+    else 
+        allsubsys.aa = params
+    end
+    GenieSession.set!( session, :allsubsys, allsubsys )    
+end
+
+function addcapital( n :: Int ) 
+    session = GenieSession.session()
+    systype = systype_from_session(session)
+    params = get_single_subsys_from_session( systype, session )
+    @info "before " params.capital_contribution_rates
+    addonerb!( 
+        params.capital_contribution_rates, 
+        params.capital_contribution_limits,
+        n )
+    @info "after " params.capital_contribution_rates
+    put_single_subsys_to_session( systype, session, params )
+    default_params=default_la_subsys( systype )
+    (; default_params, params ) |> json
+end
+
+function delcapital( n )
+    session = GenieSession.session()
+    systype = systype_from_session(session)
+    params = get_single_subsys_from_session( systype, session )
+    delonerb!( 
+        params.capital_contribution_rates, 
+        params.capital_contribution_limits,
+        n )
+    put_single_subsys_to_session( systype, session, params )
+    default_params=default_la_subsys( systype )
+    (; default_params, params ) |> json
+end
+
+function addincome( n :: Int ) 
+    session = GenieSession.session()
+    systype = systype_from_session(session)
+    params = get_single_subsys_from_session( systype, session )
+    @info "addincome; before = $(params.income_contribution_rates)"
+    addonerb!( 
+        params.income_contribution_rates, 
+        params.income_contribution_limits,
+        n )
+    @info "addincome; after = $(params.income_contribution_rates)"
+    put_single_subsys_to_session( systype, session, params )
+    default_params=default_la_subsys( params.systype )
+    (; default_params, params ) |> json
+end
+
+function delincome( n )
+    session = GenieSession.session()
+    systype = systype_from_session(session)
+    params = get_single_subsys_from_session( systype, session )
+    println( "delincome; before = $(params.income_contribution_rates)" )
+    delonerb!( 
+        params.income_contribution_rates, 
+        params.income_contribution_limits,
+        n )
+    put_single_subsys_to_session( systype, session, params )
+    default_params=default_la_subsys( systype )
+    (; default_params, params ) |> json
+end
+
 const CACHED_RESULTS = LRU{AllLASubsys,CompleteResponse}(maxsize=25)
 
 function systype_from_session( session ::GenieSession.Session )
