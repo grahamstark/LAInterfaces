@@ -46,8 +46,9 @@ function from_session(session)::CompleteResponse
         return CompleteResponse(
             GenieSession.get( session, :xlsxfile ),
             GenieSession.get( session, :html),
-            GenieSession.get( session, :allsubsys ),
-            DEFAULT_SUBSYS )
+            DEFAULT_SUBSYS,
+            GenieSession.get( session, :allsubsys )
+            )
     else
         resp = deepcopy( DEFAULT_COMPLETE_RESPONSE )
         to_session( session, resp )
@@ -73,12 +74,13 @@ function getprogress()
     @info "getprogress entered"
     progress = ( phase="missing", completed = 0, size=0 )
     if( GenieSession.isset( sess, :progress ))
-        @info "getprogress: has progress"
+        @info "getprogress: has progress "
         progress = GenieSession.get( sess, :progress )
     else
         @info "getprogress: no progress"
         GenieSession.set!( sess, :progress, progress )
     end
+    @info progress
     ( response=has_progress, data=progress, systype=systype ) |> json
 end
   
@@ -108,6 +110,14 @@ function get_params_from_session(session::GenieSession.Session)::AllLASubsys
         GenieSession.set!( session, :allsubsys, allsubsys )
     end
     return allsubsys
+end
+
+function load_all()
+    session = GenieSession.session()
+    systype = systype_from_session(session)
+    resp = from_session(session) # deepcopy( DEFAULT_COMPLETE_RESPONSE )
+    # to_session( session, resp )
+    return ( response=output_ready, data = OneResponse( systype, resp )) |> json
 end
 
 function reset()

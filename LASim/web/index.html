@@ -847,11 +847,7 @@
                 </div><!-- content -->
             </div> <!--dialog -->
         </div> <!-- big-table modal -->
-     
-
 <script type='text/javascript'>
-
-
 
 function setExpenseFields( which, ischange ){
     console.log( "setExpenseFields entered for |"+which );
@@ -1103,9 +1099,10 @@ function scrapetax( name ){
 }
 
 
-function loadParams( params, defaults ){
+function loadParams( defaults, params ){
     $( "#systype" ).val( params.systype )
     setVal( "income_living_allowance", params.income_living_allowance, defaults.income_living_allowance);
+    console.log( "ila=%o def=%o ",params.income_living_allowance, defaults.income_living_allowance );
     setVal( "income_partners_allowance", params.income_partners_allowance, defaults.income_partners_allowance );
     setVal( "income_other_dependants_allowance", params.income_other_dependants_allowance, defaults.income_other_dependants_allowance );
     setVal( "income_child_allowance", params.income_child_allowance, defaults.income_child_allowance );
@@ -1596,7 +1593,12 @@ function updateProgress( result ){
                 }).done(
                     function( outp ){
                         console.log( "submitForm; result %o", outp);
-                        createMainOutputs( outp.data.html, outp.data.xlsxfile );
+                        loadParams(  
+                            outp.data.default_params,
+                            outp.data.params );                              
+                        createMainOutputs( 
+                            outp.data.html, 
+                            outp.data.xlsxfile );
                     }
                 );
                 
@@ -1618,7 +1620,7 @@ function submitForm( action, target ){
      }
      // $("#mainform").validate();
      var dataset = JSON.stringify(loadFromForm());
-     console.log( "submitForm; data = %o", dataset );
+     console.log( "submitForm; action=%o data = %o", action, dataset );
      $.ajax(
         { url: url,
          method: 'post',
@@ -1627,7 +1629,7 @@ function submitForm( action, target ){
          data: dataset
         }).done(
         function( resp ){
-                console.log( "submitForm; resp%o", resp);
+                console.log( "submitForm; resp %o", resp);
                 console.log( "target " + target );
                 switch( action ){
                 case'run':
@@ -1636,7 +1638,7 @@ function submitForm( action, target ){
                         console.log( "starting run and timer");               
                         console.log( "resp" + resp);
                         var uri = '/lasim/progress/';
-                        updater = $.PeriodicalUpdater('/conjoint/progress', {
+                        updater = $.PeriodicalUpdater('/lasim/progress/', {
                             url: uri,         // URL of ajax request
                             cache: false,     // By default, don't allow caching
                             method: 'POST',    // method; get or post
@@ -1666,9 +1668,9 @@ function submitForm( action, target ){
                                     updateProgress( responseFromUpdater );
                                 break;
                                 case 'load_params':
-                                    updateParams( 
-                                        responseFromUpdater.data.params, 
-                                        responseFromUpdater.data.default_params, );
+                                    loadParams(  
+                                        responseFromUpdater.data.default_params,
+                                        responseFromUpdater.data.params );
                                 break;
                                 case 'bad_request':
                                     console.log( "bad request %o", responseFromUpdater );
@@ -1683,14 +1685,22 @@ function submitForm( action, target ){
                     }
                     break;
                 case 'addcapital-contribution':
+                case 'delcapital-contribution':
+                case 'addincome-contribution':
+                case 'delincome-contribution':
+                    // !!! note these response names are 
+                    // inconsistent with the main ones
+                    loadParams(
+                        resp.default_params, resp.params );
                     break;
+                
                 case 'reset':
+                case 'load':
                 case 'switch_system':
                     // FIXME something to reset parameters
                     // createMainOutputs( result.data );                    
                     loadParams( 
-                        resp.data.params, 
-                        resp.data.default_params );
+                        resp.data.default_params, resp.data.params );
                     createMainOutputs( 
                         resp.data.html, 
                         resp.data.xlsxfile);
@@ -1712,7 +1722,7 @@ $(document).ready(function(){
                 alert('submit intercepted');
                 e.preventDefault(e);
         });
-        submitForm("reset", null ); // FIXME make this params?
+        submitForm("load", null ); // FIXME make this params?
     });
 
 </script>

@@ -12,16 +12,6 @@ end
 
 function map_settings_from_subsys!( settings :: Settings, subsys :: LASubsys )
     settings.wealth_method = subsys.wealth_method
-    #  if DEFAULT_SETTINGS.wealth_method != subsys.wealth_method
-    #=
-    if subsys.reset_all_if_changed
-      global DEFAULT_RUN
-      global DEFAULT_OUTPUT 
-      DEFAULT_RUN = do_default_run()
-      DEFAULT_OUTPUT = all_results_to_html( DEFAULT_RUN, DEFAULT_PARAMS.legalaid )
-    end
-  end
-    =#
 end
   
 function map_sys_from_subsys( subsys :: LASubsys )::OneLegalAidSys
@@ -413,7 +403,7 @@ function addincome( n :: Int )
         n )
     @info "addincome; after = $(params.income_contribution_rates)"
     defaults=default_la_subsys( params.systype )
-    (; params, defaults ) |> json
+    (; default_params=defaults, params ) |> json
 end
 
 function delincome( n )
@@ -425,17 +415,33 @@ function delincome( n )
         n )
     println( "delincome; after = $(params.income_contribution_rates)" )
     defaults=default_la_subsys( params.systype )
-    (; params, defaults ) |> json
+    (; default_params=defaults, params ) |> json
 end
 
 function addcapital( n :: Int ) 
-    params = subsys_from_payload()
+    session = GenieSession.session()
+    systype = systype_from_session(session)
+    allsubsys = get_params_from_session( session )
+    # params = subsys_from_payload()
+    if systype == sys_civil 
+        params = allsubsys.civil
+    else 
+        params = allsubsys.aa
+    end
+    @info "before " params.capital_contribution_rates
     addonerb!( 
         params.capital_contribution_rates, 
         params.capital_contribution_limits,
         n )
-    defaults=default_la_subsys( params.systype )
-    (; params, defaults ) |> json
+    @info "after " params.capital_contribution_rates
+    if systype == sys_civil 
+        allsubsys.civil = params
+    else 
+        allsubsys.aa = params
+    end    
+    default_params=default_la_subsys( systype )
+    GenieSession.set!( session, :allsubsys, allsubsys )
+    (; default_params, params ) |> json
 end
 
 function delcapital( n )
@@ -445,5 +451,5 @@ function delcapital( n )
         params.capital_contribution_limits,
         n )
     defaults=default_la_subsys( params.systype )
-    (; params, defaults ) |> json
+    (; default_params=defaults, params ) |> json
 end

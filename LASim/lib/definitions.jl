@@ -122,8 +122,6 @@ mutable struct AllLASubsys{T}
 end
   
 function LASubsys( sys :: OneLegalAidSys )
-    @info sys.systype
-    @info sys.incomes
     LASubsys(
     sys.systype,
     sys.income_living_allowance,
