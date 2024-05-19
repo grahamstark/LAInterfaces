@@ -104,7 +104,7 @@ function get_params_from_session(session::GenieSession.Session)::AllLASubsys
     if( GenieSession.isset( session, :allsubsys ))
         allsubsys = GenieSession.get( session, :allsubsys )
     else
-        allsubsys = AllLASubSys( DEFAULT_PARAMS.legalaid )
+        allsubsys = AllLASubsys( DEFAULT_PARAMS.legalaid )
         GenieSession.set!( session, :allsubsys, allsubsys )
     end
     return allsubsys

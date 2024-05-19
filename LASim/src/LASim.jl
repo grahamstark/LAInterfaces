@@ -47,6 +47,8 @@ logger = FileLogger( joinpath( HOME_DIR, "log", "lasim_log.txt"))
 global_logger(logger)
 LogLevel( Logging.Debug )
 
+include( "../lib/utils.jl")
+
 function make_default_settings() :: Settings
   settings = Settings()
   settings.export_full_results = true
@@ -84,6 +86,10 @@ const DEFAULT_PARAMS = make_default_sys()
 const DEFAULT_CIVIL = STBParameters.default_civil_sys( 2023, Float64 )
 const DEFAULT_AA =  STBParameters.default_aa_sys( 2023, Float64 )
 const DEFAULT_SETTINGS = make_default_settings() 
+
+pix( DEFAULT_CIVIL.incomes )
+
+pix( DEFAULT_AA.incomes )
 
 """
 Defined here to aviod nasty cross-dependency.
