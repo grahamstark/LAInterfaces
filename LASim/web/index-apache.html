@@ -1585,7 +1585,7 @@ function updateProgress( result ){
             $("#progress-indicator").html( "<div></div>" );
             updater.stop();
             $.ajax(
-                { url: "/output",
+                { url: "/lasim/output",
                 method: 'post',
                 dataType: 'json',
                 contentType: "application/json",
@@ -1614,7 +1614,7 @@ function updateProgress( result ){
 
 
 function submitForm( action, target ){
-     var url = "/"+action; // url = "/"+action;
+     var url = "/lasim/"+action; // url = "/lasim/"+action;
      if( target != null ){
         url += "/"+target;
      }
@@ -1637,8 +1637,8 @@ function submitForm( action, target ){
                     if( resp.response != "output_ready" ){
                         console.log( "starting run and timer");               
                         console.log( "resp" + resp);
-                        var uri = '/progress/';
-                        updater = $.PeriodicalUpdater('/progress/', {
+                        var uri = '/lasim/progress/';
+                        updater = $.PeriodicalUpdater('/lasim/progress/', {
                             url: uri,         // URL of ajax request
                             cache: false,     // By default, don't allow caching
                             method: 'POST',    // method; get or post
