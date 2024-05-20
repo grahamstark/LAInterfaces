@@ -153,9 +153,9 @@
                                   <input id='uc_limit' type='number' name="uc_limit" min='0' max='100000' value='' step='0.01' size="8" class='form-control w-50'/>
 
                                   <div class="form-check">
-                                    <input class="form-check-input uc_use_earnings" type="checkbox" value=""  id="uc_use_earnings" />
-                                    <label class="form-check-label uc_use_earnings" for="uc_use_earnings" >
-                                        Use earnings (rather than all income)?
+                                    <input class="form-check-input uc_use_income" type="checkbox" value=""  id="uc_use_income" />
+                                    <label class="form-check-label uc_use_income" for="uc_use_income" >
+                                        Use All income (rather than earnings)?
                                     </label>
                                 </div>
  
@@ -1191,9 +1191,9 @@ function loadParams( defaults, params ){
     setRadio( "uc_limit_type", params.uc_limit_type, defaults.uc_limit_type );
     setVal( "uc_limit", params.uc_limit, defaults.uc_limit );
     setCheck(
-        "uc_use_earnings",
-        params.uc_use_earnings,
-        defaults.uc_use_earnings );
+        "uc_use_income",
+        params.uc_use_income,
+        defaults.uc_use_income );
 
     setVal( "prem_family", params.prem_family, defaults.prem_family );
     setVal( "prem_family_lone_parent", params.prem_family_lone_parent, defaults.prem_family_lone_parent );
@@ -1492,7 +1492,7 @@ function loadFromForm(){
         prem_disability_couple: parseFloat($('#prem_disability_couple').val()),
         uc_limit: parseFloat($('#uc_limit').val()),
         uc_limit_type: $('input[name="uc_limit_type"]:checked').val(),
-        uc_use_earnings: $('#uc_use_earnings').is(':checked'),
+        uc_use_income: $('#uc_use_income').is(':checked'),
         wealth_method: $('input[name="wealth_method"]:checked').val(),
         reset_all_if_changed: $('#reset_all_if_changed').is(':checked'),
     

@@ -91,7 +91,7 @@ function map_sys_from_subsys( subsys :: LASubsys )::OneLegalAidSys
     fullsys.premia.disability_couple = subsys.prem_disability_couple
     fullsys.uc_limit = subsys.uc_limit
     fullsys.uc_limit_type = subsys.uc_limit_type
-    fullsys.uc_use_earnings = subsys.uc_use_earnings
+    fullsys.uc_use_earnings = ! subsys.uc_use_income
     println( "before ben pushes")
     @debug subsys
     @debug fullsys.incomes.included
