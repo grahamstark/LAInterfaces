@@ -6,7 +6,7 @@ authors:
     affiliation: Virtual Worlds Research
     email: graham.stark@virtual-worlds.scot
 bibliography: references.bib
-
+engine: /opt/julia/bin/julia
 ---
 
 ## Introduction
@@ -25,7 +25,7 @@ LASim builds on Scotben [][], a microsimulation tax-benefit model of Scotland. S
 
 All the code used in this project is available for inspection on the GitHub [] code sharing site.
 
-Julia code is organised into `modules` [] which are aggregated into packages [] which can be downloaded and either run directly or integrated into other programs. For this project, several modules were added to the Scotben package:
+Julia code is organised into `modules` [] which are aggregated into packages [] which can be downloaded and either run directly or integrated into other programs. ScotBen is a Julia package. For this project, several modules were added to the Scotben package:
 
 * LegalAidCalculations.jl []
 * LegalAidOutput.jl [] 
@@ -40,12 +40,24 @@ in addition, additions were made to:
 
 In addition, several weeks development time was spent on the module `LegalAidRunner.jl` which was intended to be a specialised high-speed driver module for legal aid calculations. This module was eventually abandoned because its memory requirements were too mich for the relatively underpowered laptop chosen to host the model.
 
+The model has a web interface. This is implemented as a seperate package. 
+
+::: {.callout-note}
+
+The front-end package needs rationalised. The package includes not only the actual front-end but two earlier abortive attempts at interfaces for the model. Only the `LASim` subfolder is actually needed.
+
+:::
+
+### Modelling 
+
 ::: {.callout-note}
 There are two issues with benefits:
 
 * we use modelled entitlements rather than recorded reciepts 
 * the transition from Legacy Benefits [] to Universal Credit is progressing and this is hard to capture accurately. 
 :::
+
+
 
 ### Testing 
 
@@ -93,5 +105,9 @@ The model has a web user interface. The code for this is
 
 ### TODODs
 
-
+```{julia}
+using DataFrames
+x = 10202020
+d = DataFrame(a=rand(10))
+```
 
