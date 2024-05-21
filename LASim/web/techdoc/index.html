@@ -61,13 +61,8 @@ ul.task-list li input[type="checkbox"] {
   <li><a href="#testing" id="toc-testing" class="nav-link" data-scroll-target="#testing">Testing</a></li>
   <li><a href="#web-interface" id="toc-web-interface" class="nav-link" data-scroll-target="#web-interface">Web Interface</a></li>
   <li><a href="#frs-data" id="toc-frs-data" class="nav-link" data-scroll-target="#frs-data">FRS Data</a></li>
-  <li><a href="#scottish-crime-and-justice-survey" id="toc-scottish-crime-and-justice-survey" class="nav-link" data-scroll-target="#scottish-crime-and-justice-survey">Scottish Crime and Justice Survey</a></li>
-  <li><a href="#section" id="toc-section" class="nav-link" data-scroll-target="#section"></a></li>
+  <li><a href="#scottish-crime-and-justice-survey-scjs" id="toc-scottish-crime-and-justice-survey-scjs" class="nav-link" data-scroll-target="#scottish-crime-and-justice-survey-scjs">Scottish Crime and Justice Survey (SCJS)</a></li>
   <li><a href="#slab-datasets" id="toc-slab-datasets" class="nav-link" data-scroll-target="#slab-datasets">SLAB Datasets</a></li>
-  </ul></li>
-  <li><a href="#calibration" id="toc-calibration" class="nav-link" data-scroll-target="#calibration">Calibration</a></li>
-  <li><a href="#user-interface" id="toc-user-interface" class="nav-link" data-scroll-target="#user-interface">User Interface</a>
-  <ul class="collapse">
   <li><a href="#updating-and-maintenance" id="toc-updating-and-maintenance" class="nav-link" data-scroll-target="#updating-and-maintenance">Updating and Maintenance</a></li>
   <li><a href="#todods" id="toc-todods" class="nav-link" data-scroll-target="#todods">TODODs</a></li>
   </ul></li>
@@ -225,9 +220,8 @@ Note
 </section>
 <section id="frs-data" class="level3">
 <h3 class="anchored" data-anchor-id="frs-data">FRS Data</h3>
-<p>The model uses the Scottish households from pooled 2015-2021 Family Resources (FRS) data. We use the public use FRS release which has a number of fields deleted extensibly for privacy reasons, though the deletions seem arbitrary.</p>
-<p>The FRS is augmented with matched in data from the Scottish Household Survey and the Living Costs and Food Survey. SHS is mainly used to give local-level information and is not very relevant to Legal Aid. LCF is used to provide estimates for some of the expense fields - replayments, travel to work costs and work expenses,</p>
-<p>Problems:</p>
+<p>The model uses the Scottish households from pooled 2015-2021 Family Resources (FRS) data. We use the public use FRS release which has a number of fields deleted for privacy reasons, though the deletions often seem arbitrary.</p>
+<p>The FRS is augmented with matched in data from the Scottish Household Survey and the Living Costs and Food Survey. SHS is mainly used to give local-level information and is not very relevant to Legal Aid. LCF is used to provide estimates for some of the expense fields - repayments, travel to work costs and work expenses.</p>
 <section id="matching" class="level4">
 <h4 class="anchored" data-anchor-id="matching">Matching</h4>
 </section>
@@ -236,23 +230,34 @@ Note
 </section>
 <section id="expenses" class="level4">
 <h4 class="anchored" data-anchor-id="expenses">Expenses</h4>
+<ul>
+<li>Housing - for owner occupiers the FRS normally just counts mortgage interest as a cost. We add in capital repayments though this is tricky to derive from FRS variables. Code is in <code>xx</code> function in the <code>xxx</code> library.</li>
+<li>Maintenance payments - ??</li>
+<li>Debt repayments - use matched LCF data - COICOP code [XXX].</li>
+</ul>
+<div class="callout callout-style-default callout-note callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+Note
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>Expense fields seem low. It is known that average expenses for maintenance contributions, debt repayments and work expenses are much lower on average in the FRS than in SLAB administrative data. This may simply be a selection problem but needs more investigation. Debt in particular could be reworked. Note that student loans are mostly paid through income tax and thus automatically deducted from the model’s income tax calculation.</p>
+</div>
+</div>
 </section>
 </section>
-<section id="scottish-crime-and-justice-survey" class="level3">
-<h3 class="anchored" data-anchor-id="scottish-crime-and-justice-survey">Scottish Crime and Justice Survey</h3>
-</section>
-<section id="section" class="level3">
-<h3 class="anchored" data-anchor-id="section"></h3>
+<section id="scottish-crime-and-justice-survey-scjs" class="level3">
+<h3 class="anchored" data-anchor-id="scottish-crime-and-justice-survey-scjs">Scottish Crime and Justice Survey (SCJS)</h3>
+<p>As an aside, the original proposal was to use SCJS to model the likelihood of households experiencing a problem requiring legal advice. Some initial work was carried out which produced promising but this was abandoned on SLAB’s instructions. It could well be worth returning to this, perhaps as a stand-alone piece of work.</p>
 </section>
 <section id="slab-datasets" class="level3">
 <h3 class="anchored" data-anchor-id="slab-datasets">SLAB Datasets</h3>
+<p>Anonymised versions of the complete SLAB Civil and AA payments data for 2022/3 were supplied. These are the files XX and XX. These were used in the production of cost and caseload estimates. The procedure is crude, but the same as used in the 2007 study. The module <code>LegalAidData.jl</code> crosstabs the payment data by age group, sex/gender, case type, and entitlement level (passported/full entitlement/with contribition) and these are matched against crosstabs from the model by age/sex/estimated entitlement level to give estimates of the propensity of each entitlement group to claim legal aid. This is a crude procedure which at times produces questionable results such as the propensities for contributory benefit units sometimes being higher than for passported/fully entitled benefit units.</p>
 </section>
-</section>
-<section id="calibration" class="level2">
-<h2 class="anchored" data-anchor-id="calibration">Calibration</h2>
-</section>
-<section id="user-interface" class="level2">
-<h2 class="anchored" data-anchor-id="user-interface">User Interface</h2>
 <section id="updating-and-maintenance" class="level3">
 <h3 class="anchored" data-anchor-id="updating-and-maintenance">Updating and Maintenance</h3>
 </section>

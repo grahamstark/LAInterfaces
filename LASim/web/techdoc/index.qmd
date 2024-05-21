@@ -89,20 +89,12 @@ There are several issues with the front-end:
 :::
 
 
-
-
-
-
-
-
 ### FRS Data
 
-The model uses the Scottish households from pooled 2015-2021 Family Resources (FRS) data. We use the public use FRS release which has a number of fields deleted extensibly for privacy reasons, though the deletions seem arbitrary.
+The model uses the Scottish households from pooled 2015-2021 Family Resources (FRS) data. We use the public use FRS release which has a number of fields deleted for privacy reasons, though the deletions often seem arbitrary.
 
-The FRS is augmented with matched in data from the Scottish Household Survey and the Living Costs and Food Survey. SHS is mainly used to give local-level information and is not very relevant to Legal Aid. LCF is used to provide estimates for some of the expense fields - replayments, travel to work costs and work expenses, 
+The FRS is augmented with matched in data from the Scottish Household Survey and the Living Costs and Food Survey. SHS is mainly used to give local-level information and is not very relevant to Legal Aid. LCF is used to provide estimates for some of the expense fields - repayments, travel to work costs and work expenses.
 
-
-Problems:
 
 #### Matching 
 
@@ -110,15 +102,23 @@ Problems:
 
 #### Expenses
 
-### Scottish Crime and Justice Survey
+* Housing - for owner occupiers the FRS normally just counts mortgage interest as a cost. We add in capital repayments though this is tricky to derive from FRS variables. Code is in `xx` function in the `xxx` library. 
+* Maintenance payments  - ??
+* Debt repayments - use matched LCF data - COICOP code [XXX].
 
-### 
+::: {.callout-note}
+
+Expense fields seem low. It is known that average expenses for maintenance contributions, debt repayments and work expenses are much lower on average in the FRS than in SLAB administrative data. This may simply be a selection problem but needs more investigation. Debt in particular could be reworked. Note that student loans are mostly paid through income tax and thus automatically deducted from the model's income tax calculation.
+:::
+
+### Scottish Crime and Justice Survey (SCJS)
+
+As an aside, the original proposal was to use SCJS to model the likelihood of households experiencing a problem requiring legal advice. Some initial work was carried out which produced promising but this was abandoned on SLAB's instructions. It could well be worth returning to this, perhaps as a stand-alone piece of work.  
 
 ### SLAB Datasets
 
-## Calibration
-
-## User Interface
+Anonymised versions of the complete SLAB Civil and AA payments data for 2022/3 were supplied. These are the files XX and XX. 
+These were used in the production of cost and caseload estimates. The procedure is crude, but the same as used in the 2007 study. The module `LegalAidData.jl` crosstabs the payment data by age group, sex/gender, case type, and entitlement level (passported/full entitlement/with contribition) and these are matched against crosstabs from the model by age/sex/estimated entitlement level to give estimates of the propensity of each entitlement group to claim legal aid. This is a crude procedure which at times produces questionable results such as the propensities for contributory benefit units sometimes being higher than for passported/fully entitled benefit units.    
 
 ### Updating and Maintenance
 
