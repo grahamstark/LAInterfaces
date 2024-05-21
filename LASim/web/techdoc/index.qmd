@@ -40,7 +40,7 @@ in addition, additions were made to:
 
 In addition, several weeks development time was spent on the module `LegalAidRunner.jl` which was intended to be a specialised high-speed driver module for legal aid calculations. This module was eventually abandoned because its memory requirements were too mich for the relatively underpowered laptop chosen to host the model.
 
-The model has a web interface. This is implemented as a seperate package. 
+The model has a web interface. This is implemented as a seperate package []. This is discussed below. 
 
 ::: {.callout-note}
 
@@ -57,20 +57,36 @@ There are two issues with benefits:
 * the transition from Legacy Benefits [] to Universal Credit is progressing and this is hard to capture accurately. 
 :::
 
+Specification of the legal aid system came from the following documents:
 
+*
+*
+*
 
 ### Testing 
 
-Code is 
-
-Using calculators 
+Core code is created test-first []. Material for the tests came mainly from the online Legal Aid Calculators [][]. The spreadsheet 
+[][] contains the raw test cases, which were translated into the testsuite ``[]. The testsuite also contains a number of "dry runs" of the model.
 
 ::: {.callout-note}
 The test suite is not as comprehensive as it should be. Quite a serious mistake in how capital is treated for passporting in AA slipped through unchecked until late in the development process. Mistakes in which benefits are disregarded also slipped though until late on. 
 :::
 ### Web Interface
 
-The model has a web user interface. The code for this is  
+The model has a web user interface. The code for this is in the LASim package. This is effectively the main package for the system, though legal aid simulations can actually be run directly from the `Scotben` package, or from any code that imports `ScotBen`. 
+
+The package uses the [Genie]() web framework. It is a single-page application which uses a large amount of hand-written Javascript to handle submissions and responses. Styling uses the [Bootstrap]() css framework, customised to use SLAB fonts and colours. 
+
+
+::: {.callout-note}
+There are several issues with the front-end:
+
+* the front-end is probably too big for a single page. It should either be broken up or aspects of inputs and outputs should be hidden by default
+* the interface code is hand-written and close to the limit of what can be maintained by hand-coding. A more automated system would be needed if many more options were added;
+* there are problems with the interface's performance on the rather limited SLAB laptop supplied for running it;
+* the monitoring `progress bar` code was added last-minute and is unreliable;
+
+:::
 
 
 
@@ -78,12 +94,15 @@ The model has a web user interface. The code for this is
 
 
 
-
-## The Legal Aid System
-
-### T
 
 ### FRS Data
+
+The model uses the Scottish households from pooled 2015-2021 Family Resources (FRS) data. We use the public use FRS release which has a number of fields deleted extensibly for privacy reasons, though the deletions seem arbitrary.
+
+The FRS is augmented with matched in data from the Scottish Household Survey and the Living Costs and Food Survey. SHS is mainly used to give local-level information and is not very relevant to Legal Aid. LCF is used to provide estimates for some of the expense fields - replayments, travel to work costs and work expenses, 
+
+
+Problems:
 
 #### Matching 
 
@@ -106,8 +125,11 @@ The model has a web user interface. The code for this is
 ### TODODs
 
 ```{julia}
-using DataFrames
+using DataFrames, CairoMakie
 x = 10202020
 d = DataFrame(a=rand(10))
+b = barplot(rand(1000))
+
+b
 ```
 
