@@ -57,6 +57,7 @@ ul.task-list li input[type="checkbox"] {
   <li><a href="#the-model" id="toc-the-model" class="nav-link" data-scroll-target="#the-model">The Model</a>
   <ul class="collapse">
   <li><a href="#code-organisation" id="toc-code-organisation" class="nav-link" data-scroll-target="#code-organisation">Code organisation</a></li>
+  <li><a href="#modelling" id="toc-modelling" class="nav-link" data-scroll-target="#modelling">Modelling</a></li>
   <li><a href="#testing" id="toc-testing" class="nav-link" data-scroll-target="#testing">Testing</a></li>
   <li><a href="#web-interface" id="toc-web-interface" class="nav-link" data-scroll-target="#web-interface">Web Interface</a></li>
   </ul></li>
@@ -129,7 +130,7 @@ ul.task-list li input[type="checkbox"] {
 <h3 class="anchored" data-anchor-id="code-organisation">Code organisation</h3>
 <p>LASim builds on Scotben [][], a microsimulation tax-benefit model of Scotland. Scotben is a conventional static microsimulation model, built using the Julia programming language and using Family Resources Survey (FRS) [] data.</p>
 <p>All the code used in this project is available for inspection on the GitHub [] code sharing site.</p>
-<p>Julia code is organised into <code>modules</code> [] which are aggregated into packages [] which can be downloaded and either run directly or integrated into other programs. For this project, several modules were added to the Scotben package:</p>
+<p>Julia code is organised into <code>modules</code> [] which are aggregated into packages [] which can be downloaded and either run directly or integrated into other programs. ScotBen is a Julia package. For this project, several modules were added to the Scotben package:</p>
 <ul>
 <li>LegalAidCalculations.jl []</li>
 <li>LegalAidOutput.jl []</li>
@@ -144,6 +145,23 @@ ul.task-list li input[type="checkbox"] {
 <li>STBOutput -</li>
 </ul>
 <p>In addition, several weeks development time was spent on the module <code>LegalAidRunner.jl</code> which was intended to be a specialised high-speed driver module for legal aid calculations. This module was eventually abandoned because its memory requirements were too mich for the relatively underpowered laptop chosen to host the model.</p>
+<p>The model has a web interface. This is implemented as a seperate package.</p>
+<div class="callout callout-style-default callout-warning callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+Warning
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>The front-end package needs rationalised. The package includes not only the actual front-end but two earlier abortive attempts at interfaces for the model. Only the <code>LASim</code> subfolder is actually needed.</p>
+</div>
+</div>
+</section>
+<section id="modelling" class="level3">
+<h3 class="anchored" data-anchor-id="modelling">Modelling</h3>
 <div class="callout callout-style-default callout-note callout-titled">
 <div class="callout-header d-flex align-content-center">
 <div class="callout-icon-container">
