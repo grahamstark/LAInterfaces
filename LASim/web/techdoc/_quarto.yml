@@ -1,0 +1,14 @@
+project:
+  title: "SLAB Legal Aid Model Documentation"
+format:
+  html:
+    toc: true
+    html-math-method: katex
+    css: "../css/slab-bootstrap.css"
+    comments:
+      hypothesis: true
+  docx: default
+
+
+
+

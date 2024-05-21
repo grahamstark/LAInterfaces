@@ -1,0 +1,97 @@
+---
+title: "SLAB Legal Aid Model Documentation"
+date: May/20/2024
+authors:
+  - name: Graham Stark
+    affiliation: Virtual Worlds Research
+    email: graham.stark@virtual-worlds.scot
+bibliography: references.bib
+
+---
+
+## Introduction
+
+These are technical notes for the for the Scottish Legal Aid Board eligibility simulator model.
+
+For an overview of the purpose and desired specifications of the model, please refer to the SLAB bid document and the Virtual Worlds tender document. For an overview of the legal aid system itself, see [???] Broadly, purpose of the model is to estimate the entitlement to both Civil and Advice and Assistance (AA) legal aid amongst the Scottish Population under the current and various hypothetical systems, and from that estimate the likely costs or savings of changes to eligibility rules. 
+
+The LASim model that was built do do this built on earlier work for the England And Wales Legal Aid Board [] and the Scottish Legal Aid Board [] []. 
+
+## The Model
+
+### Code organisation
+
+LASim builds on Scotben [][], a microsimulation tax-benefit model of Scotland. Scotben is a conventional static microsimulation model, built using the Julia programming language and using Family Resources Survey (FRS) [] data. 
+
+All the code used in this project is available for inspection on the GitHub [] code sharing site.
+
+Julia code is organised into `modules` [] which are aggregated into packages [] which can be downloaded and either run directly or integrated into other programs. For this project, several modules were added to the Scotben package:
+
+* LegalAidCalculations.jl []
+* LegalAidOutput.jl [] 
+* LegalAidData.jl []
+
+in addition, additions were made to:
+
+* STBParameters.jl -
+* Results.jl - 
+* SingleHouseholdCalculations.jl -  
+* STBOutput - 
+
+In addition, several weeks development time was spent on the module `LegalAidRunner.jl` which was intended to be a specialised high-speed driver module for legal aid calculations. This module was eventually abandoned because its memory requirements were too mich for the relatively underpowered laptop chosen to host the model.
+
+::: {.callout-note}
+There are two issues with benefits:
+
+* we use modelled entitlements rather than recorded reciepts 
+* the transition from Legacy Benefits [] to Universal Credit is progressing and this is hard to capture accurately. 
+:::
+
+### Testing 
+
+Code is 
+
+Using calculators 
+
+::: {.callout-note}
+The test suite is not as comprehensive as it should be. Quite a serious mistake in how capital is treated for passporting in AA slipped through unchecked until late in the development process. Mistakes in which benefits are disregarded also slipped though until late on. 
+:::
+### Web Interface
+
+The model has a web user interface. The code for this is  
+
+
+
+
+
+
+
+
+## The Legal Aid System
+
+### T
+
+### FRS Data
+
+#### Matching 
+
+#### Capital
+
+#### Expenses
+
+### Scottish Crime and Justice Survey
+
+### 
+
+### SLAB Datasets
+
+## Calibration
+
+## User Interface
+
+### Updating and Maintenance
+
+### TODODs
+
+
+
