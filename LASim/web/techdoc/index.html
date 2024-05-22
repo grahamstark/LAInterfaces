@@ -66,6 +66,8 @@ ul.task-list li input[type="checkbox"] {
   <li><a href="#updating-and-maintenance" id="toc-updating-and-maintenance" class="nav-link" data-scroll-target="#updating-and-maintenance">Updating and Maintenance</a></li>
   <li><a href="#todods" id="toc-todods" class="nav-link" data-scroll-target="#todods">TODODs</a></li>
   </ul></li>
+  <li><a href="#calibration" id="toc-calibration" class="nav-link" data-scroll-target="#calibration">Calibration</a></li>
+  <li><a href="#user-interface" id="toc-user-interface" class="nav-link" data-scroll-target="#user-interface">User Interface</a></li>
   </ul>
 <div class="quarto-alternate-formats"><h2>Other Formats</h2><ul><li><a href="index.docx"><i class="bi bi-file-word"></i>MS Word</a></li></ul></div></nav>
 </div>
@@ -109,6 +111,7 @@ ul.task-list li input[type="checkbox"] {
 </header>
 
 
+<pre class="{julia}"><code>using DataFrames, CairoMakie, CSV, StatsBase, GLM, Revise</code></pre>
 <section id="introduction" class="level2">
 <h2 class="anchored" data-anchor-id="introduction">Introduction</h2>
 <p>These are technical notes for the for the Scottish Legal Aid Board eligibility simulator model.</p>
@@ -265,11 +268,17 @@ Note
 <h3 class="anchored" data-anchor-id="todods">TODODs</h3>
 <pre class="{julia}"><code>using DataFrames, CairoMakie
 x = 10202020
-d = DataFrame(a=rand(10))
-b = barplot(rand(1000))
+d = DataFrame(a=rand(100000))
+b = scatter(randn(100000),randn(100000); )
 
 b</code></pre>
 </section>
+</section>
+<section id="calibration" class="level2">
+<h2 class="anchored" data-anchor-id="calibration">Calibration</h2>
+</section>
+<section id="user-interface" class="level2">
+<h2 class="anchored" data-anchor-id="user-interface">User Interface</h2>
 </section>
 
 </main>

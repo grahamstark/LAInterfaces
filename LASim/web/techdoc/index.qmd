@@ -6,8 +6,13 @@ authors:
     affiliation: Virtual Worlds Research
     email: graham.stark@virtual-worlds.scot
 bibliography: references.bib
-engine: /opt/julia/bin/julia
+# engine: /opt/julia/bin/julia
+jupyter: julia-1.10
 ---
+```{julia}
+using DataFrames, CairoMakie, CSV, StatsBase, GLM, Revise
+```
+
 
 ## Introduction
 
@@ -128,8 +133,12 @@ These were used in the production of cost and caseload estimates. The procedure 
 using DataFrames, CairoMakie
 x = 10202020
 d = DataFrame(a=rand(10))
-b = barplot(rand(1000))
+b = scatter(randn(1000),randn(1000); )
 
 b
 ```
+## Calibration
+
+## User Interface
+
 
