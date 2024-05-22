@@ -1582,7 +1582,7 @@ function updateProgress( result ){
         case 'results-generation':
             $("#progress-indicator").html( "<div class='alert alert-info' role='alert'>Generating output.</div>");
             break;
-        case 'end':
+        case 'output-ready':
             $("#progress-indicator").html( "<div></div>" );
             updater.stop();
             $.ajax(
@@ -1608,7 +1608,7 @@ function updateProgress( result ){
             updater.stop();
             break;  
         default:
-            $("#progress-indicator").html( "<div class='alert alert-danger' role='alert'>Problem: run "+result.uuid+" can't be found.</div>");
+            $("#progress-indicator").html( "<div class='alert alert-danger' role='alert'>Problem: run phase "+result.data.phase+".</div>");
             break;                                      
     }
 }

@@ -251,7 +251,7 @@ function do_session_run( session::Session, allsubsys :: AllLASubsys )
         allsubsys )       
     # CACHED_RESULTS[allsubsys] = resp
     to_session( session, resp )
-    obs[]= Progress( settings.uuid, "end", -99, -99, -99, -99 )
+    obs[]= Progress( settings.uuid, "output-ready", -99, -99, -99, -99 )
 end
   
 #=
@@ -307,7 +307,7 @@ end
 function grab_runs_from_queue()
     while true
         onejob = take!( IN_QUEUE )
-        println( "rtrr")
+        println( "taking run from queue size of queue is now $n")
         do_session_run( onejob.session, onejob.subsys ) 
     end
 end
