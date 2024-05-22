@@ -10,7 +10,16 @@ bibliography: references.bib
 jupyter: julia-1.10
 ---
 ```{julia}
+
+#| echo: false
+#| warning: false
+
 using DataFrames, CairoMakie, CSV, StatsBase, GLM, Revise
+
+fig_width = 600
+fig_height = fig_width*3/4
+Makie.update_theme!(theme_ggplot2(); size = (fig_width, fig_height))
+
 ```
 
 
@@ -130,13 +139,26 @@ These were used in the production of cost and caseload estimates. The procedure 
 ### TODODs
 
 ```{julia}
-using DataFrames, CairoMakie
-x = 10202020
-d = DataFrame(a=rand(10))
-b = scatter(randn(1000),randn(1000); )
 
-b
+#| echo: false
+#| warning: false
+
+x = 10202020
+
+f = Figure() #;size = (fig_width, fig_height))
+a = Axis(f[1,1])
+b = scatter!(a, randn(1000),randn(1000); )
+f
+# with_theme(f, theme_ggplot2())
 ```
+
+```{julia}
+
+d = DataFrame(a=rand(10))
+d
+
+```
+
 ## Calibration
 
 ## User Interface
