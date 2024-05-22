@@ -1552,7 +1552,7 @@ function loadFromForm(){
     return data;
 }
 
-function updateProgress( result ){
+function updateProgress( updater, result ){
     console.log( "updateSTB  result.phase = " + result.data.phase );
     switch( result.data.phase ){
         case 'queued':
@@ -1582,9 +1582,11 @@ function updateProgress( result ){
         case 'results-generation':
             $("#progress-indicator").html( "<div class='alert alert-info' role='alert'>Generating output.</div>");
             break;
-        case 'output-ready':
+        
+        case 'do-session-run-end': 
             $("#progress-indicator").html( "<div></div>" );
             updater.stop();
+            /*
             $.ajax(
                 { url: "/output",
                 method: 'post',
@@ -1603,9 +1605,10 @@ function updateProgress( result ){
                     }
                 );
                 
-        break;  
+        break;
+        */  
         case 'na':
-            updater.stop();
+            // updater.stop();
             break;  
         default:
             $("#progress-indicator").html( "<div class='alert alert-danger' role='alert'>Problem: run phase "+result.data.phase+".</div>");
@@ -1657,17 +1660,25 @@ function submitForm( action, target ){
                         }, function( responseFromUpdater, success, xhr, handle) {
                             console.log( "progress: got %o", responseFromUpdater );
                             switch( responseFromUpdater.response ){
-                                case 'output_ready':
+                                case 'output-ready':
                                     updater.stop();
+                                    $("#progress-indicator").html( "<div></div>" );
                                     console.log( "updater stopped; main; loading output" );
+                                    loadParams(  
+                                        outp.data.default_params,
+                                        outp.data.params );                              
                                     createMainOutputs( 
                                         responseFromUpdater.data.html, 
                                         responseFromUpdater.data.xlsxfile);
                                     // createMainOutputs( responseFromUpdater.data );
                                 break;
                                 case 'has_progress':
-                                    updateProgress( responseFromUpdater );
+                                    updateProgress( updater, responseFromUpdater );
                                 break;
+                                case 'no_progress':
+                                    ;
+                                    break;
+                                /*
                                 case 'load_params':
                                     loadParams(  
                                         responseFromUpdater.data.default_params,
@@ -1676,6 +1687,7 @@ function submitForm( action, target ){
                                 case 'bad_request':
                                     console.log( "bad request %o", responseFromUpdater );
                                 break;
+                                */
                             }
                         });
                     } else {

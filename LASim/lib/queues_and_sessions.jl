@@ -156,12 +156,15 @@ function getprogress()
     if( GenieSession.isset( sess, :progress ))
         @info "getprogress: has progress "
         progress = GenieSession.get( sess, :progress )
+        @info progress 
+        response = progress.phase == "do-session-run-end" ? output_ready : has_progress       
+        return ( response=response, data=progress, systype=systype ) |> json
     else
         @info "getprogress: no progress"
-        GenieSession.set!( sess, :progress, progress )
+        # GenieSession.set!( sess, :progress, progress )
+        return ( response=no_progress, data=progress, systype=systype ) |> json
     end
-    @info progress
-    ( response=has_progress, data=progress, systype=systype ) |> json
+
 end
   
 function session_obs(
@@ -174,7 +177,7 @@ function session_obs(
             completed = 0
         end
         completed += p.step
-        @info "monitor completed=$completed p = $(p)"
+        @info "in session obs; completed=$completed phase = $(p.phase)"
         GenieSession.set!( session, :progress, (phase=p.phase, completed = completed, size=p.size))
     end
     return obs
@@ -251,7 +254,7 @@ function do_session_run( session::Session, allsubsys :: AllLASubsys )
         allsubsys )       
     # CACHED_RESULTS[allsubsys] = resp
     to_session( session, resp )
-    obs[]= Progress( settings.uuid, "output-ready", -99, -99, -99, -99 )
+    obs[]= Progress( settings.uuid, "do-session-run-end", -99, -99, -99, -99 )
 end
   
 #=
@@ -307,7 +310,8 @@ end
 function grab_runs_from_queue()
     while true
         onejob = take!( IN_QUEUE )
-        println( "taking run from queue size of queue is now $n")
+        # n = $(size(IN_QUEUE))
+        println( "taking run from queue" ) # $n")
         do_session_run( onejob.session, onejob.subsys ) 
     end
 end
