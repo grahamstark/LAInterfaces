@@ -42,6 +42,7 @@ using .LegalAidOutput
 
 const DEFAULT_UUID = UUID("c2ae9c83-d24a-431c-b04f-74662d2ba07e")
 const HOME_DIR = joinpath(dirname(pathof( LASim )),".." )
+GenieSession.__init__() 
 
 logger = FileLogger( joinpath( HOME_DIR, "log", "lasim_log.txt"))
 global_logger(logger)

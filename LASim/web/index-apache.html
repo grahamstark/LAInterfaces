@@ -1585,7 +1585,7 @@ function updateProgress( updater, result ){
         
         case 'do-session-run-end': 
             $("#progress-indicator").html( "<div></div>" );
-            updater.stop();
+            // updater.stop();
             /*
             $.ajax(
                 { url: "/lasim/output",
@@ -1636,7 +1636,7 @@ function submitForm( action, target ){
                 console.log( "submitForm; resp %o", resp);
                 console.log( "target " + target );
                 switch( action ){
-                case'run':
+                case 'run':
                     // start updater if no immediate output
                     if( resp.response != "output_ready" ){
                         console.log( "starting run and timer");               
@@ -1660,17 +1660,18 @@ function submitForm( action, target ){
                         }, function( responseFromUpdater, success, xhr, handle) {
                             console.log( "progress: got %o", responseFromUpdater );
                             switch( responseFromUpdater.response ){
-                                case 'output-ready':
-                                    updater.stop();
+                                case 'output_ready':
                                     $("#progress-indicator").html( "<div></div>" );
                                     console.log( "updater stopped; main; loading output" );
+                                    
                                     loadParams(  
-                                        outp.data.default_params,
-                                        outp.data.params );                              
+                                        responseFromUpdater.data.default_params,
+                                        responseFromUpdater.data.params );                              
                                     createMainOutputs( 
                                         responseFromUpdater.data.html, 
                                         responseFromUpdater.data.xlsxfile);
                                     // createMainOutputs( responseFromUpdater.data );
+                                    updater.stop();                                    
                                 break;
                                 case 'has_progress':
                                     updateProgress( updater, responseFromUpdater );

@@ -47,8 +47,7 @@ function from_session(session)::CompleteResponse
             GenieSession.get( session, :xlsxfile ),
             GenieSession.get( session, :html),
             DEFAULT_SUBSYS,
-            GenieSession.get( session, :allsubsys )
-            )
+            GenieSession.get( session, :allsubsys ))
     else
         resp = deepcopy( DEFAULT_COMPLETE_RESPONSE )
         to_session( session, resp )
@@ -148,39 +147,21 @@ function systype_from_session( session ::GenieSession.Session )
     return systype
 end
 
-function getprogress() 
-    sess = GenieSession.session()
-    systype = systype_from_session(sess)
-    @info "getprogress entered"
-    progress = ( phase="missing", completed = 0, size=0 )
-    if( GenieSession.isset( sess, :progress ))
-        @info "getprogress: has progress "
-        progress = GenieSession.get( sess, :progress )
-        @info progress 
-        response = progress.phase == "do-session-run-end" ? output_ready : has_progress       
-        return ( response=response, data=progress, systype=systype ) |> json
-    else
-        @info "getprogress: no progress"
-        # GenieSession.set!( sess, :progress, progress )
-        return ( response=no_progress, data=progress, systype=systype ) |> json
-    end
-
-end
-  
 function session_obs(
     session  :: GenieSession.Session,
     settings :: Settings )::Observable
-    obs = Observable( Progress(settings.uuid, "",0,0,0,0))
+    sobs = Observable( Progress(settings.uuid, "",0,0,0,0))
     completed = 0
-    of = on(obs) do p
+    of = on(sobs) do p
         if p.phase == "do-one-run-end"
             completed = 0
         end
         completed += p.step
-        @info "in session obs; completed=$completed phase = $(p.phase)"
+        @info session.id
+        @info "in session obs; completed=$completed phase = $(p.phase) session=$(session.id)"
         GenieSession.set!( session, :progress, (phase=p.phase, completed = completed, size=p.size))
     end
-    return obs
+    return sobs
 end 
   
 function get_params_from_session(session::GenieSession.Session)::AllLASubsys
@@ -230,6 +211,29 @@ function get_output()
     return ( response=output_ready, data = OneResponse( systype, resp)) |> json
 end
 
+function getprogress() 
+    sess = GenieSession.session()
+    @info sess.id
+    @info keys(sess.data)        
+    systype = systype_from_session(sess)
+    @info "getprogress entered"
+    if( GenieSession.isset( sess, :progress ))
+        @info "getprogress: has progress "
+        progress = GenieSession.get( sess, :progress )
+        @info progress 
+        if progress.phase == "do-session-run-end" 
+            return get_output() 
+        else
+            return ( response=has_progress, data=progress, systype=systype ) |> json
+        end
+    else
+        @info "getprogress: no progress"
+        # GenieSession.set!( sess, :progress, progress )
+        progress = ( phase="missing", completed = 0, size=0 )
+        return ( response=no_progress, data=progress, systype=systype ) |> json
+    end
+end
+
 """
 Execute a run from the queue.
 """
@@ -237,16 +241,16 @@ function do_session_run( session::Session, allsubsys :: AllLASubsys )
     systype = systype_from_session( session )
     activesubsys = systype == sys_civil ? allsubsys.civil : allsubsys.aa    
     settings = make_default_settings()  
-    obs = session_obs( session, settings )
-    obs[]= Progress( settings.uuid, "start-pre", -99, -99, -99, -99 )
+    sobs = session_obs( session, settings )
+    sobs[]= Progress( settings.uuid, "start-pre", -99, -99, -99, -99 )
     sys2 = deepcopy( DEFAULT_PARAMS )
     sys2.legalaid.civil = map_sys_from_subsys( allsubsys.civil )
     sys2.legalaid.aa = map_sys_from_subsys( allsubsys.aa )
     map_settings_from_subsys!( settings, activesubsys )
     @info "dorun entered activesubsys is " activesubsys
-    res = do_la_run( settings, DEFAULT_PARAMS, sys2, obs )
+    res = do_la_run( settings, DEFAULT_PARAMS, sys2, sobs )
     # output = (; html, xlsxfile, params=allsubsys, defaults=default_subsys )
-    obs[]=Progress( settings.uuid, "results-generation", 0, 0, 0, 0 )
+    # obs[]=Progress( settings.uuid, "results-generation", 0, 0, 0, 0 )
     resp = CompleteResponse(
         res.xlsxfile,
         res.html,
@@ -254,7 +258,8 @@ function do_session_run( session::Session, allsubsys :: AllLASubsys )
         allsubsys )       
     # CACHED_RESULTS[allsubsys] = resp
     to_session( session, resp )
-    obs[]= Progress( settings.uuid, "do-session-run-end", -99, -99, -99, -99 )
+    sobs[]= Progress( settings.uuid, "do-session-run-end", -99, -99, -99, -99 )
+    # GenieSession.set!( session, :progress, ("do-session-run-end", -99, -99, -99, -99 ))
 end
   
 #=
