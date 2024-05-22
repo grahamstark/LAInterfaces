@@ -136,7 +136,7 @@ function delincome( n )
     (; default_params, params ) |> json
 end
 
-const CACHED_RESULTS = LRU{AllLASubsys,CompleteResponse}(maxsize=25)
+# const CACHED_RESULTS = LRU{AllLASubsys,CompleteResponse}(maxsize=25)
 
 function systype_from_session( session ::GenieSession.Session )
     systype = sys_civil
@@ -249,7 +249,7 @@ function do_session_run( session::Session, allsubsys :: AllLASubsys )
         res.html,
         DEFAULT_SUBSYS,
         allsubsys )       
-    CACHED_RESULTS[allsubsys] = resp
+    # CACHED_RESULTS[allsubsys] = resp
     to_session( session, resp )
     obs[]= Progress( settings.uuid, "end", -99, -99, -99, -99 )
 end
@@ -290,16 +290,18 @@ function submit_job()
     GenieSession.set!( session, :allsubsys, allsubsys )    
     @info "submit_job subsys=" subsys
     sas = SubsysAndSession(allsubsys,session)
-    if ! haskey( CACHED_RESULTS, sas )    
-        put!( IN_QUEUE, sas )
-        qp = ( phase="queued" ,completed=0, size=0 )
-        GenieSession.set!( session, :progress, qp )    
-        return ( response=has_progress, data=qp ) |> json
+    # if ! haskey( CACHED_RESULTS, sas )    
+    put!( IN_QUEUE, sas )
+    qp = ( phase="queued" ,completed=0, size=0 )
+    GenieSession.set!( session, :progress, qp )    
+    return ( response=has_progress, data=qp ) |> json
+    #=
     else
         GenieSession.set!( session, :progress, (phase="end",completed=0, size=0 ))
         resp = CACHED_RESULTS[sas]
         return ( response=output_ready, data=OneResponse( systype, resp)) |> json      
     end
+    =#
 end
 
 function grab_runs_from_queue()

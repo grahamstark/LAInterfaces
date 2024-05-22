@@ -1646,13 +1646,13 @@ function submitForm( action, target ){
                             data: '',         // array of values to be passed to the page - e.g. {name: "John", greeting: "hello"}
                             minTimeout: 1000, // starting value for the timeout in milliseconds
                             maxTimeout:64000, // maximum length of time between requests
-                            multiplier: 2,    // if set to 2, timerInterval will double each time the response hasn't changed (up to maxTimeout)
+                            multiplier: 1,    // if set to 2, timerInterval will double each time the response hasn't changed (up to maxTimeout)
                             maxCalls: 0,      // maximum number of calls. 0 = no limit.
                             maxCallsCallback: null, // The callback to execute when we reach our max number of calls
                             autoStop: 0,      // automatically stop requests after this many returns of the same data. 0 = disabled
                             autoStopCallback: null, // The callback to execute when we autoStop
                             cookie: false,    // whether (and how) to store a cookie
-                            runatonce: false, // Whether to fire initially or wait
+                            runatonce: true, // Whether to fire initially or wait
                             verbose: 0        // The level to be logging at: 0 = none; 1 = some; 2 = all
                         }, function( responseFromUpdater, success, xhr, handle) {
                             console.log( "progress: got %o", responseFromUpdater );
