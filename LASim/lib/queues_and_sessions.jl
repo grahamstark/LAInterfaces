@@ -249,17 +249,17 @@ function do_session_run( session::Session, allsubsys :: AllLASubsys )
     map_settings_from_subsys!( settings, activesubsys )
     @info "dorun entered activesubsys is " activesubsys
     res = do_la_run( settings, DEFAULT_PARAMS, sys2, sobs )
-    # output = (; html, xlsxfile, params=allsubsys, defaults=default_subsys )
-    # obs[]=Progress( settings.uuid, "results-generation", 0, 0, 0, 0 )
     resp = CompleteResponse(
         res.xlsxfile,
         res.html,
         DEFAULT_SUBSYS,
         allsubsys )       
-    # CACHED_RESULTS[allsubsys] = resp
     to_session( session, resp )
-    sobs[]= Progress( settings.uuid, "do-session-run-end", -99, -99, -99, -99 )
-    # GenieSession.set!( session, :progress, ("do-session-run-end", -99, -99, -99, -99 ))
+    for i in 1:1
+        sobs[]= Progress( settings.uuid, "do-session-run-end", -99, -99, -99, -99 )
+    end
+    GenieSession.set!( session, :progress, 
+        Progress("do-session-run-end", -99, -99, -99, -99, -99 ))
 end
   
 #=
@@ -298,19 +298,11 @@ function submit_job()
     GenieSession.set!( session, :allsubsys, allsubsys )    
     @info "submit_job subsys=" subsys
     sas = SubsysAndSession(allsubsys,session)
-    # if ! haskey( CACHED_RESULTS, sas )    
     put!( IN_QUEUE, sas )
     qp = ( phase="queued" ,completed=0, size=0 )
     GenieSession.set!( session, :progress, qp )    
     return ( response=has_progress, data=qp ) |> json
-    #=
-    else
-        GenieSession.set!( session, :progress, (phase="end",completed=0, size=0 ))
-        resp = CACHED_RESULTS[sas]
-        return ( response=output_ready, data=OneResponse( systype, resp)) |> json      
-    end
-    =#
-end
+ end
 
 function grab_runs_from_queue()
     while true

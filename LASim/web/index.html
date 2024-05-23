@@ -1552,7 +1552,7 @@ function loadFromForm(){
     return data;
 }
 
-function updateProgress( updater, result ){
+function updateProgress( result ){
     console.log( "updateSTB  result.phase = " + result.data.phase );
     switch( result.data.phase ){
         case 'queued':
@@ -1582,32 +1582,9 @@ function updateProgress( updater, result ){
         case 'results-generation':
             $("#progress-indicator").html( "<div class='alert alert-info' role='alert'>Generating output.</div>");
             break;
-        
         case 'do-session-run-end': 
             $("#progress-indicator").html( "<div></div>" );
-            // updater.stop();
-            /*
-            $.ajax(
-                { url: "/output",
-                method: 'post',
-                dataType: 'json',
-                contentType: "application/json",
-                data: result.system 
-                }).done(
-                    function( outp ){
-                        console.log( "submitForm; result %o", outp);
-                        loadParams(  
-                            outp.data.default_params,
-                            outp.data.params );                              
-                        createMainOutputs( 
-                            outp.data.html, 
-                            outp.data.xlsxfile );
-                    }
-                );
-                
-        break;
-        */  
-        case 'na':
+         case 'na':
             // updater.stop();
             break;  
         default:
@@ -1662,40 +1639,28 @@ function submitForm( action, target ){
                             switch( responseFromUpdater.response ){
                                 case 'output_ready':
                                     $("#progress-indicator").html( "<div></div>" );
-                                    console.log( "updater stopped; main; loading output" );
-                                    
+                                    console.log( "main; loading output" );
                                     loadParams(  
                                         responseFromUpdater.data.default_params,
                                         responseFromUpdater.data.params );                              
                                     createMainOutputs( 
                                         responseFromUpdater.data.html, 
                                         responseFromUpdater.data.xlsxfile);
-                                    // createMainOutputs( responseFromUpdater.data );
+                                    console.log("stopping updater");
                                     updater.stop();                                    
                                 break;
                                 case 'has_progress':
-                                    updateProgress( updater, responseFromUpdater );
+                                    updateProgress( responseFromUpdater );
                                 break;
                                 case 'no_progress':
                                     ;
                                     break;
-                                /*
-                                case 'load_params':
-                                    loadParams(  
-                                        responseFromUpdater.data.default_params,
-                                        responseFromUpdater.data.params );
-                                break;
-                                case 'bad_request':
-                                    console.log( "bad request %o", responseFromUpdater );
-                                break;
-                                */
-                            }
+                           }
                         });
                     } else {
                         createMainOutputs( 
                         resp.data.html, 
                         resp.data.xlsxfile);
-                        // createMainOutputs( resp.data );
                     }
                     break;
                 case 'addcapital-contribution':
