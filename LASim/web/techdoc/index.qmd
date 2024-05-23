@@ -5,7 +5,10 @@ authors:
   - name: Graham Stark
     affiliation: Virtual Worlds Research
     email: graham.stark@virtual-worlds.scot
-bibliography: references.bib
+citation:
+  url: https://virtual-worlds.scot/techdoc/index.html
+bibliography: SLAB-2-24.bib
+csl: /home/graham_s/pandoc_data/chicago-note-bibliography.csl
 # engine: /opt/julia/bin/julia
 jupyter: julia-1.10
 ---
@@ -41,13 +44,13 @@ These are technical notes for the for the Scottish Legal Aid Board eligibility s
 
 For an overview of the purpose and desired specifications of the model, please refer to the SLAB bid document and the Virtual Worlds tender document. For an overview of the legal aid system itself, see [???] Broadly, purpose of the model is to estimate the entitlement to both Civil and Advice and Assistance (AA) legal aid amongst the Scottish Population under the current and various hypothetical systems, and from that estimate the likely costs or savings of changes to eligibility rules. 
 
-The LASim model that was built do do this built on earlier work for the England And Wales Legal Aid Board [] and the Scottish Legal Aid Board [] []. 
+The LASim model that was built do do this built on earlier work for the England And Wales Legal Aid Board [@buck_means_2001;@buck_simplicity_2003;] and the Scottish and Northern Irish Legal Aid Boards [@digan_financial_2007;@StarkSLAB]. 
 
 ## The Model
 
 ### Code organisation
 
-LASim builds on Scotben [][], a microsimulation tax-benefit model of Scotland. Scotben is a conventional static microsimulation model, built using the [Julia](https://juliahub.org) programming language and Family Resources Survey (FRS) [] data. 
+LASim builds on [Scotben](https://github.com/grahamstark/ScottishTaxBenefitModel.jl/), a microsimulation tax-benefit model of Scotland. Scotben is a conventional static microsimulation model, built using the [Julia](https://juliahub.org) programming language and Family Resources Survey (FRS) [] data. 
 
 A tax benefit model is [..]. For more information on this model, see [] and for tax-benefit models generally, see [].
 
@@ -58,19 +61,19 @@ All the code used in this project is available for inspection on the GitHub code
 
 Julia code is organised into `modules` [] which are aggregated into packages []. Packages can be downloaded and either run directly or integrated into other programs. ScotBen is a Julia package. For this project, several modules were added to the Scotben package:
 
-* LegalAidCalculations.jl [] - this calculates entitlement to both Civil and AA for a single FRS household.  
-* LegalAidOutput.jl [] - this generates output tables and calculates the likelyhood that a given household will claim legal aid.
-* LegalAidData.jl [] - this holds SLAB supplied individual-level records for payments and contributions under both Civil and AA legal aid. This is used along with tbe entitlement data to produce cost and takeup estimates. 
+* [LegalAidCalculations.jl](https://github.com/grahamstark/ScottishTaxBenefitModel.jl/blob/master/src/LegalAidCalculations.jl) - this calculates entitlement to both Civil and AA for a single FRS household.  
+* [LegalAidOutput.jl](https://github.com/grahamstark/ScottishTaxBenefitModel.jl/blob/master/src/LegalAidOutput.jl) - this generates output tables and calculates the likelyhood that a given household will claim legal aid.
+* [LegalAidData.jl](https://github.com/grahamstark/ScottishTaxBenefitModel.jl/blob/master/src/LegalAidData.jl) - this holds SLAB supplied individual-level records for payments and contributions under both Civil and AA legal aid. This is used along with tbe entitlement data to produce cost and takeup estimates. 
 
 in addition, additions were made to the following Modules:
 
-* STBParameters.jl [] - this models the parameters needed for the entire Scottisg/UK fiscal system - tax rates, benefit levels and so on. A set of parameters capturing capital and income limits, rules for allowances, disregarded incomes, etc. was added 
-* [Results.jl]() - This holds records capturing entitlements to benefits, liability to tax, etc. for a single household. A record capturing entitlement to Legal Aid, contributions, assessed income, etc. was added, as `OneLegalAidResult`.
-* [SingleHouseholdCalculations.jl]() - this runs all calculations for all FRS households. A small call was added to optionally run the legal aid calculations; 
-* [STBOutput]() - this holds the main output from the model. The structures from `LegalAidOutput` are incorporated here.
-* [RunSettings]() - fields were added to control optional switching of the capital source - this is discussed below.  
+* [STBParameters.jl](https://github.com/grahamstark/ScottishTaxBenefitModel.jl/blob/master/src/STBParameters.jl) - this models the parameters needed for the entire Scottisg/UK fiscal system - tax rates, benefit levels and so on. A set of parameters capturing capital and income limits, rules for allowances, disregarded incomes, etc. was added 
+* [Results.jl](https://github.com/grahamstark/ScottishTaxBenefitModel.jl/blob/master/src/Results.jl) - This holds records capturing entitlements to benefits, liability to tax, etc. for a single household. A record capturing entitlement to Legal Aid, contributions, assessed income, etc. was added, as `OneLegalAidResult`.
+* [SingleHouseholdCalculations.jl](https://github.com/grahamstark/ScottishTaxBenefitModel.jl/blob/master/src/SingleHouseholdCalculations.jl) - this runs all calculations for all FRS households. A small call was added to optionally run the legal aid calculations; 
+* [STBOutput](https://github.com/grahamstark/ScottishTaxBenefitModel.jl/blob/master/src/STBOutput.jl) - this holds the main output from the model. The structures from `LegalAidOutput` are incorporated here.
+* [RunSettings](https://github.com/grahamstark/ScottishTaxBenefitModel.jl/blob/master/src/RunSettings.jl) - fields were added to control optional switching of the capital source - this is discussed below.  
 
-In addition, considerable development time was spent on the module [LegalAidRunner.jl]() which was intended to be a specialised high-speed driver module for legal aid calculations. This module was eventually abandoned because its memory requirements were too mich for the relatively underpowered laptop chosen to host the model.
+In addition, considerable development time was spent on the module [LegalAidRunner.jl](https://github.com/grahamstark/ScottishTaxBenefitModel.jl/blob/master/src/LegalAidRunner.jl) which was intended to be a specialised high-speed driver module for legal aid calculations. This module was eventually abandoned because its memory requirements were too mich for the relatively underpowered laptop chosen to host the model.
 
 ### Taxes and Benefits
 
@@ -80,12 +83,12 @@ The 2007 model was custom-written to specifically model Legal Aid. Instead of ca
 There are two issues with benefits:
 
 * we use modelled entitlements rather than recorded receipts. There are currently no official estimates of means-tested benefit takeup (it is deemed too complex because of the legacy/UC transition) but previous estimates were of the range 50-80% [^@], 
-* the transition from Legacy Benefits [] to Universal Credit is progressing and this is hard to capture accurately. [Our modelling of this]() is based on analysis by the House Of Commons Library[^].
+* the transition from Legacy Benefits [] to Universal Credit is progressing and this is hard to capture accurately. [Our modelling of this](https://github.com/grahamstark/ScottishTaxBenefitModel.jl/blob/master/src/UCTransition.jl) is based on analysis by the House Of Commons Library[@house_of_commons_library_constituency_2020].
 
 :::
 
 Specification of the legal aid system came from the following documents:
-*
+* 
 *
 *
 
@@ -175,3 +178,8 @@ d
 
 ```
 
+
+### References
+
+::: {#refs}
+:::
