@@ -149,20 +149,33 @@ function systype_from_session( session ::GenieSession.Session )
     return systype
 end
 
+function dict_obs( settings :: Settings )::Observable
+    sobs = Observable( Progress(settings.uuid, "",0,0,0,0))
+    completed = 0
+    of = on(sobs) do p
+        completed += p.step
+        if p.phase ==  "do-session-run-end"
+            completed = 0
+        end
+        prog = Progress( settings.uuid, p.phase, p.thread, completed, p.step, p.size )
+        @show "setting " settings.uuid " to " prog.phase
+        PROGRESS[settings.uuid] = prog
+    end
+    return sobs
+end 
+
 function session_obs(
     session  :: GenieSession.Session,
     settings :: Settings )::Observable
     sobs = Observable( Progress(settings.uuid, "",0,0,0,0))
     completed = 0
-    last_phase = nothing 
     of = on(sobs) do p
         completed += p.step
         if p.phase ==  "do-session-run-end"
             completed = 0
         end
         @info session.id
-        if last_phase != "do-session-run-end"
-            @info "in session obs; completed=$completed phase = $(p.phase) session=$(session.id)"
+             @info "in session obs; completed=$completed phase = $(p.phase) session=$(session.id)"
             GenieSession.set!( session, :progress, 
                 Progress(
                     p.uuid, 
@@ -172,8 +185,6 @@ function session_obs(
                     p.step,
                     p.size ))
                 # (phase=p.phase, completed = completed, size=p.size))
-        end
-        last_phase = p.phase
     end
     return sobs
 end 
@@ -184,7 +195,7 @@ function get_params_from_session(session::GenieSession.Session)::AllLASubsys
     if( GenieSession.isset( session, :allsubsys ))
         allsubsys = GenieSession.get( session, :allsubsys )
     else
-        allsubsys = AllLASubsys( DEFAULT_PARAMS.legalaid )
+        allsubsys = AllLASubsys( DEFAULT_UUID, DEFAULT_PARAMS.legalaid )
         GenieSession.set!( session, :allsubsys, allsubsys )
     end
     return allsubsys
@@ -225,7 +236,27 @@ function get_output()
     return ( response=output_ready, data = OneResponse( systype, resp)) |> json
 end
 
-function getprogress() 
+function getprogress( uuid ) 
+    sess = GenieSession.session()
+    systype = systype_from_session(sess)
+    @info "getprogress entered looking got $uuid"
+    if( haskey( PROGRESS, uuid ))
+        @info "getprogress: has progress "
+        progress = PROGRESS[uuid]
+        @info progress 
+        if progress.phase == "do-session-run-end" 
+            return get_output() 
+        else
+            return ( response=has_progress, data=progress, systype=systype ) |> json
+        end
+    else
+        @info "getprogress: no progress"
+        progress = NO_PROGRESS 
+        return ( response=no_progress, data=NO_PROGRESS, systype=systype ) |> json
+    end
+end
+
+function getprogress_sess() 
     sess = GenieSession.session()
     @info sess.id
     @info keys(sess.data)        
@@ -254,8 +285,9 @@ Execute a run from the queue.
 function do_session_run( session::Session, allsubsys :: AllLASubsys )
     systype = systype_from_session( session )
     activesubsys = systype == sys_civil ? allsubsys.civil : allsubsys.aa    
-    settings = make_default_settings()  
-    sobs = session_obs( session, settings )
+    settings = make_default_settings()
+    settings.uuid = UUID(rand(UInt128))
+    sobs = dict_obs( settings )
     sobs[]= Progress( settings.uuid, "start-pre", -99, -99, -99, -99 )
     sys2 = deepcopy( DEFAULT_PARAMS )
     sys2.legalaid.civil = map_sys_from_subsys( allsubsys.civil )

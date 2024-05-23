@@ -33,7 +33,7 @@
         
         </header>
         <form id='mainform' action="thing" method="POST">  
-            
+            <input type="hidden" name="uuid" id="uuid" value=""/>
             <div class='container-fluid'>
                 <div class='row justify-content-center text-secondary pt-3 pb-3'>
                     <div class='col-4'></div>
@@ -1102,6 +1102,7 @@ function scrapetax( name ){
 
 function loadParams( defaults, params ){
     $( "#systype" ).val( params.systype )
+    $( "#uuid").val( params.uuid )
     setVal( "income_living_allowance", params.income_living_allowance, defaults.income_living_allowance);
     console.log( "ila=%o def=%o ",params.income_living_allowance, defaults.income_living_allowance );
     setVal( "income_partners_allowance", params.income_partners_allowance, defaults.income_partners_allowance );
@@ -1443,6 +1444,7 @@ function loadFromForm(){
 
     var data = {
         systype: $( "#systype" ).val(),
+        uuid: $( "#uuid" ).val(),
         income_living_allowance: parseFloat($( "#income_living_allowance" ).val()),
         income_partners_allowance: parseFloat($( "#income_partners_allowance" ).val()),
         income_other_dependants_allowance: parseFloat($( "#income_other_dependants_allowance" ).val()),
@@ -1600,7 +1602,8 @@ function submitForm( action, target ){
         url += "/"+target;
      }
      // $("#mainform").validate();
-     var dataset = JSON.stringify(loadFromForm());
+     var formdata = loadFromForm();
+     var dataset = JSON.stringify(formdata);
      console.log( "submitForm; action=%o data = %o", action, dataset );
      $.ajax(
         { url: url,
@@ -1623,7 +1626,7 @@ function submitForm( action, target ){
                             url: uri,         // URL of ajax request
                             cache: false,     // By default, don't allow caching
                             method: 'POST',    // method; get or post
-                            data: '',         // array of values to be passed to the page - e.g. {name: "John", greeting: "hello"}
+                            data: {uuid:formdata.uuid},         // array of values to be passed to the page - e.g. {name: "John", greeting: "hello"}
                             minTimeout: 1000, // starting value for the timeout in milliseconds
                             maxTimeout:64000, // maximum length of time between requests
                             multiplier: 1,    // if set to 2, timerInterval will double each time the response hasn't changed (up to maxTimeout)

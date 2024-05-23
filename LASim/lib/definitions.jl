@@ -13,7 +13,7 @@ end
 
 
 mutable struct LASubsys{T}
-    uuid :: UUID,
+    uuid :: UUID
     systype :: SystemType    
     income_living_allowance :: T       
     income_partners_allowance   :: T        
@@ -263,7 +263,7 @@ function do_la_run(
     return (; xlsxfile, html )
 end
 
-const DEFAULT_SUBSYS = AllLASubsys( DEFAULT_CIVIL, DEFAULT_AA )
+const DEFAULT_SUBSYS = AllLASubsys( DEFAULT_UUID, DEFAULT_CIVIL, DEFAULT_AA )
 const DEFAULT_XLSXFILE, DEFAULT_HTML = do_la_run(
     DEFAULT_SETTINGS,
     DEFAULT_PARAMS,

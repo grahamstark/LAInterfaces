@@ -1,4 +1,5 @@
 using Genie.Router
+using UUIDs
 
 route("/run", LASim.submit_job, method=POST )
 
@@ -32,7 +33,11 @@ route("/") do
   serve_static_file("index.html")
 end
 
-route( "/progress", LASim.getprogress, method = POST )
+route( "/progress", method = POST ) do
+  uuid = UUID( payload(:uuid))
+  @show uuid
+  LASim.getprogress( UUID(uuid) )
+end
 
 route( "/output", method = POST ) do 
   LASim.get_output()
