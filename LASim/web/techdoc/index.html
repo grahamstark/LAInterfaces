@@ -94,7 +94,8 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
   <li><a href="#the-model" id="toc-the-model" class="nav-link" data-scroll-target="#the-model">The Model</a>
   <ul class="collapse">
   <li><a href="#code-organisation" id="toc-code-organisation" class="nav-link" data-scroll-target="#code-organisation">Code organisation</a></li>
-  <li><a href="#modelling" id="toc-modelling" class="nav-link" data-scroll-target="#modelling">Modelling</a></li>
+  <li><a href="#taxes-and-benefits" id="toc-taxes-and-benefits" class="nav-link" data-scroll-target="#taxes-and-benefits">Taxes and Benefits</a></li>
+  <li><a href="#calibration" id="toc-calibration" class="nav-link" data-scroll-target="#calibration">Calibration</a></li>
   <li><a href="#testing" id="toc-testing" class="nav-link" data-scroll-target="#testing">Testing</a></li>
   <li><a href="#web-interface" id="toc-web-interface" class="nav-link" data-scroll-target="#web-interface">Web Interface</a></li>
   <li><a href="#frs-data" id="toc-frs-data" class="nav-link" data-scroll-target="#frs-data">FRS Data</a></li>
@@ -103,8 +104,6 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
   <li><a href="#updating-and-maintenance" id="toc-updating-and-maintenance" class="nav-link" data-scroll-target="#updating-and-maintenance">Updating and Maintenance</a></li>
   <li><a href="#todods" id="toc-todods" class="nav-link" data-scroll-target="#todods">TODODs</a></li>
   </ul></li>
-  <li><a href="#calibration" id="toc-calibration" class="nav-link" data-scroll-target="#calibration">Calibration</a></li>
-  <li><a href="#user-interface" id="toc-user-interface" class="nav-link" data-scroll-target="#user-interface">User Interface</a></li>
   </ul>
 <div class="quarto-alternate-formats"><h2>Other Formats</h2><ul><li><a href="index.docx"><i class="bi bi-file-word"></i>MS Word</a></li></ul></div></nav>
 </div>
@@ -158,40 +157,33 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <h2 class="anchored" data-anchor-id="the-model">The Model</h2>
 <section id="code-organisation" class="level3">
 <h3 class="anchored" data-anchor-id="code-organisation">Code organisation</h3>
-<p>LASim builds on Scotben [][], a microsimulation tax-benefit model of Scotland. Scotben is a conventional static microsimulation model, built using the Julia programming language and using Family Resources Survey (FRS) [] data.</p>
-<p>All the code used in this project is available for inspection on the GitHub [] code sharing site.</p>
-<p>Julia code is organised into <code>modules</code> [] which are aggregated into packages [] which can be downloaded and either run directly or integrated into other programs. ScotBen is a Julia package. For this project, several modules were added to the Scotben package:</p>
+<p>LASim builds on Scotben [][], a microsimulation tax-benefit model of Scotland. Scotben is a conventional static microsimulation model, built using the <a href="https://juliahub.org">Julia</a> programming language and Family Resources Survey (FRS) [] data.</p>
+<p>A tax benefit model is [..]. For more information on this model, see [] and for tax-benefit models generally, see [].</p>
+<p>All the code used in this project is available for inspection on the GitHub code sharing site, as follows:</p>
 <ul>
-<li>LegalAidCalculations.jl []</li>
-<li>LegalAidOutput.jl []</li>
-<li>LegalAidData.jl []</li>
+<li><a href="https://github.com/grahamstark/scottishtaxbenefitmodel.jl">Scotben - the Main Model</a></li>
+<li><a href="https://github.com/grahamstark/lainterfaces/">LASim - the web Front End</a></li>
 </ul>
-<p>in addition, additions were made to:</p>
+<p>Julia code is organised into <code>modules</code> [] which are aggregated into packages []. Packages can be downloaded and either run directly or integrated into other programs. ScotBen is a Julia package. For this project, several modules were added to the Scotben package:</p>
 <ul>
-<li>STBParameters.jl -</li>
-<li>Results.jl -</li>
-<li>SingleHouseholdCalculations.jl -<br>
+<li>LegalAidCalculations.jl [] - this calculates entitlement to both Civil and AA for a single FRS household.<br>
 </li>
-<li>STBOutput -</li>
+<li>LegalAidOutput.jl [] - this generates output tables and calculates the likelyhood that a given household will claim legal aid.</li>
+<li>LegalAidData.jl [] - this holds SLAB supplied individual-level records for payments and contributions under both Civil and AA legal aid. This is used along with tbe entitlement data to produce cost and takeup estimates.</li>
 </ul>
-<p>In addition, several weeks development time was spent on the module <code>LegalAidRunner.jl</code> which was intended to be a specialised high-speed driver module for legal aid calculations. This module was eventually abandoned because its memory requirements were too mich for the relatively underpowered laptop chosen to host the model.</p>
-<p>The model has a web interface. This is implemented as a seperate package []. This is discussed below.</p>
-<div class="callout callout-style-default callout-note callout-titled">
-<div class="callout-header d-flex align-content-center">
-<div class="callout-icon-container">
-<i class="callout-icon"></i>
-</div>
-<div class="callout-title-container flex-fill">
-Note
-</div>
-</div>
-<div class="callout-body-container callout-body">
-<p>The front-end package needs rationalised. The package includes not only the actual front-end but two earlier abortive attempts at interfaces for the model. Only the <code>LASim</code> subfolder is actually needed.</p>
-</div>
-</div>
+<p>in addition, additions were made to the following Modules:</p>
+<ul>
+<li>STBParameters.jl [] - this models the parameters needed for the entire Scottisg/UK fiscal system - tax rates, benefit levels and so on. A set of parameters capturing capital and income limits, rules for allowances, disregarded incomes, etc. was added</li>
+<li><a href="">Results.jl</a> - This holds records capturing entitlements to benefits, liability to tax, etc. for a single household. A record capturing entitlement to Legal Aid, contributions, assessed income, etc. was added, as <code>OneLegalAidResult</code>.</li>
+<li><a href="">SingleHouseholdCalculations.jl</a> - this runs all calculations for all FRS households. A small call was added to optionally run the legal aid calculations;</li>
+<li><a href="">STBOutput</a> - this holds the main output from the model. The structures from <code>LegalAidOutput</code> are incorporated here.</li>
+<li><a href="">RunSettings</a> - fields were added to control optional switching of the capital source - this is discussed below.</li>
+</ul>
+<p>In addition, considerable development time was spent on the module <a href="">LegalAidRunner.jl</a> which was intended to be a specialised high-speed driver module for legal aid calculations. This module was eventually abandoned because its memory requirements were too mich for the relatively underpowered laptop chosen to host the model.</p>
 </section>
-<section id="modelling" class="level3">
-<h3 class="anchored" data-anchor-id="modelling">Modelling</h3>
+<section id="taxes-and-benefits" class="level3">
+<h3 class="anchored" data-anchor-id="taxes-and-benefits">Taxes and Benefits</h3>
+<p>The 2007 model was custom-written to specifically model Legal Aid. Instead of calculating liability to taxes and entitlements to benefits, it instead simply took recorded FRS values for these things and used those in its LA calculations. The current system is a general purpose tax-benefit model which makes it’s own estimates of household liabilities and entitlements given the rules of the fiscal system. We chose this approach chiefly because the benefit system, in particular, is changing rapidly, especially with the phased introduction of Universal Credit. To model Scotland with reasonable accuracy, you need to ‘pool’ multiple years of FRS data and, unless you override recorded benefit receipts with values calculated on the current regime, older data becomes unrepresentative. (The same is true of direct taxes though this is less relevant to Legal Aid Calculations).</p>
 <div class="callout callout-style-default callout-note callout-titled">
 <div class="callout-header d-flex align-content-center">
 <div class="callout-icon-container">
@@ -204,17 +196,15 @@ Note
 <div class="callout-body-container callout-body">
 <p>There are two issues with benefits:</p>
 <ul>
-<li>we use modelled entitlements rather than recorded reciepts</li>
-<li>the transition from Legacy Benefits [] to Universal Credit is progressing and this is hard to capture accurately.</li>
+<li>we use modelled entitlements rather than recorded receipts. There are currently no official estimates of means-tested benefit takeup (it is deemed too complex because of the legacy/UC transition) but previous estimates were of the range 50-80% [^@],</li>
+<li>the transition from Legacy Benefits [] to Universal Credit is progressing and this is hard to capture accurately. <a href="">Our modelling of this</a> is based on analysis by the House Of Commons Library[^].</li>
 </ul>
 </div>
 </div>
-<p>Specification of the legal aid system came from the following documents:</p>
-<ul>
-<li></li>
-<li></li>
-<li></li>
-</ul>
+<p>Specification of the legal aid system came from the following documents: <em> </em> *</p>
+</section>
+<section id="calibration" class="level3">
+<h3 class="anchored" data-anchor-id="calibration">Calibration</h3>
 </section>
 <section id="testing" class="level3">
 <h3 class="anchored" data-anchor-id="testing">Testing</h3>
@@ -236,7 +226,7 @@ Note
 <section id="web-interface" class="level3">
 <h3 class="anchored" data-anchor-id="web-interface">Web Interface</h3>
 <p>The model has a web user interface. The code for this is in the LASim package. This is effectively the main package for the system, though legal aid simulations can actually be run directly from the <code>Scotben</code> package, or from any code that imports <code>ScotBen</code>.</p>
-<p>The package uses the <a href="">Genie</a> web framework. It is a single-page application which uses a large amount of hand-written Javascript to handle submissions and responses. Styling uses the <a href="">Bootstrap</a> css framework, customised to use SLAB fonts and colours.</p>
+<p>The package uses the <a href="">Genie</a> web framework. Genie provides much of the messy back-end needed for a web application, such as a simple web-server, the facility to start sessions for users and the like. Building on this, LASim is a single-page application which uses a large amount of hand-written Javascript to handle submissions and responses. Styling uses the <a href="">Bootstrap</a> css framework, customised to use SLAB fonts and colours.</p>
 <div class="callout callout-style-default callout-note callout-titled">
 <div class="callout-header d-flex align-content-center">
 <div class="callout-icon-container">
@@ -249,10 +239,11 @@ Note
 <div class="callout-body-container callout-body">
 <p>There are several issues with the front-end:</p>
 <ul>
+<li>he front-end package needs rationalised. The package includes not only the actual front-end but two earlier abortive attempts at interfaces for the model. Only the <code>LASim</code> subfolder is actually needed;</li>
 <li>the front-end is probably too big for a single page. It should either be broken up or aspects of inputs and outputs should be hidden by default</li>
 <li>the interface code is hand-written and close to the limit of what can be maintained by hand-coding. A more automated system would be needed if many more options were added;</li>
 <li>there are problems with the interface’s performance on the rather limited SLAB laptop supplied for running it;</li>
-<li>the monitoring <code>progress bar</code> code was added last-minute and is unreliable;</li>
+<li>the monitoring <code>progress bar</code> code was added last-minute and is somewhat unreliable.</li>
 </ul>
 </div>
 </div>
@@ -302,8 +293,8 @@ Note
 </section>
 <section id="todods" class="level3">
 <h3 class="anchored" data-anchor-id="todods">TODODs</h3>
-<div id="e5d64c47" class="cell" data-execution_count="2">
-<div class="cell-output cell-output-display" data-execution_count="33">
+<div id="e079b309" class="cell" data-execution_count="2">
+<div class="cell-output cell-output-display" data-execution_count="13">
 <div>
 <figure class="figure">
 <p><img src="index_files/figure-html/cell-3-output-1.svg" class="img-fluid figure-img"></p>
@@ -311,10 +302,10 @@ Note
 </div>
 </div>
 </div>
-<div id="176e4218" class="cell" data-execution_count="3">
+<div id="610c1cb9" class="cell" data-execution_count="3">
 <div class="sourceCode cell-code" id="cb1"><pre class="sourceCode julia code-with-copy"><code class="sourceCode julia"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a>d <span class="op">=</span> <span class="fu">DataFrame</span>(a<span class="op">=</span><span class="fu">rand</span>(<span class="fl">10</span>))</span>
 <span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a>d</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<div class="cell-output cell-output-display" data-execution_count="34">
+<div class="cell-output cell-output-display" data-execution_count="14">
 <div><div style="float: left;"><span>10×1 DataFrame</span></div><div style="clear: both;"></div></div><div class="data-frame" style="overflow-x: scroll;">
 <table class="data-frame table table-sm table-striped small" data-quarto-postprocess="true">
 <thead>
@@ -330,43 +321,43 @@ Note
 <tbody>
 <tr class="odd">
 <td class="rowNumber" style="text-align: right; font-weight: bold;">1</td>
-<td style="text-align: right;">0.0335085</td>
+<td style="text-align: right;">0.134671</td>
 </tr>
 <tr class="even">
 <td class="rowNumber" style="text-align: right; font-weight: bold;">2</td>
-<td style="text-align: right;">0.17141</td>
+<td style="text-align: right;">0.985574</td>
 </tr>
 <tr class="odd">
 <td class="rowNumber" style="text-align: right; font-weight: bold;">3</td>
-<td style="text-align: right;">0.937057</td>
+<td style="text-align: right;">0.17265</td>
 </tr>
 <tr class="even">
 <td class="rowNumber" style="text-align: right; font-weight: bold;">4</td>
-<td style="text-align: right;">0.526685</td>
+<td style="text-align: right;">0.657192</td>
 </tr>
 <tr class="odd">
 <td class="rowNumber" style="text-align: right; font-weight: bold;">5</td>
-<td style="text-align: right;">0.537022</td>
+<td style="text-align: right;">0.802234</td>
 </tr>
 <tr class="even">
 <td class="rowNumber" style="text-align: right; font-weight: bold;">6</td>
-<td style="text-align: right;">0.636039</td>
+<td style="text-align: right;">0.576381</td>
 </tr>
 <tr class="odd">
 <td class="rowNumber" style="text-align: right; font-weight: bold;">7</td>
-<td style="text-align: right;">0.996031</td>
+<td style="text-align: right;">0.412549</td>
 </tr>
 <tr class="even">
 <td class="rowNumber" style="text-align: right; font-weight: bold;">8</td>
-<td style="text-align: right;">0.573126</td>
+<td style="text-align: right;">0.56772</td>
 </tr>
 <tr class="odd">
 <td class="rowNumber" style="text-align: right; font-weight: bold;">9</td>
-<td style="text-align: right;">0.396565</td>
+<td style="text-align: right;">0.71618</td>
 </tr>
 <tr class="even">
 <td class="rowNumber" style="text-align: right; font-weight: bold;">10</td>
-<td style="text-align: right;">0.447197</td>
+<td style="text-align: right;">0.117854</td>
 </tr>
 </tbody>
 </table>
@@ -374,12 +365,6 @@ Note
 </div>
 </div>
 </section>
-</section>
-<section id="calibration" class="level2">
-<h2 class="anchored" data-anchor-id="calibration">Calibration</h2>
-</section>
-<section id="user-interface" class="level2">
-<h2 class="anchored" data-anchor-id="user-interface">User Interface</h2>
 </section>
 
 </main>

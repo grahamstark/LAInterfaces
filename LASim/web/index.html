@@ -886,8 +886,8 @@ function setExpenseFields( which, ischange ){
 var updater;
 
 function drawRunProgress( data ){
-    console.log( "data.completed" + data.completed + "data.size" + data.size );
-    var pct = Math.trunc(100 * data.completed / data.size);
+    console.log( "data.count" + data.count + "data.size" + data.size );
+    var pct = Math.trunc(100 * data.count / data.size);
     var runn = "Model Running";
     var colour = "bg-success";
     if( data.phase == 'health' ){

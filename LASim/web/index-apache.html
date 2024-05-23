@@ -33,7 +33,7 @@
         
         </header>
         <form id='mainform' action="thing" method="POST">  
-            
+            <input type="hidden" name="uuid" id="uuid" value=""/>
             <div class='container-fluid'>
                 <div class='row justify-content-center text-secondary pt-3 pb-3'>
                     <div class='col-4'></div>
@@ -886,8 +886,8 @@ function setExpenseFields( which, ischange ){
 var updater;
 
 function drawRunProgress( data ){
-    console.log( "data.completed" + data.completed + "data.size" + data.size );
-    var pct = Math.trunc(100 * data.completed / data.size);
+    console.log( "data.count" + data.count + "data.size" + data.size );
+    var pct = Math.trunc(100 * data.count / data.size);
     var runn = "Model Running";
     var colour = "bg-success";
     if( data.phase == 'health' ){
@@ -1102,6 +1102,7 @@ function scrapetax( name ){
 
 function loadParams( defaults, params ){
     $( "#systype" ).val( params.systype )
+    $( "#uuid").val( params.uuid )
     setVal( "income_living_allowance", params.income_living_allowance, defaults.income_living_allowance);
     console.log( "ila=%o def=%o ",params.income_living_allowance, defaults.income_living_allowance );
     setVal( "income_partners_allowance", params.income_partners_allowance, defaults.income_partners_allowance );
@@ -1443,6 +1444,7 @@ function loadFromForm(){
 
     var data = {
         systype: $( "#systype" ).val(),
+        uuid: $( "#uuid" ).val(),
         income_living_allowance: parseFloat($( "#income_living_allowance" ).val()),
         income_partners_allowance: parseFloat($( "#income_partners_allowance" ).val()),
         income_other_dependants_allowance: parseFloat($( "#income_other_dependants_allowance" ).val()),

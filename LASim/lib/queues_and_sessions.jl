@@ -19,6 +19,8 @@ struct CompleteResponse{T}
     params  :: AllLASubsys{T}
 end
 
+PROGRESS = Dict{UUID,Progress}()
+
 const DEFAULT_COMPLETE_RESPONSE = CompleteResponse(
     DEFAULT_XLSXFILE,
     DEFAULT_HTML,
@@ -152,14 +154,26 @@ function session_obs(
     settings :: Settings )::Observable
     sobs = Observable( Progress(settings.uuid, "",0,0,0,0))
     completed = 0
+    last_phase = nothing 
     of = on(sobs) do p
-        if p.phase == "do-one-run-end"
+        completed += p.step
+        if p.phase ==  "do-session-run-end"
             completed = 0
         end
-        completed += p.step
         @info session.id
-        @info "in session obs; completed=$completed phase = $(p.phase) session=$(session.id)"
-        GenieSession.set!( session, :progress, (phase=p.phase, completed = completed, size=p.size))
+        if last_phase != "do-session-run-end"
+            @info "in session obs; completed=$completed phase = $(p.phase) session=$(session.id)"
+            GenieSession.set!( session, :progress, 
+                Progress(
+                    p.uuid, 
+                    p.phase, 
+                    p.thread,
+                    completed,
+                    p.step,
+                    p.size ))
+                # (phase=p.phase, completed = completed, size=p.size))
+        end
+        last_phase = p.phase
     end
     return sobs
 end 
@@ -229,7 +243,7 @@ function getprogress()
     else
         @info "getprogress: no progress"
         # GenieSession.set!( sess, :progress, progress )
-        progress = ( phase="missing", completed = 0, size=0 )
+        progress = NO_PROGRESS # ( phase="missing", completed = 0, size=0 )
         return ( response=no_progress, data=progress, systype=systype ) |> json
     end
 end
@@ -255,11 +269,9 @@ function do_session_run( session::Session, allsubsys :: AllLASubsys )
         DEFAULT_SUBSYS,
         allsubsys )       
     to_session( session, resp )
-    for i in 1:1
-        sobs[]= Progress( settings.uuid, "do-session-run-end", -99, -99, -99, -99 )
-    end
+    sobs[]= Progress( settings.uuid, "do-session-run-end", -99, -99, -99, -99 )
     GenieSession.set!( session, :progress, 
-        Progress("do-session-run-end", -99, -99, -99, -99, -99 ))
+        Progress(settings.uuid, "do-session-run-end", -99, -99, -99, -99 ))
 end
   
 #=

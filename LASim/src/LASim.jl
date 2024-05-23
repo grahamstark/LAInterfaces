@@ -42,6 +42,11 @@ using .LegalAidOutput
 
 const DEFAULT_UUID = UUID("c2ae9c83-d24a-431c-b04f-74662d2ba07e")
 const HOME_DIR = joinpath(dirname(pathof( LASim )),".." )
+const NO_PROGRESS = Progress( 
+  DEFAULT_UUID, 
+  "missing",
+  0, 0, 0, 0 )
+
 GenieSession.__init__() 
 
 logger = FileLogger( joinpath( HOME_DIR, "log", "lasim_log.txt"))

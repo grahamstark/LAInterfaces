@@ -13,6 +13,7 @@ jupyter: julia-1.10
 
 #| echo: false
 #| warning: false
+#| output: false
 
 using DataFrames, CairoMakie, CSV, StatsBase, GLM, Revise 
 using ScottishTaxBenefitModel
@@ -46,47 +47,51 @@ The LASim model that was built do do this built on earlier work for the England 
 
 ### Code organisation
 
-LASim builds on Scotben [][], a microsimulation tax-benefit model of Scotland. Scotben is a conventional static microsimulation model, built using the Julia programming language and using Family Resources Survey (FRS) [] data. 
+LASim builds on Scotben [][], a microsimulation tax-benefit model of Scotland. Scotben is a conventional static microsimulation model, built using the [Julia](https://juliahub.org) programming language and Family Resources Survey (FRS) [] data. 
 
-All the code used in this project is available for inspection on the GitHub [] code sharing site.
+A tax benefit model is [..]. For more information on this model, see [] and for tax-benefit models generally, see [].
 
-Julia code is organised into `modules` [] which are aggregated into packages [] which can be downloaded and either run directly or integrated into other programs. ScotBen is a Julia package. For this project, several modules were added to the Scotben package:
+All the code used in this project is available for inspection on the GitHub code sharing site, as follows:
 
-* LegalAidCalculations.jl []
-* LegalAidOutput.jl [] 
-* LegalAidData.jl []
+* [Scotben - the Main Model](https://github.com/grahamstark/scottishtaxbenefitmodel.jl)
+* [LASim - the web Front End](https://github.com/grahamstark/lainterfaces/)
 
-in addition, additions were made to:
+Julia code is organised into `modules` [] which are aggregated into packages []. Packages can be downloaded and either run directly or integrated into other programs. ScotBen is a Julia package. For this project, several modules were added to the Scotben package:
 
-* STBParameters.jl -
-* Results.jl - 
-* SingleHouseholdCalculations.jl -  
-* STBOutput - 
+* LegalAidCalculations.jl [] - this calculates entitlement to both Civil and AA for a single FRS household.  
+* LegalAidOutput.jl [] - this generates output tables and calculates the likelyhood that a given household will claim legal aid.
+* LegalAidData.jl [] - this holds SLAB supplied individual-level records for payments and contributions under both Civil and AA legal aid. This is used along with tbe entitlement data to produce cost and takeup estimates. 
 
-In addition, several weeks development time was spent on the module `LegalAidRunner.jl` which was intended to be a specialised high-speed driver module for legal aid calculations. This module was eventually abandoned because its memory requirements were too mich for the relatively underpowered laptop chosen to host the model.
+in addition, additions were made to the following Modules:
 
-The model has a web interface. This is implemented as a seperate package []. This is discussed below. 
+* STBParameters.jl [] - this models the parameters needed for the entire Scottisg/UK fiscal system - tax rates, benefit levels and so on. A set of parameters capturing capital and income limits, rules for allowances, disregarded incomes, etc. was added 
+* [Results.jl]() - This holds records capturing entitlements to benefits, liability to tax, etc. for a single household. A record capturing entitlement to Legal Aid, contributions, assessed income, etc. was added, as `OneLegalAidResult`.
+* [SingleHouseholdCalculations.jl]() - this runs all calculations for all FRS households. A small call was added to optionally run the legal aid calculations; 
+* [STBOutput]() - this holds the main output from the model. The structures from `LegalAidOutput` are incorporated here.
+* [RunSettings]() - fields were added to control optional switching of the capital source - this is discussed below.  
 
-::: {.callout-note}
+In addition, considerable development time was spent on the module [LegalAidRunner.jl]() which was intended to be a specialised high-speed driver module for legal aid calculations. This module was eventually abandoned because its memory requirements were too mich for the relatively underpowered laptop chosen to host the model.
 
-The front-end package needs rationalised. The package includes not only the actual front-end but two earlier abortive attempts at interfaces for the model. Only the `LASim` subfolder is actually needed.
+### Taxes and Benefits
 
-:::
-
-### Modelling 
+The 2007 model was custom-written to specifically model Legal Aid. Instead of calculating liability to taxes and entitlements to benefits, it instead simply took recorded FRS values for these things and used those in its LA calculations. The current system is a general purpose tax-benefit model which makes it's own estimates of household liabilities and entitlements given the rules of the fiscal system. We chose this approach chiefly because the benefit system, in particular, is changing rapidly, especially with the phased introduction of Universal Credit. To model Scotland with reasonable accuracy, you need to 'pool' multiple years of FRS data and, unless you override recorded benefit receipts with values calculated on the current regime, older data becomes unrepresentative. (The same is true of direct taxes though this is less relevant to Legal Aid Calculations).
 
 ::: {.callout-note}
 There are two issues with benefits:
 
-* we use modelled entitlements rather than recorded reciepts 
-* the transition from Legacy Benefits [] to Universal Credit is progressing and this is hard to capture accurately. 
+* we use modelled entitlements rather than recorded receipts. There are currently no official estimates of means-tested benefit takeup (it is deemed too complex because of the legacy/UC transition) but previous estimates were of the range 50-80% [^@], 
+* the transition from Legacy Benefits [] to Universal Credit is progressing and this is hard to capture accurately. [Our modelling of this]() is based on analysis by the House Of Commons Library[^].
+
 :::
 
 Specification of the legal aid system came from the following documents:
+*
+*
+*
 
-*
-*
-*
+
+### Calibration
+
 
 ### Testing 
 
@@ -100,16 +105,16 @@ The test suite is not as comprehensive as it should be. Quite a serious mistake 
 
 The model has a web user interface. The code for this is in the LASim package. This is effectively the main package for the system, though legal aid simulations can actually be run directly from the `Scotben` package, or from any code that imports `ScotBen`. 
 
-The package uses the [Genie]() web framework. It is a single-page application which uses a large amount of hand-written Javascript to handle submissions and responses. Styling uses the [Bootstrap]() css framework, customised to use SLAB fonts and colours. 
-
+The package uses the [Genie]() web framework. Genie provides much of the messy back-end needed for a web application, such as a simple web-server, the facility to start sessions for users and the like. Building on this, LASim is a single-page application which uses a large amount of hand-written Javascript to handle submissions and responses. Styling uses the [Bootstrap]() css framework, customised to use SLAB fonts and colours. 
 
 ::: {.callout-note}
 There are several issues with the front-end:
 
+* he front-end package needs rationalised. The package includes not only the actual front-end but two earlier abortive attempts at interfaces for the model. Only the `LASim` subfolder is actually needed;
 * the front-end is probably too big for a single page. It should either be broken up or aspects of inputs and outputs should be hidden by default
 * the interface code is hand-written and close to the limit of what can be maintained by hand-coding. A more automated system would be needed if many more options were added;
 * there are problems with the interface's performance on the rather limited SLAB laptop supplied for running it;
-* the monitoring `progress bar` code was added last-minute and is unreliable;
+* the monitoring `progress bar` code was added last-minute and is somewhat unreliable.
 
 :::
 
@@ -169,9 +174,4 @@ d = DataFrame(a=rand(10))
 d
 
 ```
-
-## Calibration
-
-## User Interface
-
 
