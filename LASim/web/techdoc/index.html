@@ -55,7 +55,27 @@ div.sourceCode
 @media screen {
 pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
 }
-</style>
+/* CSS for citations */
+div.csl-bib-body { }
+div.csl-entry {
+  clear: both;
+  margin-bottom: 0em;
+}
+.hanging-indent div.csl-entry {
+  margin-left:2em;
+  text-indent:-2em;
+}
+div.csl-left-margin {
+  min-width:2em;
+  float:left;
+}
+div.csl-right-inline {
+  margin-left:2em;
+  padding-left:1em;
+}
+div.csl-indent {
+  margin-left: 2em;
+}</style>
 
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.5.1/jquery.min.js" integrity="sha512-bLT0Qm9VnAYZDflyKcBaQ2gg0hSYNQrJ8RilYldYQ1FxQYoCLtUjuuRuZo+fjqhx/qtq/1itJ0C2ejDxltZVFg==" crossorigin="anonymous"></script><script src="index_files/libs/clipboard/clipboard.min.js"></script>
@@ -99,10 +119,12 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
   <li><a href="#testing" id="toc-testing" class="nav-link" data-scroll-target="#testing">Testing</a></li>
   <li><a href="#web-interface" id="toc-web-interface" class="nav-link" data-scroll-target="#web-interface">Web Interface</a></li>
   <li><a href="#frs-data" id="toc-frs-data" class="nav-link" data-scroll-target="#frs-data">FRS Data</a></li>
+  <li><a href="#matching" id="toc-matching" class="nav-link" data-scroll-target="#matching">Matching</a></li>
   <li><a href="#scottish-crime-and-justice-survey-scjs" id="toc-scottish-crime-and-justice-survey-scjs" class="nav-link" data-scroll-target="#scottish-crime-and-justice-survey-scjs">Scottish Crime and Justice Survey (SCJS)</a></li>
   <li><a href="#slab-datasets" id="toc-slab-datasets" class="nav-link" data-scroll-target="#slab-datasets">SLAB Datasets</a></li>
   <li><a href="#updating-and-maintenance" id="toc-updating-and-maintenance" class="nav-link" data-scroll-target="#updating-and-maintenance">Updating and Maintenance</a></li>
   <li><a href="#todods" id="toc-todods" class="nav-link" data-scroll-target="#todods">TODODs</a></li>
+  <li><a href="#references" id="toc-references" class="nav-link" data-scroll-target="#references">References</a></li>
   </ul></li>
   </ul>
 <div class="quarto-alternate-formats"><h2>Other Formats</h2><ul><li><a href="index.docx"><i class="bi bi-file-word"></i>MS Word</a></li></ul></div></nav>
@@ -151,13 +173,13 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <h2 class="anchored" data-anchor-id="introduction">Introduction</h2>
 <p>These are technical notes for the for the Scottish Legal Aid Board eligibility simulator model.</p>
 <p>For an overview of the purpose and desired specifications of the model, please refer to the SLAB bid document and the Virtual Worlds tender document. For an overview of the legal aid system itself, see [???] Broadly, purpose of the model is to estimate the entitlement to both Civil and Advice and Assistance (AA) legal aid amongst the Scottish Population under the current and various hypothetical systems, and from that estimate the likely costs or savings of changes to eligibility rules.</p>
-<p>The LASim model that was built do do this built on earlier work for the England And Wales Legal Aid Board [] and the Scottish Legal Aid Board [] [].</p>
+<p>The LASim model that was built do do this built on earlier work for the England And Wales Legal Aid Board [<span class="citation" data-cites="buck_means_2001">Buck and Stark<a href="#fn1" class="footnote-ref" id="fnref1" role="doc-noteref"><sup>1</sup></a></span>;<span class="citation" data-cites="buck_simplicity_2003">Buck and Stark<a href="#fn2" class="footnote-ref" id="fnref2" role="doc-noteref"><sup>2</sup></a></span>;] and the Scottish and Northern Irish Legal Aid Boards.<span class="citation" data-cites="digan_financial_2007 StarkSLAB"><a href="#fn3" class="footnote-ref" id="fnref3" role="doc-noteref"><sup>3</sup></a></span></p>
 </section>
 <section id="the-model" class="level2">
 <h2 class="anchored" data-anchor-id="the-model">The Model</h2>
 <section id="code-organisation" class="level3">
 <h3 class="anchored" data-anchor-id="code-organisation">Code organisation</h3>
-<p>LASim builds on Scotben [][], a microsimulation tax-benefit model of Scotland. Scotben is a conventional static microsimulation model, built using the <a href="https://juliahub.org">Julia</a> programming language and Family Resources Survey (FRS) [] data.</p>
+<p>LASim builds on <a href="https://github.com/grahamstark/ScottishTaxBenefitModel.jl/">Scotben</a>, a microsimulation tax-benefit model of Scotland. Scotben is a conventional static microsimulation model, built using the <a href="https://juliahub.org">Julia</a> programming language and Family Resources Survey (FRS) [] data.</p>
 <p>A tax benefit model is [..]. For more information on this model, see [] and for tax-benefit models generally, see [].</p>
 <p>All the code used in this project is available for inspection on the GitHub code sharing site, as follows:</p>
 <ul>
@@ -166,20 +188,20 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </ul>
 <p>Julia code is organised into <code>modules</code> [] which are aggregated into packages []. Packages can be downloaded and either run directly or integrated into other programs. ScotBen is a Julia package. For this project, several modules were added to the Scotben package:</p>
 <ul>
-<li>LegalAidCalculations.jl [] - this calculates entitlement to both Civil and AA for a single FRS household.<br>
+<li><a href="https://github.com/grahamstark/ScottishTaxBenefitModel.jl/blob/master/src/LegalAidCalculations.jl">LegalAidCalculations.jl</a> - this calculates entitlement to both Civil and AA for a single FRS household.<br>
 </li>
-<li>LegalAidOutput.jl [] - this generates output tables and calculates the likelyhood that a given household will claim legal aid.</li>
-<li>LegalAidData.jl [] - this holds SLAB supplied individual-level records for payments and contributions under both Civil and AA legal aid. This is used along with tbe entitlement data to produce cost and takeup estimates.</li>
+<li><a href="https://github.com/grahamstark/ScottishTaxBenefitModel.jl/blob/master/src/LegalAidOutput.jl">LegalAidOutput.jl</a> - this generates output tables and calculates the likelyhood that a given household will claim legal aid.</li>
+<li><a href="https://github.com/grahamstark/ScottishTaxBenefitModel.jl/blob/master/src/LegalAidData.jl">LegalAidData.jl</a> - this holds SLAB supplied individual-level records for payments and contributions under both Civil and AA legal aid. This is used along with tbe entitlement data to produce cost and takeup estimates.</li>
 </ul>
 <p>in addition, additions were made to the following Modules:</p>
 <ul>
-<li>STBParameters.jl [] - this models the parameters needed for the entire Scottisg/UK fiscal system - tax rates, benefit levels and so on. A set of parameters capturing capital and income limits, rules for allowances, disregarded incomes, etc. was added</li>
-<li><a href="">Results.jl</a> - This holds records capturing entitlements to benefits, liability to tax, etc. for a single household. A record capturing entitlement to Legal Aid, contributions, assessed income, etc. was added, as <code>OneLegalAidResult</code>.</li>
-<li><a href="">SingleHouseholdCalculations.jl</a> - this runs all calculations for all FRS households. A small call was added to optionally run the legal aid calculations;</li>
-<li><a href="">STBOutput</a> - this holds the main output from the model. The structures from <code>LegalAidOutput</code> are incorporated here.</li>
-<li><a href="">RunSettings</a> - fields were added to control optional switching of the capital source - this is discussed below.</li>
+<li><a href="https://github.com/grahamstark/ScottishTaxBenefitModel.jl/blob/master/src/STBParameters.jl">STBParameters.jl</a> - this models the parameters needed for the entire Scottisg/UK fiscal system - tax rates, benefit levels and so on. A set of parameters capturing capital and income limits, rules for allowances, disregarded incomes, etc. was added</li>
+<li><a href="https://github.com/grahamstark/ScottishTaxBenefitModel.jl/blob/master/src/Results.jl">Results.jl</a> - This holds records capturing entitlements to benefits, liability to tax, etc. for a single household. A record capturing entitlement to Legal Aid, contributions, assessed income, etc. was added, as <code>OneLegalAidResult</code>.</li>
+<li><a href="https://github.com/grahamstark/ScottishTaxBenefitModel.jl/blob/master/src/SingleHouseholdCalculations.jl">SingleHouseholdCalculations.jl</a> - this runs all calculations for all FRS households. A small call was added to optionally run the legal aid calculations;</li>
+<li><a href="https://github.com/grahamstark/ScottishTaxBenefitModel.jl/blob/master/src/STBOutput.jl">STBOutput</a> - this holds the main output from the model. The structures from <code>LegalAidOutput</code> are incorporated here.</li>
+<li><a href="https://github.com/grahamstark/ScottishTaxBenefitModel.jl/blob/master/src/RunSettings.jl">RunSettings</a> - fields were added to control optional switching of the capital source - this is discussed below.</li>
 </ul>
-<p>In addition, considerable development time was spent on the module <a href="">LegalAidRunner.jl</a> which was intended to be a specialised high-speed driver module for legal aid calculations. This module was eventually abandoned because its memory requirements were too mich for the relatively underpowered laptop chosen to host the model.</p>
+<p>In addition, considerable development time was spent on the module <a href="https://github.com/grahamstark/ScottishTaxBenefitModel.jl/blob/master/src/LegalAidRunner.jl">LegalAidRunner.jl</a> which was intended to be a specialised high-speed driver module for legal aid calculations. This module was eventually abandoned because its memory requirements were too mich for the relatively underpowered laptop chosen to host the model.</p>
 </section>
 <section id="taxes-and-benefits" class="level3">
 <h3 class="anchored" data-anchor-id="taxes-and-benefits">Taxes and Benefits</h3>
@@ -197,11 +219,11 @@ Note
 <p>There are two issues with benefits:</p>
 <ul>
 <li>we use modelled entitlements rather than recorded receipts. There are currently no official estimates of means-tested benefit takeup (it is deemed too complex because of the legacy/UC transition) but previous estimates were of the range 50-80% [^@],</li>
-<li>the transition from Legacy Benefits [] to Universal Credit is progressing and this is hard to capture accurately. <a href="">Our modelling of this</a> is based on analysis by the House Of Commons Library[^].</li>
+<li>the transition from Legacy Benefits [] to Universal Credit is progressing and this is hard to capture accurately. <a href="https://github.com/grahamstark/ScottishTaxBenefitModel.jl/blob/master/src/UCTransition.jl">Our modelling of this</a> is based on analysis by the House Of Commons Library<span class="citation" data-cites="house_of_commons_library_constituency_2020"><a href="#fn4" class="footnote-ref" id="fnref4" role="doc-noteref"><sup>4</sup></a></span>.</li>
 </ul>
 </div>
 </div>
-<p>Specification of the legal aid system came from the following documents: <em> </em> *</p>
+<p>Specification of the legal aid system came from the following documents: * <em> </em></p>
 </section>
 <section id="calibration" class="level3">
 <h3 class="anchored" data-anchor-id="calibration">Calibration</h3>
@@ -226,7 +248,7 @@ Note
 <section id="web-interface" class="level3">
 <h3 class="anchored" data-anchor-id="web-interface">Web Interface</h3>
 <p>The model has a web user interface. The code for this is in the LASim package. This is effectively the main package for the system, though legal aid simulations can actually be run directly from the <code>Scotben</code> package, or from any code that imports <code>ScotBen</code>.</p>
-<p>The package uses the <a href="">Genie</a> web framework. Genie provides much of the messy back-end needed for a web application, such as a simple web-server, the facility to start sessions for users and the like. Building on this, LASim is a single-page application which uses a large amount of hand-written Javascript to handle submissions and responses. Styling uses the <a href="">Bootstrap</a> css framework, customised to use SLAB fonts and colours.</p>
+<p>The package uses the <a href="https://genieframework.com/">Genie</a> web framework. Genie provides much of the messy back-end needed for a web application, such as a simple web-server, the facility to start sessions for users and the like. Building on this, LASim is a single-page application which uses a large amount of hand-written Javascript to handle submissions and responses. Styling uses the <a href="https://getbootstrap.com/">Bootstrap</a> css framework, customised to use SLAB fonts and colours.</p>
 <div class="callout callout-style-default callout-note callout-titled">
 <div class="callout-header d-flex align-content-center">
 <div class="callout-icon-container">
@@ -239,7 +261,7 @@ Note
 <div class="callout-body-container callout-body">
 <p>There are several issues with the front-end:</p>
 <ul>
-<li>he front-end package needs rationalised. The package includes not only the actual front-end but two earlier abortive attempts at interfaces for the model. Only the <code>LASim</code> subfolder is actually needed;</li>
+<li>the front-end package needs rationalised. The package includes not only the actual front-end but two earlier abortive attempts at interfaces for the model. Only the <code>LASim</code> subfolder is actually needed;</li>
 <li>the front-end is probably too big for a single page. It should either be broken up or aspects of inputs and outputs should be hidden by default</li>
 <li>the interface code is hand-written and close to the limit of what can be maintained by hand-coding. A more automated system would be needed if many more options were added;</li>
 <li>there are problems with the interface’s performance on the rather limited SLAB laptop supplied for running it;</li>
@@ -250,13 +272,32 @@ Note
 </section>
 <section id="frs-data" class="level3">
 <h3 class="anchored" data-anchor-id="frs-data">FRS Data</h3>
-<p>The model uses the Scottish households from pooled 2015-2021 Family Resources (FRS) data. We use the public use FRS release which has a number of fields deleted for privacy reasons, though the deletions often seem arbitrary.</p>
-<p>The FRS is augmented with matched in data from the Scottish Household Survey and the Living Costs and Food Survey. SHS is mainly used to give local-level information and is not very relevant to Legal Aid. LCF is used to provide estimates for some of the expense fields - repayments, travel to work costs and work expenses.</p>
-<section id="matching" class="level4">
-<h4 class="anchored" data-anchor-id="matching">Matching</h4>
+<p>The model uses the Scottish households from pooled 2015-2021 Family Resources (FRS) data<span class="citation" data-cites="department_for_work_and_pensions_family_2024"><a href="#fn5" class="footnote-ref" id="fnref5" role="doc-noteref"><sup>5</sup></a></span>. We use the public use FRS release which has a number of fields deleted for privacy reasons, though the deletions often seem arbitrary.</p>
 </section>
+<section id="matching" class="level3">
+<h3 class="anchored" data-anchor-id="matching">Matching</h3>
+<p>The FRS is augmented with matched in data from the Scottish Household Survey<span class="citation" data-cites="scottish_government_scottish_2024-1"><a href="#fn6" class="footnote-ref" id="fnref6" role="doc-noteref"><sup>6</sup></a></span> and the Living Costs and Food Survey. SHS is mainly used to give local-level information and is not very relevant to Legal Aid. LCF is used to provide estimates for some of the expense fields - repayments, travel to work costs and work expenses. The matching code for thse dataset is <a href="https://github.com/grahamstark/ScottishTaxBenefitModel.jl/tree/master/matching">the matching/ folder</a>. Matching uses a custom version of Coarsened Exact Matching<span class="citation" data-cites="iacus_causal_2011 leulescu_statistical_2013 dorazio_statmatch_2022"><a href="#fn7" class="footnote-ref" id="fnref7" role="doc-noteref"><sup>7</sup></a></span></p>
+<p>Both LCF and SHS are matched to FRS at the household level.</p>
+<p>The SHS/FRS are matched on: * Tenure Type * Accomodation Type * Single Parent * Num Adults * Num Children * Employment Status of Head of Household (HoH) * Socio-Economic Status of HoH * Age of HoH * Ethnic Group Of HoH</p>
+<p>LCF/FRS are matched on:</p>
+<ul>
+<li>Tenure Type</li>
+<li>Accomodation Type</li>
+<li>Number of Rooms</li>
+<li>Age of Head</li>
+<li>Num Children</li>
+<li>Is self employed</li>
+<li>Num children</li>
+<li>Num adults</li>
+<li>Ethnic Group (White/Non-White)</li>
+<li>Age of HoH</li>
+<li>Ethnic Group Of HoH</li>
+</ul>
+<p>The ‘top 20’ matches on these variables are then ranked by household income.</p>
+<p>Code for this is in the <a href="https://github.com/grahamstark/ScottishTaxBenefitModel.jl/blob/master/src/MatchingLibs.jl">MatchingLibs.jl module</a></p>
 <section id="capital" class="level4">
 <h4 class="anchored" data-anchor-id="capital">Capital</h4>
+<p><span class="citation" data-cites="office_for_national_statistics_wealth_2017"><a href="#fn8" class="footnote-ref" id="fnref8" role="doc-noteref"><sup>8</sup></a></span></p>
 </section>
 <section id="expenses" class="level4">
 <h4 class="anchored" data-anchor-id="expenses">Expenses</h4>
@@ -282,7 +323,7 @@ Note
 </section>
 <section id="scottish-crime-and-justice-survey-scjs" class="level3">
 <h3 class="anchored" data-anchor-id="scottish-crime-and-justice-survey-scjs">Scottish Crime and Justice Survey (SCJS)</h3>
-<p>As an aside, the original proposal was to use SCJS to model the likelihood of households experiencing a problem requiring legal advice. Some initial work was carried out which produced promising but this was abandoned on SLAB’s instructions. It could well be worth returning to this, perhaps as a stand-alone piece of work.</p>
+<p>As an aside, the original proposal was to use SCJS<span class="citation" data-cites="scottish_government_scottish_crime_2024"><a href="#fn9" class="footnote-ref" id="fnref9" role="doc-noteref"><sup>9</sup></a></span> to model the likelihood of households experiencing a problem requiring legal advice. Some initial work was carried out which produced promising but this was abandoned on SLAB’s instructions. It could well be worth returning to this, perhaps as a stand-alone piece of work.</p>
 </section>
 <section id="slab-datasets" class="level3">
 <h3 class="anchored" data-anchor-id="slab-datasets">SLAB Datasets</h3>
@@ -293,8 +334,8 @@ Note
 </section>
 <section id="todods" class="level3">
 <h3 class="anchored" data-anchor-id="todods">TODODs</h3>
-<div id="e079b309" class="cell" data-execution_count="2">
-<div class="cell-output cell-output-display" data-execution_count="13">
+<div id="b9e2c17f" class="cell" data-execution_count="2">
+<div class="cell-output cell-output-display" data-execution_count="3">
 <div>
 <figure class="figure">
 <p><img src="index_files/figure-html/cell-3-output-1.svg" class="img-fluid figure-img"></p>
@@ -302,10 +343,10 @@ Note
 </div>
 </div>
 </div>
-<div id="610c1cb9" class="cell" data-execution_count="3">
+<div id="8470cec6" class="cell" data-execution_count="3">
 <div class="sourceCode cell-code" id="cb1"><pre class="sourceCode julia code-with-copy"><code class="sourceCode julia"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a>d <span class="op">=</span> <span class="fu">DataFrame</span>(a<span class="op">=</span><span class="fu">rand</span>(<span class="fl">10</span>))</span>
 <span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a>d</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<div class="cell-output cell-output-display" data-execution_count="14">
+<div class="cell-output cell-output-display" data-execution_count="4">
 <div><div style="float: left;"><span>10×1 DataFrame</span></div><div style="clear: both;"></div></div><div class="data-frame" style="overflow-x: scroll;">
 <table class="data-frame table table-sm table-striped small" data-quarto-postprocess="true">
 <thead>
@@ -321,43 +362,43 @@ Note
 <tbody>
 <tr class="odd">
 <td class="rowNumber" style="text-align: right; font-weight: bold;">1</td>
-<td style="text-align: right;">0.134671</td>
+<td style="text-align: right;">0.362321</td>
 </tr>
 <tr class="even">
 <td class="rowNumber" style="text-align: right; font-weight: bold;">2</td>
-<td style="text-align: right;">0.985574</td>
+<td style="text-align: right;">0.701616</td>
 </tr>
 <tr class="odd">
 <td class="rowNumber" style="text-align: right; font-weight: bold;">3</td>
-<td style="text-align: right;">0.17265</td>
+<td style="text-align: right;">0.201876</td>
 </tr>
 <tr class="even">
 <td class="rowNumber" style="text-align: right; font-weight: bold;">4</td>
-<td style="text-align: right;">0.657192</td>
+<td style="text-align: right;">0.847043</td>
 </tr>
 <tr class="odd">
 <td class="rowNumber" style="text-align: right; font-weight: bold;">5</td>
-<td style="text-align: right;">0.802234</td>
+<td style="text-align: right;">0.82853</td>
 </tr>
 <tr class="even">
 <td class="rowNumber" style="text-align: right; font-weight: bold;">6</td>
-<td style="text-align: right;">0.576381</td>
+<td style="text-align: right;">0.921681</td>
 </tr>
 <tr class="odd">
 <td class="rowNumber" style="text-align: right; font-weight: bold;">7</td>
-<td style="text-align: right;">0.412549</td>
+<td style="text-align: right;">0.00971444</td>
 </tr>
 <tr class="even">
 <td class="rowNumber" style="text-align: right; font-weight: bold;">8</td>
-<td style="text-align: right;">0.56772</td>
+<td style="text-align: right;">0.144697</td>
 </tr>
 <tr class="odd">
 <td class="rowNumber" style="text-align: right; font-weight: bold;">9</td>
-<td style="text-align: right;">0.71618</td>
+<td style="text-align: right;">0.773495</td>
 </tr>
 <tr class="even">
 <td class="rowNumber" style="text-align: right; font-weight: bold;">10</td>
-<td style="text-align: right;">0.117854</td>
+<td style="text-align: right;">0.182231</td>
 </tr>
 </tbody>
 </table>
@@ -365,9 +406,74 @@ Note
 </div>
 </div>
 </section>
+<section id="references" class="level3">
+<h3 class="anchored" data-anchor-id="references">References</h3>
+<div id="refs" class="references csl-bib-body hanging-indent" data-entry-spacing="0" role="list">
+<div id="ref-buck_means_2001" class="csl-entry" role="listitem">
+Buck, Alexy, and Graham Stark. <span>“Means <span>Assessment</span>: <span>Options</span> for <span>Change</span>.”</span> Legal Services Commission, 2001. <a href="http://webarchive.nationalarchives.gov.uk/20100210214359/http://lsrc.org.uk/publications/meansassessmentoptionsforchange.pdf">http://webarchive.nationalarchives.gov.uk/20100210214359/http://lsrc.org.uk/publications/meansassessmentoptionsforchange.pdf</a>.
+</div>
+<div id="ref-buck_simplicity_2003" class="csl-entry" role="listitem">
+———. <span>“Simplicity Versus Fairness in Means Testing: The Case of Civil Legal Aid.”</span> <em>Fiscal Studies</em> 24, no. 4 (December 2003): 427–49. <a href="http://onlinelibrary.wiley.com/doi/10.1111/j.1475-5890.2003.tb00090.x/abstract">http://onlinelibrary.wiley.com/doi/10.1111/j.1475-5890.2003.tb00090.x/abstract</a>.
+</div>
+<div id="ref-house_of_commons_library_constituency_2020" class="csl-entry" role="listitem">
+Commons Library, House of. <span>“Constituency Data: <span>Universal</span> <span>Credit</span> Rollout,”</span> June 2020. <a href="https://commonslibrary.parliament.uk/social-policy/welfare-pensions/benefits/constituency-data-universal-credit-roll-out/">https://commonslibrary.parliament.uk/social-policy/welfare-pensions/benefits/constituency-data-universal-credit-roll-out/</a>.
+</div>
+<div id="ref-dorazio_statmatch_2022" class="csl-entry" role="listitem">
+D’Orazio, Marcello. <span>“<span>StatMatch</span>: <span>Statistical</span> <span>Matching</span> or <span>Data</span> <span>Fusion</span>,”</span> March 2022. <a href="https://CRAN.R-project.org/package=StatMatch">https://CRAN.R-project.org/package=StatMatch</a>.
+</div>
+<div id="ref-digan_financial_2007" class="csl-entry" role="listitem">
+Digan, Tony, and Graham Stark. <span>“Financial <span>Arrangements</span> for <span>Access</span> to <span>Civil</span> <span>Legal</span> <span>Aid</span>.”</span> Northern Ireland Legal Services Commission, 2007.
+</div>
+<div id="ref-scottish_government_scottish_crime_2024" class="csl-entry" role="listitem">
+Government, Scottish. <span>“Scottish <span>Crime</span> and <span>Justice</span> <span>Survey</span> 2021/22,”</span> 2024. <a href="http://www.gov.scot/news/scottish-crime-justice-survey/">http://www.gov.scot/news/scottish-crime-justice-survey/</a>.
+</div>
+<div id="ref-scottish_government_scottish_2024-1" class="csl-entry" role="listitem">
+Government, SCottish. <span>“Scottish <span>Household</span> <span>Survey</span>,”</span> 2024. <a href="http://www.gov.scot/collections/scottish-household-survey/">http://www.gov.scot/collections/scottish-household-survey/</a>.
+</div>
+<div id="ref-iacus_causal_2011" class="csl-entry" role="listitem">
+Iacus, Stefano, Gary King, and Giuseppe Porro. <span>“Causal <span>Inference</span> <span>Without</span> <span>Balance</span> <span>Checking</span>: <span>Coarsened</span> <span>Exact</span> <span>Matching</span>.”</span> <em>Political Analysis</em>, 2011.
+</div>
+<div id="ref-leulescu_statistical_2013" class="csl-entry" role="listitem">
+LEULESCU, Aura, and Mihaela AGAFIŢEI. <span>“Statistical Matching: A Model Based Approachfor Data Integration.”</span> Eurostat, 2013. <a href="https://ec.europa.eu/eurostat/documents/3888793/5855821/KS-RA-13-020-EN.PDF/477dd541-92ee-4259-95d4-1c42fcf2ef34?version=1.0">https://ec.europa.eu/eurostat/documents/3888793/5855821/KS-RA-13-020-EN.PDF/477dd541-92ee-4259-95d4-1c42fcf2ef34?version=1.0</a>.
+</div>
+<div id="ref-office_for_national_statistics_wealth_2017" class="csl-entry" role="listitem">
+National Statistics, Office for. <span>“Wealth and Assets Survey (<span>WAS</span>),”</span> 2017. <a href="https://www.ons.gov.uk/economy/nationalaccounts/uksectoraccounts/methodologies/wealthandassetssurveywas">https://www.ons.gov.uk/economy/nationalaccounts/uksectoraccounts/methodologies/wealthandassetssurveywas</a>.
+</div>
+<div id="ref-StarkSLAB" class="csl-entry" role="listitem">
+Stark, Graham. <span>“Scottish Legal Aid Borad,”</span> July 2013. <a href="https://github.com/grahamstark/scottish_legal_aid">https://github.com/grahamstark/scottish_legal_aid</a>.
+</div>
+<div id="ref-department_for_work_and_pensions_family_2024" class="csl-entry" role="listitem">
+Work and Pensions, Department for. <span>“Family <span>Resources</span> <span>Survey</span> - <span>GOV</span>.<span>UK</span>,”</span> March 2024. <a href="https://www.gov.uk/government/collections/family-resources-survey--2">https://www.gov.uk/government/collections/family-resources-survey--2</a>.
+</div>
+</div>
+</section>
 </section>
 
-</main>
+
+<div id="quarto-appendix" class="default"><section id="footnotes" class="footnotes footnotes-end-of-document" role="doc-endnotes"><h2 class="anchored quarto-appendix-heading">Footnotes</h2>
+
+<ol>
+<li id="fn1"><p><a href="#ref-buck_means_2001" role="doc-biblioref"><span>“Means <span>Assessment</span>”</span></a>.<a href="#fnref1" class="footnote-back" role="doc-backlink">↩︎</a></p></li>
+<li id="fn2"><p><a href="#ref-buck_simplicity_2003" role="doc-biblioref"><span>“Simplicity Versus Fairness in Means Testing”</span></a>.<a href="#fnref2" class="footnote-back" role="doc-backlink">↩︎</a></p></li>
+<li id="fn3"><p><a href="#ref-digan_financial_2007" role="doc-biblioref">Digan and Stark, <span>“Financial <span>Arrangements</span> for <span>Access</span> to <span>Civil</span> <span>Legal</span> <span>Aid</span>”</span></a>; <a href="#ref-StarkSLAB" role="doc-biblioref">Stark, <span>“Scottish Legal Aid Borad”</span></a>.<a href="#fnref3" class="footnote-back" role="doc-backlink">↩︎</a></p></li>
+<li id="fn4"><p><a href="#ref-house_of_commons_library_constituency_2020" role="doc-biblioref">Commons Library, <span>“Constituency Data”</span></a>.<a href="#fnref4" class="footnote-back" role="doc-backlink">↩︎</a></p></li>
+<li id="fn5"><p><a href="#ref-department_for_work_and_pensions_family_2024" role="doc-biblioref">Work and Pensions, <span>“Family <span>Resources</span> <span>Survey</span> - <span>GOV</span>.<span>UK</span>”</span></a>.<a href="#fnref5" class="footnote-back" role="doc-backlink">↩︎</a></p></li>
+<li id="fn6"><p><a href="#ref-scottish_government_scottish_2024-1" role="doc-biblioref">Government, <span>“Scottish <span>Household</span> <span>Survey</span>”</span></a>.<a href="#fnref6" class="footnote-back" role="doc-backlink">↩︎</a></p></li>
+<li id="fn7"><p><a href="#ref-iacus_causal_2011" role="doc-biblioref">Iacus, King, and Porro, <span>“Causal <span>Inference</span> <span>Without</span> <span>Balance</span> <span>Checking</span>”</span></a>; <a href="#ref-leulescu_statistical_2013" role="doc-biblioref">LEULESCU and AGAFIŢEI, <span>“Statistical Matching”</span></a>; <a href="#ref-dorazio_statmatch_2022" role="doc-biblioref">D’Orazio, <span>“<span>StatMatch</span>”</span></a>.<a href="#fnref7" class="footnote-back" role="doc-backlink">↩︎</a></p></li>
+<li id="fn8"><p><a href="#ref-office_for_national_statistics_wealth_2017" role="doc-biblioref">National Statistics, <span>“Wealth and Assets Survey (<span>WAS</span>)”</span></a>.<a href="#fnref8" class="footnote-back" role="doc-backlink">↩︎</a></p></li>
+<li id="fn9"><p><a href="#ref-scottish_government_scottish_crime_2024" role="doc-biblioref">Government, <span>“Scottish <span>Crime</span> and <span>Justice</span> <span>Survey</span> 2021/22”</span></a>.<a href="#fnref9" class="footnote-back" role="doc-backlink">↩︎</a></p></li>
+</ol>
+</section><section class="quarto-appendix-contents" id="quarto-citation"><h2 class="anchored quarto-appendix-heading">Citation</h2><div><div class="quarto-appendix-secondary-label">BibTeX citation:</div><pre class="sourceCode code-with-copy quarto-appendix-bibtex"><code class="sourceCode bibtex">@online{stark2024,
+  author = {Stark, Graham},
+  title = {SLAB {Legal} {Aid} {Model} {Documentation}},
+  date = {2024-05-20},
+  url = {https://virtual-worlds.scot/techdoc/index.html},
+  langid = {en}
+}
+</code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre><div class="quarto-appendix-secondary-label">For attribution, please cite this work as:</div><div id="ref-stark2024" class="csl-entry quarto-appendix-citeas" role="listitem">
+Stark, Graham. <span>“SLAB Legal Aid Model Documentation,”</span> May
+20, 2024. <a href="https://virtual-worlds.scot/techdoc/index.html">https://virtual-worlds.scot/techdoc/index.html</a>.
+</div></div></section></div></main>
 <!-- /main column -->
 <script id="quarto-html-after-body" type="application/javascript">
 window.document.addEventListener("DOMContentLoaded", function (event) {

@@ -158,7 +158,7 @@ function dict_obs( settings :: Settings )::Observable
             completed = 0
         end
         prog = Progress( settings.uuid, p.phase, p.thread, completed, p.step, p.size )
-        @show "setting " settings.uuid " to " prog.phase
+        @show "dict_obs: setting PROGRESS[$(settings.uuid)] to $(prog.phase)"
         PROGRESS[settings.uuid] = prog
     end
     return sobs
@@ -236,21 +236,22 @@ function get_output()
     return ( response=output_ready, data = OneResponse( systype, resp)) |> json
 end
 
-function getprogress( uuid ) 
+function getprogress( uuid :: UUID ) 
     sess = GenieSession.session()
     systype = systype_from_session(sess)
-    @info "getprogress entered looking got $uuid"
+    @show "getprogress entered looking for uuid=$uuid"
+    @show "available keys are: $(keys(PROGRESS))"
     if( haskey( PROGRESS, uuid ))
-        @info "getprogress: has progress "
+        @show "getprogress: key $uuid found "
         progress = PROGRESS[uuid]
-        @info progress 
+        @show "getprogress: progress is $progress" 
         if progress.phase == "do-session-run-end" 
             return get_output() 
         else
             return ( response=has_progress, data=progress, systype=systype ) |> json
         end
     else
-        @info "getprogress: no progress"
+        @show "getprogress: no progress found"
         progress = NO_PROGRESS 
         return ( response=no_progress, data=NO_PROGRESS, systype=systype ) |> json
     end
@@ -286,7 +287,7 @@ function do_session_run( session::Session, allsubsys :: AllLASubsys )
     systype = systype_from_session( session )
     activesubsys = systype == sys_civil ? allsubsys.civil : allsubsys.aa    
     settings = make_default_settings()
-    settings.uuid = UUID(rand(UInt128))
+    # settings.uuid = UUID(rand(UInt128))
     sobs = dict_obs( settings )
     sobs[]= Progress( settings.uuid, "start-pre", -99, -99, -99, -99 )
     sys2 = deepcopy( DEFAULT_PARAMS )

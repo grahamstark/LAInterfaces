@@ -1438,13 +1438,23 @@ function createMainOutputs( result, xlsxfile ){
     $('#xlsxfile').attr('href', xlsxfile );
 }
 
+// from: https://stackoverflow.com/questions/105034/how-do-i-create-a-guid-uuid#2117523
+function uuidv4() {
+  return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function(c) {
+    var r = Math.random() * 16 | 0, v = c == 'x' ? r : (r & 0x3 | 0x8);
+    return v.toString(16);
+  });
+}
+
 function loadFromForm(){
     ic = scrapetax( "income-contribution" )
     cc = scrapetax( "capital-contribution" )
-
+    var new_uuid = uuidv4(); // new ident for this run
+    $( "#uuid").val( new_uuid ); // also store it in page
+    
     var data = {
         systype: $( "#systype" ).val(),
-        uuid: $( "#uuid" ).val(),
+        uuid: new_uuid, // set this // $( "#uuid" ).val(),
         income_living_allowance: parseFloat($( "#income_living_allowance" ).val()),
         income_partners_allowance: parseFloat($( "#income_partners_allowance" ).val()),
         income_other_dependants_allowance: parseFloat($( "#income_other_dependants_allowance" ).val()),
@@ -1594,7 +1604,6 @@ function updateProgress( result ){
             break;                                      
     }
 }
-
 
 function submitForm( action, target ){
      var url = "/lasim/"+action; // url = "/lasim/"+action;

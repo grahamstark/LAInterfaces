@@ -12,6 +12,7 @@ end
 
 function map_settings_from_subsys!( settings :: Settings, subsys :: LASubsys )
     settings.wealth_method = subsys.wealth_method
+    settings.uuid = subsys.uuid
 end
   
 function map_sys_from_subsys( subsys :: LASubsys )::OneLegalAidSys

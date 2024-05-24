@@ -34,8 +34,9 @@ route("/") do
 end
 
 route( "/progress", method = POST ) do
+  @show "route: progress entered"
   uuid = UUID( payload(:uuid))
-  @show uuid
+  @show "route: uuid=$uuid"
   LASim.getprogress( UUID(uuid) )
 end
 
