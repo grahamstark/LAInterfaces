@@ -117,6 +117,7 @@ function dict_obs( settings :: Settings )::Observable
     of = on(sobs) do p
         completed += p.step
         if p.phase ==  "do-session-run-end"
+            stacktrace()
             completed = 0
         end
         prog = Progress( settings.uuid, p.phase, p.thread, completed, p.step, p.size )
