@@ -24,6 +24,11 @@ route("/addcapital-contribution/:n", method = POST ) do
   LASim.addcapital( n )
 end
 
+route( "/clearout/:uuid", method = POST ) do
+  uuid = UUID(payload(:uuid))
+  LASim.clearout(uuid)
+end
+
 route("/delcapital-contribution/:n", method = POST ) do 
   n::Int = parse(Int,  payload(:n))
   LASim.delcapital( n )
@@ -36,8 +41,11 @@ end
 route( "/progress", method = POST ) do
   @show "route: progress entered"
   uuid = UUID( payload(:uuid))
+  ss = payload(:systype)
+  @assert( ss in ["sys_civil", "sys_aa"])
+  systype = ss == "sys_civil" ? sys_civil : sys_aa
   @show "route: uuid=$uuid"
-  LASim.getprogress( UUID(uuid) )
+  LASim.getprogress( uuid, systype )
 end
 
 route( "/output", method = POST ) do 

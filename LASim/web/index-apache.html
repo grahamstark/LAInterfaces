@@ -1446,11 +1446,9 @@ function uuidv4() {
   });
 }
 
-function loadFromForm(){
+function loadFromForm(new_uuid){
     ic = scrapetax( "income-contribution" )
     cc = scrapetax( "capital-contribution" )
-    var new_uuid = uuidv4(); // new ident for this run
-    $( "#uuid").val( new_uuid ); // also store it in page
     
     var data = {
         systype: $( "#systype" ).val(),
@@ -1610,8 +1608,10 @@ function submitForm( action, target ){
      if( target != null ){
         url += "/"+target;
      }
+     var new_uuid = uuidv4(); // new ident for this run
+     $( "#uuid").val( new_uuid ); // also store it in page
      // $("#mainform").validate();
-     var formdata = loadFromForm();
+     var formdata = loadFromForm(new_uuid);
      var dataset = JSON.stringify(formdata);
      console.log( "submitForm; action=%o data = %o", action, dataset );
      $.ajax(
@@ -1635,7 +1635,7 @@ function submitForm( action, target ){
                             url: uri,         // URL of ajax request
                             cache: false,     // By default, don't allow caching
                             method: 'POST',    // method; get or post
-                            data: {uuid:formdata.uuid},         // array of values to be passed to the page - e.g. {name: "John", greeting: "hello"}
+                            data: {uuid:new_uuid, systype:formdata.systype},         // array of values to be passed to the page - e.g. {name: "John", greeting: "hello"}
                             minTimeout: 1000, // starting value for the timeout in milliseconds
                             maxTimeout:64000, // maximum length of time between requests
                             multiplier: 1,    // if set to 2, timerInterval will double each time the response hasn't changed (up to maxTimeout)
@@ -1659,11 +1659,14 @@ function submitForm( action, target ){
                                         responseFromUpdater.data.html, 
                                         responseFromUpdater.data.xlsxfile);
                                     console.log("stopping updater");
+
                                     updater.stop();                                    
                                 break;
                                 case 'has_progress':
                                     updateProgress( responseFromUpdater );
                                 break;
+                                case 'please_stop':
+                                    updater.stop();
                                 case 'no_progress':
                                     ;
                                     break;
@@ -1671,8 +1674,8 @@ function submitForm( action, target ){
                         });
                     } else {
                         createMainOutputs( 
-                        resp.data.html, 
-                        resp.data.xlsxfile);
+                            resp.data.html, 
+                            resp.data.xlsxfile);
                     }
                     break;
                 case 'addcapital-contribution':
@@ -1698,8 +1701,6 @@ function submitForm( action, target ){
                     break;
                 }
             }
-
-
         ).fail(
             function( jqXHR, textStatus, errorThrown ){
                 console.log( "failed with " + textStatus + " errorThrown "+errorThrown );

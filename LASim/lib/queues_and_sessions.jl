@@ -229,11 +229,11 @@ end
 """
 return output for the 
 """
-function get_output() 
+function get_output() :: NamedTuple
     session = GenieSession.session()
     systype = systype_from_session(session)
     resp = from_session(session)
-    return ( response=output_ready, data = OneResponse( systype, resp)) |> json
+    return ( response=output_ready, data = OneResponse( systype, resp))
 end
 
 function getprogress( uuid :: UUID ) 
@@ -246,7 +246,9 @@ function getprogress( uuid :: UUID )
         progress = PROGRESS[uuid]
         @show "getprogress: progress is $progress" 
         if progress.phase == "do-session-run-end" 
-            return get_output() 
+            outp = get_output()
+            @assert outp.data.params.uuid == uuid "uuid of returned outp wrong requested=$uuid vs in params=$(outp.data.params.uuid)"
+            return outp |> json
         else
             return ( response=has_progress, data=progress, systype=systype ) |> json
         end
@@ -268,7 +270,7 @@ function getprogress_sess()
         progress = GenieSession.get( sess, :progress )
         @info progress 
         if progress.phase == "do-session-run-end" 
-            return get_output() 
+            return get_output() |> json
         else
             return ( response=has_progress, data=progress, systype=systype ) |> json
         end
