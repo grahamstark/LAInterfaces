@@ -154,7 +154,8 @@ function reset( uuid::UUID, systype :: SystemType )::HTTP.Messages.Response
 end
 
 function switch_system( uuid::UUID, systype :: SystemType )::HTTP.Messages.Response
-    params.systype = systype == sys_civil ? sys_aa : sys_civil
+    # new_systype = systype == sys_civil ? sys_aa : sys_civil
+    println( "switch_system to $systype")
     resp = OUTPUT[uuid]
     return ( response=output_ready, data = OneResponse( systype, resp)) |> json
 end
