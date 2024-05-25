@@ -6,6 +6,7 @@ using Genie.Requests
 import Genie.Renderer.Json: json
 using GenieSession 
 using GenieSessionFileSession
+using HTTP
 
 import JSON3
 using ArgCheck

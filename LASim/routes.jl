@@ -1,13 +1,29 @@
 using Genie.Router
 using UUIDs
+using LASim
 
-route("/run", LASim.submit_job, method=POST )
+route("/run", method=POST ) do 
+  LASim.submit_job()
+end
 
-route("/reset", LASim.reset, method=POST )
+route("/reset", method=POST ) do
+  uuid, systype = LASim.sys_and_uuid_from_payload() 
+  LASim.reset( uuid, systype )
+end
 
-route("/load", LASim.load_all, method=POST )
+route("/load", method=POST ) do 
+  LASim.load_all()
+end
 
-route("/switch_system", LASim.switch_system, method=POST )
+# just differs in 
+route("/initial_load", method=POST ) do 
+  LASim.load_all()
+end
+
+route("/switch_system", method=POST ) do
+  uuid, systype = LASim.sys_and_uuid_from_payload() 
+  LASim.switch_system( uuid, systype )
+end
 
 route("/addincome-contribution/:n", method = POST) do 
   n::Int = parse(Int, payload(:n))
@@ -25,7 +41,7 @@ route("/addcapital-contribution/:n", method = POST ) do
 end
 
 route( "/clearout/:uuid", method = POST ) do
-  uuid = UUID(payload(:uuid))
+  uuid, systype = LASim.sys_and_uuid_from_payload()
   LASim.clearout(uuid)
 end
 
@@ -40,11 +56,11 @@ end
 
 route( "/progress", method = POST ) do
   @show "route: progress entered"
-  uuid = UUID( payload(:uuid))
-  ss = payload(:systype)
-  @assert( ss in ["sys_civil", "sys_aa"])
+  ss = payload( :systype )
+  @assert ss in ["sys_civil", "sys_aa"]
   systype = ss == "sys_civil" ? sys_civil : sys_aa
-  @show "route: uuid=$uuid"
+  uuid = UUID( payload(:uuid))
+  # uuid, systype = LASim.sys_and_uuid_from_payload()
   LASim.getprogress( uuid, systype )
 end
 

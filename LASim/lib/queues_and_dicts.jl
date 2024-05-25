@@ -42,16 +42,16 @@ function OneResponse( systype :: SystemType, resp :: CompleteResponse ) :: OneRe
     end
 end
 
-function put_single_subsys_to_dict( params  :: LASubsys )
+function get_single_subsys_from_dict( systype :: SystemType )
     allsubsys = OUTPUT[ params.uuid ].params
-    if params.systype == sys_civil 
+    if systype == sys_civil 
         return allsubsys.civil
     else 
         return allsubsys.aa
     end
 end
 
-function get_single_subsys_from_dict( params  :: LASubsys )
+function put_single_subsys_to_dict( params  :: LASubsys )
     allresp = get(OUTPUT, params.uuid, DEFAULT_COMPLETE_RESPONSE )
     if params.systype == sys_civil 
         allresp.params.civil = params
@@ -61,8 +61,7 @@ function get_single_subsys_from_dict( params  :: LASubsys )
     OUTPUT[params.uuid] = allresp # not needed??
 end
 
-
-function addcapital( n :: Int ) 
+function addcapital( n :: Int ) ::HTTP.Messages.Response
     params = subsys_from_payload()
     @info "before " params.capital_contribution_rates
     addonerb!( 
@@ -75,7 +74,7 @@ function addcapital( n :: Int )
     (; default_params, params ) |> json
 end
 
-function delcapital( n )
+function delcapital( n )::HTTP.Messages.Response
     params = subsys_from_payload()
     delonerb!( 
         params.capital_contribution_rates, 
@@ -86,7 +85,7 @@ function delcapital( n )
     (; default_params, params ) |> json
 end
 
-function addincome( n :: Int ) 
+function addincome( n :: Int ) ::HTTP.Messages.Response
     params = subsys_from_payload()
     @info "addincome; before = $(params.income_contribution_rates)"
     addonerb!( 
@@ -99,15 +98,15 @@ function addincome( n :: Int )
     (; default_params, params ) |> json
 end
 
-function delincome( n )
-    subsys = subsys_from_payload()
+function delincome( n )::HTTP.Messages.Response
+    params = subsys_from_payload()
     println( "delincome; before = $(params.income_contribution_rates)" )
     delonerb!( 
-        subsys.income_contribution_rates, 
-        subsys.income_contribution_limits,
+        params.income_contribution_rates, 
+        params.income_contribution_limits,
         n )
     put_single_subsys_to_dict( params )
-    default_params=default_la_subsys( subsys.systype )
+    default_params=default_la_subsys( params.systype )
     (; default_params, params ) |> json
 end
 
@@ -116,7 +115,7 @@ function dict_obs( settings :: Settings )::Observable
     completed = 0
     of = on(sobs) do p
         completed += p.step
-        if p.phase ==  "do-session-run-end"
+        if p.phase ==  "reached-run-end"
             stacktrace()
             completed = 0
         end
@@ -127,24 +126,32 @@ function dict_obs( settings :: Settings )::Observable
     return sobs
 end 
 
-function load_all(uuid::UUID, systype::SystemType)::NamedTuple
-    resp = OUTPUT[uuid]
+function load_all()::HTTP.Messages.Response
+    resp = nothing
+    systype = sys_civil
+    try # horrible hack
+        params = subsys_from_payload()
+        resp = OUTPUT[params.uuid]
+        systype = params.systype
+    catch
+        resp = deepcopy( DEFAULT_COMPLETE_RESPONSE )
+    end
+    @show resp.params
     return ( response=output_ready, data = OneResponse( systype, resp )) |> json
 end
 
-function reset()
-    params = subsys_from_payload()
+function reset( uuid::UUID, systype :: SystemType )::HTTP.Messages.Response
     resp = deepcopy( DEFAULT_COMPLETE_RESPONSE )
-    resp.uuid = params.uuid
-    OUTPUT[params.uuid] = resp
-    return ( response=output_ready, data = OneResponse( params.systype, resp)) |> json
+    resp.params.civil.uuid = uuid
+    resp.params.aa.uuid = uuid
+    OUTPUT[uuid] = resp
+    return ( response=output_ready, data = OneResponse( systype, resp)) |> json
 end
 
-function switch_system()
-    params = subsys_from_payload()
-    params.systype = params.systype == sys_civil ? sys_aa : sys_civil
-    resp = OUTPUT[params.uuid]
-    return ( response=output_ready, data = OneResponse( params.systype, resp)) |> json
+function switch_system( uuid::UUID, systype :: SystemType )::HTTP.Messages.Response
+    params.systype = systype == sys_civil ? sys_aa : sys_civil
+    resp = OUTPUT[uuid]
+    return ( response=output_ready, data = OneResponse( systype, resp)) |> json
 end
 
 """
@@ -152,10 +159,10 @@ return output for the
 """
 function get_output(systype::SystemType, uuid :: UUID ) :: NamedTuple
     resp = OUTPUT[uuid]
-    return ( response=output_ready, data = OneResponse( params.systype, resp))
+    return ( response=output_ready, data = OneResponse( systype, resp))
 end
 
-function getprogress( uuid :: UUID, systype :: SystemType ) 
+function getprogress( uuid :: UUID, systype :: SystemType ) ::HTTP.Messages.Response
     @show "getprogress entered looking for uuid=$uuid" 
     @show "available progess keys are: $(keys(PROGRESS))"
     @show "available output keys are: $(keys(OUTPUT))"
@@ -163,7 +170,7 @@ function getprogress( uuid :: UUID, systype :: SystemType )
         @show "getprogress: key $uuid found "
         progress = PROGRESS[uuid]
         @show "getprogress: progress is $progress" 
-        if progress.phase == "do-session-run-end" 
+        if progress.phase == "reached-run-end" 
             outp = get_output(systype, uuid)
             @assert outp.data.params.uuid == uuid "uuid of returned outp wrong requested=$uuid vs in params=$(outp.data.params.uuid)"
             return outp |> json
@@ -184,7 +191,7 @@ function do_dict_run(
     systype::SystemType, 
     uuid :: UUID  )
     allresp = OUTPUT[uuid]
-    activesubsys = systype == sys_civil ? alresp.params.civil : allresp.params.aa    
+    activesubsys = systype == sys_civil ? allresp.params.civil : allresp.params.aa    
     settings = make_default_settings()
     map_settings_from_subsys!( settings, activesubsys )
     # settings.uuid = UUID(rand(UInt128))
@@ -201,13 +208,12 @@ function do_dict_run(
         res.xlsxfile,
         res.html,
         DEFAULT_SUBSYS,
-        allsubsys )
+        allresp.params )
     println( "#3")
     OUTPUT[uuid] = resp
     println( "#4 $uuid")
-
     @info "saved resp to output; keys in OUTPUT are $(keys(OUTPUT)) "
-    sobs[]= Progress( uuid, "do-session-run-end", -99, -99, -99, -99 )
+    sobs[]= Progress( uuid, "reached-run-end", -99, -99, -99, -99 )
 end
   
 #=
@@ -221,17 +227,18 @@ end
 #
 # this many simultaneous (sp) runs
 #
-const NUM_HANDLERS = 4
+const NUM_HANDLERS = 2
 #
 # This number of submissions
 #
-const QSIZE = 32
-struct SystypeAndUUID{T}
-    systype  :: SystemType
-    uuid  :: UUID
+const QSIZE = 5
+
+struct SysTypeAndUUID
+    systype :: SystemType
+    uuid    :: UUID
 end
 
-IN_QUEUE = Channel{SystypeAndUUID{Float64}}(QSIZE) # 
+IN_QUEUE = Channel{SysTypeAndUUID}(QSIZE) # 
 
 function submit_job()
     subsys = subsys_from_payload()
@@ -244,9 +251,7 @@ function submit_job()
         allresp.params.aa = subsys
     end
     OUTPUT[subsys.uuid] = allresp
-    sas = SystypeAndUUID(
-        subsys.systype,
-        subsys.uuid)
+    sas = SysTypeAndUUID( subsys.systype, subsys.uuid )
     put!( IN_QUEUE, sas )
     qp = Progress( subsys.uuid, "queued", 0, 0, 0, 0 )
     PROGRESS[subsys.uuid] = qp    

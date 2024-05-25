@@ -46,7 +46,7 @@
                     <div class='col-5'></div>
                     <fieldset class="col border text-black m-1 p-2">
                         <legend class="text-primary">Civil or A&amp;A</legend>
-                        <select id="systype" name="systype" value='' onchange='submitForm( "switch_system", null )' > 
+                        <select id="systype" name="systype" value='sys_civil' onchange='submitForm( "switch_system", null )' > 
                             <option value="sys_civil">Civil</option>
                             <option value="sys_aa">Advice and Assistance</option>
                         </select>
@@ -957,7 +957,6 @@ function createDecileBarChart( targetId, result, thumbnail ){
         } // encoding
     }
     console.log( "deciles_vg=" + JSON.stringify(deciles_vg) );
-
     vegaEmbed( targetId, deciles_vg );
 }
 
@@ -973,7 +972,7 @@ function makeId( n, name, type ){
     return name + "-" + typename + '-' + n;
 }
 
-function makeInput( n, name, type ){
+function makeInput( n, name, type, val ){
     var typename = makeTypename( type );
     var min=-BIG_A;
     var max=BIG_A;
@@ -987,7 +986,7 @@ function makeInput( n, name, type ){
         step=0.01;
     }
     var id = makeId( n, name, type );
-    return "<input id='"+id+"' name='"+id+"' type='number' min='"+min+"' max='"+max+"' step='"+step+"' value='' class=' w-75' />";
+    return "<input id='"+id+"' name='"+id+"' type='number' min='"+min+"' max='"+max+"' step='"+step+"' value='"+val+"' class=' w-75' />";
 }
 
 function makeAddDel( n, name, isdel ){
@@ -1000,9 +999,9 @@ function makeAddDel( n, name, isdel ){
     return "<span onclick='submitForm(\""+action+"\", "+n+")' ><i class=\""+icon+"\" style=\"font-size: 1rem\"></i></span>";
 }
 
-function makeRow( n, name, addDel ){
+function makeRow( n, name, addDel, r, b ){
     const id = name+"-"+n;
-    var row = "<tr id='"+id+"'><td>"+makeInput( n, name, 'rate' )+"</td><td>"+makeInput( n, name, 'band' )+"</td><td  class='align-middle'>"+makeAddDel( n, name, false )+"</td>";
+    var row = "<tr id='"+id+"'><td>"+makeInput( n, name, 'rate', r )+"</td><td>"+makeInput( n, name, 'band', b )+"</td><td  class='align-middle'>"+makeAddDel( n, name, false )+"</td>";
     if( addDel ){
         row += "<td class='align-middle'>"+makeAddDel( n, name, true )+"</td>";
     } else {
@@ -1013,8 +1012,8 @@ function makeRow( n, name, addDel ){
     return row;
 }
 
-function insertRow( which, n, name, addRow ){
-    $("#"+which ).append( makeRow( n, name, addRow ));
+function insertRow( which, n, name, addRow, r, b ){
+    $("#"+which ).append( makeRow( n, name, addRow, r, b ));
 }
 
 
@@ -1051,7 +1050,7 @@ function setRadio( id, val, def ){
 function loadTax( name, rates, bands, defrates, defbands ){
     var nr = rates.length;
     var nb = bands.length;
-    // console.log( "nr="+nr + " nb = " + nb );
+    console.log( "nr="+nr + " nb = " + nb );
     $( "#"+name+"-n").val( nr );
     for( var i = 1; i <= nr; i++ ){
         var rp = "#"+name+"-r-"+i;
@@ -1060,7 +1059,7 @@ function loadTax( name, rates, bands, defrates, defbands ){
         // if( i == nr ){
         //     $( rb ).hide();            
         // } else {
-         $( rb ).val( bands[i-1]);
+        $( rb ).val( bands[i-1]);
         //}
     }
 }
@@ -1068,34 +1067,37 @@ function loadTax( name, rates, bands, defrates, defbands ){
 function initialiseTable( which, rates, bands, defrates, defbands ){
     var n = rates.length;
     var target = which+ "-rows";
+    console.log( "n = %o rates %o = bands %o =", n, rates, bands );
     $( "#"+target ).children().remove();
     var addDel = n > 1;
     for( var i = 1; i <= n; i++ ){
-        insertRow( target, i, which, addDel );
+        insertRow( target, i, which, addDel, rates[i-1], bands[i-1] );
     }
-    loadTax( which, rates, bands, defrates, defbands );
+    // loadTax( which, rates, bands, defrates, defbands );
 }
 
 function scrapetax( name ){
     var rates = [];
     var bands = [];
     var nrt = "#"+name+"-n";
-    // console.log( "count nrt key = " + nrt );
+    console.log( "count nrt key = " + nrt );
     var nr = parseInt($( nrt ).val());
-    // console.log( name + " : got nr as " + nr );
+    console.log( name + " : got nr as " + nr );
     for( var i = 1; i <= nr; i++ ){
         var rp = "#"+name+"-r-"+i;
         var rb = "#"+name+"-b-"+i;
-        rates.push( parseFloat($( rp ).val()));
+        var rpv = $( rp ).val();
+        console.log( "scrapetax; looking for "+rp+ " found " + rpv );
+        rates.push( parseFloat(rpv));
         //if( i < nr ){ // skip top bands
-            var rr = parseFloat($( rb ).val());
-            if( Number.isNaN(rr)){
-                rr = BIG_A;
-            }
-            bands.push( rr );
+        var rr = parseFloat($( rb ).val());
+        if( Number.isNaN(rr)){
+            rr = BIG_A;
+        }
+        bands.push( rr );
         // }
     }
-    // console.log( "rates=" + rates );
+    console.log( "rates=%o bands=%o", rates, bands );
     return [rates, bands];
 }
 
@@ -1420,8 +1422,6 @@ function loadParams( defaults, params ){
         'SCOTTISH_CHILD_PAYMENT_disregarded',
         params.SCOTTISH_CHILD_PAYMENT_disregarded,
         defaults.SCOTTISH_CHILD_PAYMENT_disregarded );
-
-
 }
 
 function createMainOutputs( result, xlsxfile ){
@@ -1447,9 +1447,8 @@ function uuidv4() {
 }
 
 function loadFromForm(new_uuid){
-    ic = scrapetax( "income-contribution" )
-    cc = scrapetax( "capital-contribution" )
-    
+    ic = scrapetax( "income-contribution" );
+    cc = scrapetax( "capital-contribution" );
     var data = {
         systype: $( "#systype" ).val(),
         uuid: new_uuid, // set this // $( "#uuid" ).val(),
@@ -1603,23 +1602,42 @@ function updateProgress( result ){
     }
 }
 
+// actions that need to sumbit all the fields
+const FULL_DATA_ACTIONS = new Set([
+    'run',
+    'initial_load',
+    'addcapital-contribution',
+    'delcapital-contribution',
+    'addincome-contribution',
+    'delincome-contribution' ]); 
+const NEW_UUID_ACTIONS = new Set(['reset','run']);
+
 function submitForm( action, target ){
      var url = "/lasim/"+action; // url = "/lasim/"+action;
      if( target != null ){
         url += "/"+target;
      }
-     var new_uuid = uuidv4(); // new ident for this run
-     $( "#uuid").val( new_uuid ); // also store it in page
-     // $("#mainform").validate();
-     var formdata = loadFromForm(new_uuid);
-     var dataset = JSON.stringify(formdata);
-     console.log( "submitForm; action=%o data = %o", action, dataset );
+     var uuid = $('#uuid').val()
+     if(NEW_UUID_ACTIONS.has( action )){
+        uuid = uuidv4(); // new ident for this run
+        $( "#uuid").val( uuid ); // also store it in page
+     }
+     var systype = $('#systype').val();
+     var formdata = 'NOTHING';
+     if(FULL_DATA_ACTIONS.has(action)){
+        formdata = loadFromForm(uuid);
+     }
+     data = JSON.stringify({
+        params:formdata,
+        uuid:uuid,
+        systype:systype})
+     console.log( "submitForm; action=%o data = %o", action, data );
      $.ajax(
         { url: url,
          method: 'post',
          dataType: 'json',
          contentType: "application/json",
-         data: dataset
+         data: data
         }).done(
         function( resp ){
                 console.log( "submitForm; resp %o", resp);
@@ -1627,6 +1645,7 @@ function submitForm( action, target ){
                 switch( action ){
                 case 'run':
                     // start updater if no immediate output
+                    var rdata = { uuid:uuid, systype:systype };       
                     if( resp.response != "output_ready" ){
                         console.log( "starting run and timer");               
                         console.log( "resp" + resp);
@@ -1635,7 +1654,7 @@ function submitForm( action, target ){
                             url: uri,         // URL of ajax request
                             cache: false,     // By default, don't allow caching
                             method: 'POST',    // method; get or post
-                            data: {uuid:new_uuid, systype:formdata.systype},         // array of values to be passed to the page - e.g. {name: "John", greeting: "hello"}
+                            data: rdata,  
                             minTimeout: 1000, // starting value for the timeout in milliseconds
                             maxTimeout:64000, // maximum length of time between requests
                             multiplier: 1,    // if set to 2, timerInterval will double each time the response hasn't changed (up to maxTimeout)
@@ -1686,15 +1705,16 @@ function submitForm( action, target ){
                     // inconsistent with the main ones
                     loadParams(
                         resp.default_params, resp.params );
-                    break;
-                
+                    break;          
                 case 'reset':
                 case 'load':
+                case 'initial_load':
                 case 'switch_system':
                     // FIXME something to reset parameters
                     // createMainOutputs( result.data );                    
                     loadParams( 
-                        resp.data.default_params, resp.data.params );
+                        resp.data.default_params, 
+                        resp.data.params );
                     createMainOutputs( 
                         resp.data.html, 
                         resp.data.xlsxfile);
@@ -1714,7 +1734,7 @@ $(document).ready(function(){
                 alert('submit intercepted');
                 e.preventDefault(e);
         });
-        submitForm("load", null ); // FIXME make this params?
+        submitForm("initial_load", null ); // FIXME make this params?
     });
 
 </script>

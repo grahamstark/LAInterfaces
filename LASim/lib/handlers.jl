@@ -6,9 +6,27 @@ function spop!( s :: AbstractSet, thing )
     end
 end
 
-function subsys_from_payload()
-  return JSON3.read( rawpayload(), LASubsys{Float64})
+struct FromServerStruct{T}
+    params::LASubsys{T}
+    uuid::UUID
+    systype::SystemType
 end
+
+function subsys_from_payload()::LASubsys
+  return JSON3.read( rawpayload(), FromServerStruct{Float64}).params
+end
+
+struct ThingIOnlyNeedCauseIFuckedUp 
+    params  :: String 
+    uuid    :: UUID
+    systype :: SystemType
+end
+
+function sys_and_uuid_from_payload()::NamedTuple
+    thing = JSON3.read( rawpayload(), ThingIOnlyNeedCauseIFuckedUp )
+    return (; uuid=thing.uuid, systype=thing.systype)
+end
+
 
 function map_settings_from_subsys!( settings :: Settings, subsys :: LASubsys )
     settings.wealth_method = subsys.wealth_method
