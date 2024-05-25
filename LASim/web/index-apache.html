@@ -1056,16 +1056,14 @@ function loadTax( name, rates, bands, defrates, defbands ){
         var rp = "#"+name+"-r-"+i;
         $( rp ).val( rates[i-1]);
         var rb = "#"+name+"-b-"+i;
-        // if( i == nr ){
-        //     $( rb ).hide();            
-        // } else {
         $( rb ).val( bands[i-1]);
-        //}
     }
 }
 
 function initialiseTable( which, rates, bands, defrates, defbands ){
     var n = rates.length;
+    var nr = rates.length;
+    $( "#"+which+"-n").val( nr );
     var target = which+ "-rows";
     console.log( "n = %o rates %o = bands %o =", n, rates, bands );
     $( "#"+target ).children().remove();
@@ -1089,15 +1087,13 @@ function scrapetax( name ){
         var rpv = $( rp ).val();
         console.log( "scrapetax; looking for "+rp+ " found " + rpv );
         rates.push( parseFloat(rpv));
-        //if( i < nr ){ // skip top bands
         var rr = parseFloat($( rb ).val());
         if( Number.isNaN(rr)){
             rr = BIG_A;
         }
         bands.push( rr );
-        // }
     }
-    console.log( "rates=%o bands=%o", rates, bands );
+    console.log( "scrapetax: rates=%o bands=%o", rates, bands );
     return [rates, bands];
 }
 

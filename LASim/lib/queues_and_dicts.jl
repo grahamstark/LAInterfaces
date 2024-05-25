@@ -88,11 +88,13 @@ end
 function addincome( n :: Int ) ::HTTP.Messages.Response
     params = subsys_from_payload()
     @info "addincome; before = $(params.income_contribution_rates)"
+    @info params.income_contribution_limits
     addonerb!( 
         params.income_contribution_rates, 
         params.income_contribution_limits,
         n )
     @info "addincome; after = $(params.income_contribution_rates)"
+    @info params.income_contribution_limits
     put_single_subsys_to_dict( params )
     default_params=default_la_subsys( params.systype )
     (; default_params, params ) |> json
@@ -100,11 +102,14 @@ end
 
 function delincome( n )::HTTP.Messages.Response
     params = subsys_from_payload()
-    println( "delincome; before = $(params.income_contribution_rates)" )
+    @info "delincome; before = $(params.income_contribution_rates)"
+    @info params.income_contribution_limits
     delonerb!( 
         params.income_contribution_rates, 
         params.income_contribution_limits,
         n )
+    @info "delincome; after = $(params.income_contribution_rates)"
+    @info params.income_contribution_limits
     put_single_subsys_to_dict( params )
     default_params=default_la_subsys( params.systype )
     (; default_params, params ) |> json
