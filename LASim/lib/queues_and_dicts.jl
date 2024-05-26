@@ -52,7 +52,10 @@ function get_single_subsys_from_dict( systype :: SystemType )
 end
 
 function put_single_subsys_to_dict( params  :: LASubsys )
-    allresp = get(OUTPUT, params.uuid, DEFAULT_COMPLETE_RESPONSE )
+    allresp = get(OUTPUT, params.uuid, nothing )
+    if isnothing(allresp)
+        allresp = deepcopy( DEFAULT_COMPLETE_RESPONSE )
+    end
     if params.systype == sys_civil 
         allresp.params.civil = params
     else 
@@ -140,8 +143,11 @@ function load_all()::HTTP.Messages.Response
         systype = params.systype
     catch
         resp = deepcopy( DEFAULT_COMPLETE_RESPONSE )
+        resp.params.uuid = uuid4()
+        OUTPUT[params.uuid] = resp
     end
     @show resp.params
+    @show DEFAULT_COMPLETE_RESPONSE
     return ( response=output_ready, data = OneResponse( systype, resp )) |> json
 end
 
@@ -157,7 +163,7 @@ function switch_system( uuid::UUID, systype :: SystemType )::HTTP.Messages.Respo
     # new_systype = systype == sys_civil ? sys_aa : sys_civil
     println( "switch_system to $systype")
     resp = OUTPUT[uuid]
-    return ( response=output_ready, data = OneResponse( systype, resp)) |> json
+    return ( response=output_ready, data = OneResponse( systype, resp )) |> json
 end
 
 """
@@ -250,7 +256,10 @@ function submit_job()
     subsys = subsys_from_payload()
     @info "submit_job uuid = $(subsys.uuid)"
     # allsubsys = get_params_from_dict(subsys.uuid)
-    allresp = get( OUTPUT, subsys.uuid, DEFAULT_COMPLETE_RESPONSE )
+    allresp = get( OUTPUT, subsys.uuid, nothing )
+    if isnothing(allresp)
+        allresp = deepcopy( DEFAULT_COMPLETE_RESPONSE )
+    end
     if subsys.systype == sys_civil 
         allresp.params.civil = subsys
     else 

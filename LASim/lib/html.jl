@@ -178,6 +178,14 @@ function first_col_rename( thing )::String
     return get( FIRST_COL_RENAMES, thing, Utils.pretty( thing ))
 end
 
+function aa_colname_rename( thing )::String
+    return get( FIRST_COL_RENAMES, thing, Utils.pretty( thing ))
+end
+
+function civil_colname_rename( thing )::String
+    return get( FIRST_COL_RENAMES, thing, Utils.pretty( thing ))
+end
+
 function frame_to_table(
     ;
     pre_df  :: DataFrame,
@@ -237,13 +245,14 @@ end
 # TOLIBRARY
 function results_to_html( 
     results :: LegalOutput;
-    la2 :: OneLegalAidSys ) :: NamedTuple
+    la2 :: OneLegalAidSys,
+    systype :: SystemType ) :: NamedTuple
     # table expects a tuple
     # k = "$(LegalAidData.PROBLEM_TYPES[1])-$(LegalAidData.ESTIMATE_TYPES[2])"
     crosstab = format_crosstab( 
         results.crosstab_pers[1];
         examples =  results.crosstab_pers_examples[1], 
-        caption="Changes to elgibility: all Scottish Adults (click table for breakdowns)" )
+        caption="Changes to elgibility: all Scottish People (click table for breakdowns)" )
     
     crosstab_examples = "<div>"
     for r in 1:5
@@ -282,7 +291,7 @@ function results_to_html(
         ;    
         pre_df = results.breakdown_pers[1][t],
         post_df = results.breakdown_pers[2][t],
-        caption =  "Eligibility Counts, all Scottish adults, by Employment (click table for more)." )
+        caption =  "Eligibility Counts, all Scottish people, by Employment (click table for more)." )
     
     allcounts =  "<div class='row'><div class='col'><h3>Breakdowns By Characteristics</h3></div></div>"
     for t in tgts[2:end]
@@ -308,7 +317,7 @@ function results_to_html(
             ;    
             pre_df = results.cases_pers[1][t],
             post_df = results.cases_pers[2][t],
-            caption =  "Costs, all Scottish adults, by Employment and Problem Type(click table for more)." )
+            caption =  "Costs, all Scottish people, by Employment and Problem Type(click table for more)." )
             allcosts = "<div class='row'><div class='col'><h3>Costs By Characteristics</h3></div></div>"
     
     allcases= "<div class='row'><div class='col'><h3>Cases By Characteristics</h3></div></div>"
@@ -358,7 +367,7 @@ end
 function all_results_to_html( 
     results  :: AllLegalOutput, 
     legalaid :: ScottishLegalAidSys ) :: NamedTuple
-    civil = results_to_html( results.civil, la2=legalaid.civil )
-    aa  = results_to_html( results.aa, la2=legalaid.aa )
+    civil = results_to_html( results.civil, la2=legalaid.civil, systype=sys_civil )
+    aa  = results_to_html( results.aa, la2=legalaid.aa, systype=sys_aa )
     (; aa, civil )
 end
