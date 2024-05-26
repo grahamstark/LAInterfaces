@@ -143,8 +143,9 @@ function load_all()::HTTP.Messages.Response
         systype = params.systype
     catch
         resp = deepcopy( DEFAULT_COMPLETE_RESPONSE )
-        resp.params.uuid = uuid4()
-        OUTPUT[params.uuid] = resp
+        resp.params.civil.uuid = uuid4()
+        resp.params.aa.uuid = uuid4()
+        OUTPUT[resp.params.civil.uuid] = resp
     end
     @show resp.params
     @show DEFAULT_COMPLETE_RESPONSE
