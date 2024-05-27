@@ -9,8 +9,8 @@ citation:
   url: https://virtual-worlds.scot/techdoc/index.html
 bibliography: SLAB-2024.bib
 csl: /home/graham_s/pandoc_data/chicago-note-bibliography.csl
-# engine: julia
-jupyter: julia-1.10
+engine: julia
+# jupyter: julia-1.10
 ---
 ```{julia}
 
@@ -34,6 +34,8 @@ Makie.update_theme!(theme_ggplot2()) #; size = (fig_width, fig_height))
 
 hh_dataset = CSV.File( joinpath(settings.data_dir,settings.household_name*".tab" )) |> DataFrame
 people_dataset = CSV.File( joinpath( settings.data_dir, settings.people_name*".tab")) |> DataFrame
+
+cap = CSV.File( "/home/graham_s/julia/vw/StbScratch/data/capcompare.tab")|>DataFrame
 
 ```
 
@@ -163,17 +165,87 @@ Code for this is in the [MatchingLibs.jl module](https://github.com/grahamstark/
 
 #### Capital
 
+Modelling the capital test proved a struggle. The FRS has limited information on assets. A companion survey, the Wealth Assets Survey (WAS)[@office_for_national_statistics_wealth_2017] provides more comprehensive coverage. WAS figures are often much larger than FRS figures.  
 
-> "The total value of all liquid assets, including fixed-term investments. Pound amounts are informed by responses to questions on the value of assets or, in some cases, estimated from the interest on the savings."[@office_for_national_statistics_wealth_2017]
+#### FRS 
+FRS asset figures are for financial assets only and are recorded 
+> "The total value of all liquid assets, including fixed-term investments. Pound amounts are informed by responses to questions on the value of assets or, in some cases, estimated from the interest on the savings."[@department_for_work_and_pensions_family_2023]. 
+
+FRS asset data is recorded in several places:
+
+* The `assets` records, which record individual assets held by household members, and the `accounts` record, which records interest receipts;
+* `totcapb3` and `totcapb4`, which are ONS calculated total financial assets, constructed by summing the `assets` values and adding to that estimated assets from the `accounts` records for cases where `assets` are missing for some account type[^fntotcap]. These are recorded at the benefit unit level;
+* `totsav`, which is a banded benefit unit level variable that's supposed to be derived from the `totcap` variables, though it seems inconsistent with those in some cases.
+
+FRS has no physical capital variables and no measure of net debt.
+
+The 2007 Model used the `totsav` record exclusively.
+
+FRS `totcapb3`:
+
+    Mean:           49956.744418
+    Std. Deviation: 341989.645891
+    Minimum:        0.000000
+    1st Quartile:   0.000000
+    Median:         2200.000000
+    3rd Quartile:   15000.000000
+    Maximum:        14220994.478282
+
+FRS Hybrid Method:
+    Mean:           174130.856968
+    Std. Deviation: 1180353.308364
+    Minimum:        0.000499
+    1st Quartile:   3490.211230
+    Median:         17906.699082
+    3rd Quartile:   82892.751084
+    Maximum:        74536124.513276
+
+WAS IMPUTATION:
+
+    Mean:           174130.856968
+    Std. Deviation: 1180353.308364
+    Minimum:        0.000499
+    1st Quartile:   3490.211230
+    Median:         17906.699082
+    3rd Quartile:   82892.751084
+    Maximum:        74536124.513276
 
 
-```julia 
+####  WAS 
 
-# from MakeHousehold
- model_adult.wealth_and_assets = frs_bu.totcapb3
-            # we'll also store the band 
-            model_adult.totsav= frs_bu.totsav
+We also 
 
+```{julia}
+
+f = Figure()
+ax = Axis(f[1,1]; 
+    xlabel="HH Financial Assets £000s", 
+    title="Density Plot of 3 measures of financial assets", 
+    subtitle="truncated at 250k",
+    xtickformat="{:.0f}")
+# colo[u]rs: http://juliagraphics.github.io/Colors.jl/stable/namedcolors/
+c1 = density!(ax,cap[0 .<= cap.cap_other_method_1 .<= 250_000,:cap_other_method_1]./1000, color = (:blue, 0.4))
+c2 = density!(ax,cap[0 .<= cap.cap_no_method .<= 250_000,:cap_no_method]./1000, color = (:deeppink, 0.4))
+c3 = density!(ax,cap[0 .<= cap.cap_imputation .<= 250_000,:cap_imputation]./1000, color=(:green,0.4))
+Legend(f[1, 2],[c1,c2,c3], ["Hybrid Method", "Raw FRS", "WAS Imputation"])
+
+fl = Figure()
+ax = Axis(fl[1,1]; 
+    xlabel="Log HH Financial Assets ", 
+    title="Density Plot of 3 measures of financial assets", 
+    subtitle="Log Scale",
+    xtickformat="{:.1f}")
+# colo[u]rs: http://juliagraphics.github.io/Colors.jl/stable/namedcolors/
+c1 = density!(ax,log.(cap[0 .< cap.cap_other_method_1 .<= 250_000,:cap_other_method_1]), color = (:blue, 0.4))
+c2 = density!(ax,log.(cap[0 .< cap.cap_no_method .<= 250_000,:cap_no_method]), color = (:deeppink, 0.4))
+c3 = density!(ax,log.(cap[0 .< cap.cap_imputation .<= 250_000,:cap_imputation]), color=(:green,0.4))
+Legend(fl[1, 2],[c1,c2,c3], ["Hybrid Method", "Raw FRS", "WAS Imputation"])
+
+(f,fl)
+
+```
+
+```julia
 """
 return 3 element vector 1=financial, 2=physical 3=housing 4=pension
 """
@@ -257,3 +329,6 @@ threeplot(
 
 ::: {#refs}
 :::
+
+
+[^fntotcap]: we use `totcap3` since that's the only version that's available for all the years we pool over.
