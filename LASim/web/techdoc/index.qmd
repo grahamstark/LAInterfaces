@@ -9,7 +9,7 @@ citation:
   url: https://virtual-worlds.scot/techdoc/index.html
 bibliography: SLAB-2024.bib
 csl: /home/graham_s/pandoc_data/chicago-note-bibliography.csl
-# engine: /opt/julia/bin/julia
+# engine: julia
 jupyter: julia-1.10
 ---
 ```{julia}
@@ -163,6 +163,48 @@ Code for this is in the [MatchingLibs.jl module](https://github.com/grahamstark/
 
 #### Capital
 
+```julia 
+
+# from MakeHousehold
+ model_adult.wealth_and_assets = frs_bu.totcapb3
+            # we'll also store the band 
+            model_adult.totsav= frs_bu.totsav
+
+"""
+return 3 element vector 1=financial, 2=physical 3=housing 4=pension
+"""
+function add_wealth!( 
+    intermed  :: MTIntermediate{T},
+    hh        :: Household{T},
+    bu        :: BenefitUnit,
+    buno      :: Int,
+    method    :: ExtraDataMethod ) where T
+    if method == imputation 
+        if buno == 1 # use the regression hhld stuff from was & assign all to 1st bu 
+            intermed.net_financial_wealth = hh.net_financial_wealth
+            intermed.net_physical_wealth = hh.net_physical_wealth
+            intermed.net_housing_wealth  = hh.net_housing_wealth 
+            intermed.net_pension_wealth = hh.net_pension_wealth
+        end
+    elseif method == matching
+        @assert false "FRS matching not implemented yet for get_wealth"
+    elseif method == no_method
+        head = get_head( bu )
+        # println( "add_wealth! method=$method head.wealth_and_assets=$(head.wealth_and_assets)")
+        intermed.net_financial_wealth = head.wealth_and_assets
+        # nothing else set
+    elseif method == other_method_1
+        head = get_head( bu )
+        cap = map_totsav(
+            head.totsav,
+            hh.data_year,
+            head.wealth_and_assets,
+            head.onerand )
+        intermed.net_financial_wealth = cap
+        intermed.net_physical_wealth = cap*0.6 # average diff between financial and physical in WAS
+    end
+end
+```
 
 [@office_for_national_statistics_wealth_2017]
 
@@ -195,19 +237,14 @@ These were used in the production of cost and caseload estimates. The procedure 
 #| echo: false
 #| warning: false
 
-x = 10202020
+threeplot( 
+  hh_dataset.net_financial_wealth, 
+  hh_dataset.total_wealth, xlabel="FRS Financial Wealth", ylabel="WAS Modelled Financial Wealth")
 
-f = Figure() #;size = (fig_width, fig_height))
-a = Axis(f[1,1])
-b = scatter!(a, randn(1000),randn(1000); )
-f
 # with_theme(f, theme_ggplot2())
 ```
 
 ```{julia}
-
-d = DataFrame(a=rand(10))
-d
 
 ```
 
