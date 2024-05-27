@@ -9,8 +9,8 @@ citation:
   url: https://virtual-worlds.scot/techdoc/index.html
 bibliography: SLAB-2024.bib
 csl: /home/graham_s/pandoc_data/chicago-note-bibliography.csl
-engine: julia
-# jupyter: julia-1.10
+# engine: julia
+jupyter: julia-1.10
 ---
 ```{julia}
 
@@ -30,7 +30,7 @@ settings = Settings()
 
 fig_width = 600
 fig_height = fig_width*3/4
-Makie.update_theme!(theme_ggplot2()) #; size = (fig_width, fig_height))
+Makie.update_theme!(theme_ggplot2(); size = (fig_width, fig_height))
 
 hh_dataset = CSV.File( joinpath(settings.data_dir,settings.household_name*".tab" )) |> DataFrame
 people_dataset = CSV.File( joinpath( settings.data_dir, settings.people_name*".tab")) |> DataFrame
@@ -49,6 +49,11 @@ For an overview of the purpose and desired specifications of the model, please r
 The LASim model that was built do do this built on earlier work for the England And Wales Legal Aid Board [@buck_means_2001;@buck_simplicity_2003;] and the Scottish and Northern Irish Legal Aid Boards [@digan_financial_2007;@StarkSLAB]. 
 
 ## The Model
+::: {.callout-note}
+
+All the code used in this project is publicly available on the GitHub code sharinf site. The code is indended to be readable by non-specialists; hopefully it should mostly be clear enough for SLAB to understand at least in outline. Understanding of the Julia programming language would be helpful for this but shouldn't be needed to understand the the intention of code. An exception to this is the user interface code which was revised so frequently in the last few weeks that it badly needs a refactor.
+
+:::
 
 ### Code organisation
 
@@ -90,18 +95,15 @@ There are two issues with benefits:
 :::
 
 Specification of the legal aid system came from the following documents:
-* 
-*
-*
 
-
-### Calibration
-
+* SLAB Civil Keycard [@slab_civil_2024]
+* Financial eligibility for civil legal aid: general conditions and limits [@slab_financial_2024-1]
+* The Civil Legal Aid (Scotland) Regulations 2002 [@scottish_legal_aid_board_civil_2002];
 
 ### Testing 
 
-Core code is created test-first []. Material for the tests came mainly from the online Legal Aid Calculators [][]. The spreadsheet 
-[][] contains the raw test cases, which were translated into the testsuite ``[]. The testsuite also contains a number of "dry runs" of the model.
+Core code is created test-first []. Material for the tests came mainly from the online Legal Aid Calculators [@slab_aa_estimator_2024;@slab_eligibility_2024]. The spreadsheet 
+[testcalcs.ods][https://github.com/grahamstark/ScottishTaxBenefitModel.jl/blob/master/docs/legalaid/testcalcs.ods] contains the raw test cases, which were translated into the testsuite [legal_aid_calculations_tests.jl](https://github.com/grahamstark/ScottishTaxBenefitModel.jl/blob/master/test/legal_aid_calculations_tests.jl). The testsuite also contains a number of "dry runs" of the model.
 
 ::: {.callout-note}
 The test suite is not as comprehensive as it should be. Quite a serious mistake in how capital is treated for passporting in AA slipped through unchecked until late in the development process. Mistakes in which benefits are disregarded also slipped though until late on. 
@@ -168,7 +170,9 @@ Code for this is in the [MatchingLibs.jl module](https://github.com/grahamstark/
 Modelling the capital test proved a struggle. The FRS has limited information on assets. A companion survey, the Wealth Assets Survey (WAS)[@office_for_national_statistics_wealth_2017] provides more comprehensive coverage. WAS figures are often much larger than FRS figures.  
 
 #### FRS 
-FRS asset figures are for financial assets only and are recorded 
+FRS asset figures are for financial assets only and are recorded at individial, benefit unit and household levels.
+The variables aim to record:
+
 > "The total value of all liquid assets, including fixed-term investments. Pound amounts are informed by responses to questions on the value of assets or, in some cases, estimated from the interest on the savings."[@department_for_work_and_pensions_family_2023]. 
 
 FRS asset data is recorded in several places:
@@ -177,9 +181,32 @@ FRS asset data is recorded in several places:
 * `totcapb3` and `totcapb4`, which are ONS calculated total financial assets, constructed by summing the `assets` values and adding to that estimated assets from the `accounts` records for cases where `assets` are missing for some account type[^fntotcap]. These are recorded at the benefit unit level;
 * `totsav`, which is a banded benefit unit level variable that's supposed to be derived from the `totcap` variables, though it seems inconsistent with those in some cases.
 
-FRS has no physical capital variables and no measure of net debt.
+FRS has no physical capital variables and no measure of net debt. (All these measure are non-negative)
 
 The 2007 Model used the `totsav` record exclusively.
+
+#### The Wealth and Assets Survey (WAS)
+
+The Wealth and Assets Survey (WAS) [@office_for_national_statistics_wealth_2017]. It has compehensive data on financial, physical, housing and pension wealth. 
+
+An alternative we explored was to impute wealth onto the FRS from WAS. We did this using a linear regression on household characteristics (Code for this is in the files: `load_was.jl` and `wealth_regressions.jl` in the [https://github.com/grahamstark/ScottishTaxBenefitModel.jl/blob/master/regressions/(https://github.com/grahamstark/ScottishTaxBenefitModel.jl/blob/master/regressions/)] folder)
+
+* `HphysWR7` - Total Physical Wealth
+* `HPropWR7` - Total net property wealth
+* `TOTPENR7_aggr` - HH Value of total pensions
+* `HFINWNTR7_Sum` - Household Net Financial wealth
+
+All at the household level. Regresions were in logs.  All except net pension wealth can be negative, so seperate regression were run for net debtors and creditors, and a probit was used to predict whether a household had net positive assets of each type.
+
+::: {.callout-note}
+
+These regressions were a holdover from a previous project modelling a wealth tax. Modelling wealth from regressions is hard because wealth is highly skewed and because of the need to model net positives and negative seperately. In retrospect it would have likely been preferable to use data matching rather than regressions here.
+
+:::
+
+We also developed a hybrid method which we took the higher of the `totsav` and `totcapb3` FRS variables and then inferred physical wealth as 60% of financial wealth, since this is roughly the ratio between the two in WAS. There is no great logic to this but it may be the best we can do with the data we have.
+
+The upshot of this is that we have three different measures of financial wealth, with no very clear story to tell about which is the best. The differences between the FRS measures and the WAS measure is very striking[^upratenote]. All three measures are selectable from the model front-end. Below are summary statics for our three financial wealth measures and a frequency plot in levels and logs. Note how much larger the WAS measure is, and that WAS financial wealth can be negative. 
 
 FRS `totcapb3`:
 
@@ -191,33 +218,34 @@ FRS `totcapb3`:
     3rd Quartile:   15000.000000
     Maximum:        14220994.478282
 
+
 FRS Hybrid Method:
-    Mean:           174130.856968
-    Std. Deviation: 1180353.308364
-    Minimum:        0.000499
-    1st Quartile:   3490.211230
-    Median:         17906.699082
-    3rd Quartile:   82892.751084
-    Maximum:        74536124.513276
+
+    Mean:           57846.211156
+    Std. Deviation: 343156.049386
+    Minimum:        0.000000
+    1st Quartile:   0.000000
+    Median:         5505.000000
+    3rd Quartile:   31707.500000
+    Maximum:        14220994.478282
 
 WAS IMPUTATION:
 
-    Mean:           174130.856968
-    Std. Deviation: 1180353.308364
-    Minimum:        0.000499
-    1st Quartile:   3490.211230
-    Median:         17906.699082
-    3rd Quartile:   82892.751084
-    Maximum:        74536124.513276
+    Mean:           152488.665372
+    Std. Deviation: 1352864.608534
+    Minimum:        -1031504.371745
+    1st Quartile:   552.542060
+    Median:         9087.785520
+    3rd Quartile:   56710.460409
+    Maximum:        118888658.238608
 
 
-####  WAS 
-
-We also 
 
 ```{julia}
+#| echo: false
+#| warning: false
 
-f = Figure()
+f = Figure(size = (1200, 1200))
 ax = Axis(f[1,1]; 
     xlabel="HH Financial Assets £000s", 
     title="Density Plot of 3 measures of financial assets", 
@@ -229,70 +257,29 @@ c2 = density!(ax,cap[0 .<= cap.cap_no_method .<= 250_000,:cap_no_method]./1000, 
 c3 = density!(ax,cap[0 .<= cap.cap_imputation .<= 250_000,:cap_imputation]./1000, color=(:green,0.4))
 Legend(f[1, 2],[c1,c2,c3], ["Hybrid Method", "Raw FRS", "WAS Imputation"])
 
-fl = Figure()
-ax = Axis(fl[1,1]; 
+ax2 = Axis(f[2,1]; 
     xlabel="Log HH Financial Assets ", 
-    title="Density Plot of 3 measures of financial assets", 
     subtitle="Log Scale",
     xtickformat="{:.1f}")
 # colo[u]rs: http://juliagraphics.github.io/Colors.jl/stable/namedcolors/
-c1 = density!(ax,log.(cap[0 .< cap.cap_other_method_1 .<= 250_000,:cap_other_method_1]), color = (:blue, 0.4))
-c2 = density!(ax,log.(cap[0 .< cap.cap_no_method .<= 250_000,:cap_no_method]), color = (:deeppink, 0.4))
-c3 = density!(ax,log.(cap[0 .< cap.cap_imputation .<= 250_000,:cap_imputation]), color=(:green,0.4))
-Legend(fl[1, 2],[c1,c2,c3], ["Hybrid Method", "Raw FRS", "WAS Imputation"])
+c1 = density!(ax2,log.(cap[0 .< cap.cap_other_method_1 .<= 250_000,:cap_other_method_1]), color = (:blue, 0.4))
+c2 = density!(ax2,log.(cap[0 .< cap.cap_no_method .<= 250_000,:cap_no_method]), color = (:deeppink, 0.4))
+c3 = density!(ax2,log.(cap[0 .< cap.cap_imputation .<= 250_000,:cap_imputation]), color=(:green,0.4))
+# Legend(fl[2, 2],[c1,c2,c3], ["Hybrid Method", "Raw FRS", "WAS Imputation"])
 
-(f,fl)
+f
 
 ```
-
-```julia
-"""
-return 3 element vector 1=financial, 2=physical 3=housing 4=pension
-"""
-function add_wealth!( 
-    intermed  :: MTIntermediate{T},
-    hh        :: Household{T},
-    bu        :: BenefitUnit,
-    buno      :: Int,
-    method    :: ExtraDataMethod ) where T
-    if method == imputation 
-        if buno == 1 # use the regression hhld stuff from was & assign all to 1st bu 
-            intermed.net_financial_wealth = hh.net_financial_wealth
-            intermed.net_physical_wealth = hh.net_physical_wealth
-            intermed.net_housing_wealth  = hh.net_housing_wealth 
-            intermed.net_pension_wealth = hh.net_pension_wealth
-        end
-    elseif method == matching
-        @assert false "FRS matching not implemented yet for get_wealth"
-    elseif method == no_method
-        head = get_head( bu )
-        # println( "add_wealth! method=$method head.wealth_and_assets=$(head.wealth_and_assets)")
-        intermed.net_financial_wealth = head.wealth_and_assets
-        # nothing else set
-    elseif method == other_method_1
-        head = get_head( bu )
-        cap = map_totsav(
-            head.totsav,
-            hh.data_year,
-            head.wealth_and_assets,
-            head.onerand )
-        intermed.net_financial_wealth = cap
-        intermed.net_physical_wealth = cap*0.6 # average diff between financial and physical in WAS
-    end
-end
-```
-
-[@office_for_national_statistics_wealth_2017]
 
 #### Expenses
 
-* Housing - for owner occupiers the FRS normally just counts mortgage interest as a cost. We add in capital repayments though this is tricky to derive from FRS variables. Code is in `xx` function in the `xxx` library. 
-* Maintenance payments  - ??
-* Debt repayments - use matched LCF data - COICOP code [XXX].
+* Housing - for owner occupiers the FRS normally just counts mortgage interest as a cost. We add in capital repayments though this is tricky to derive from FRS variables. Code is in `mortage_capital_payments` function in the `Household_Mappings_FRS_Only.jl` module. 
+* Maintenance payments - this is the sum of the FRS `maint` records for each individual.
+* Debt repayments - there is no FRS code for repayments other than student debt repayments, so for this we use matched LCF data - codes: `lcf.b237 + lcf.b238 + lcf.ck5316t + lcf.cc6211c`. See the [MatchingLibs.jl](https://github.com/grahamstark/ScottishTaxBenefitModel.jl/blob/master/src/MatchingLibs.jl) package and [lcf_frs_matching.jl](https://github.com/grahamstark/ScottishTaxBenefitModel.jl/blob/master/matching/lcf_frs_matching.jl) script for more on how FRS and LCF are matched. 
 
 ::: {.callout-note}
 
-Expense fields seem low. It is known that average expenses for maintenance contributions, debt repayments and work expenses are much lower on average in the FRS than in SLAB administrative data. This may simply be a selection problem but needs more investigation. Debt in particular could be reworked. Note that student loans are mostly paid through income tax and thus automatically deducted from the model's income tax calculation.
+Expense fields seem low. It is known that average expenses for maintenance contributions, debt repayments and work expenses are much lower on average in the FRS than in SLAB administrative data. This may simply be a selection problem but needs more investigation. Debt payments in particular could be reworked. Note that student loans are mostly paid through income tax and thus automatically deducted from the model's income tax calculation.
 :::
 
 ### Scottish Crime and Justice Survey (SCJS)
@@ -301,29 +288,15 @@ As an aside, the original proposal was to use SCJS[@scottish_government_scottish
 
 ### SLAB Datasets
 
-Anonymised versions of the complete SLAB Civil and AA payments data for 2022/3 were supplied. These are the files XX and XX. 
-These were used in the production of cost and caseload estimates. The procedure is crude, but the same as used in the 2007 study. The module `LegalAidData.jl` crosstabs the payment data by age group, sex/gender, case type, and entitlement level (passported/full entitlement/with contribition) and these are matched against crosstabs from the model by age/sex/estimated entitlement level to give estimates of the propensity of each entitlement group to claim legal aid. This is a crude procedure which at times produces questionable results such as the propensities for contributory benefit units sometimes being higher than for passported/fully entitled benefit units.    
+Anonymised versions of the complete SLAB Civil and AA payments data for 2022/3 were supplied. These were used in the production of cost and caseload estimates. The procedure is crude, but the same as used in the 2007 study. The module `LegalAidData.jl` crosstabs the payment data by age group, sex/gender, case type, and entitlement level (passported/full entitlement/with contribition) and these are matched against crosstabs from the model by age/sex/estimated entitlement level to give estimates of the propensity of each entitlement group to claim legal aid. This is a crude procedure which at times produces questionable results such as the propensities for contributory benefit units sometimes being higher than for passported/fully entitled benefit units.    
 
 ### Updating and Maintenance
 
-### TODODs
+::: {.callout-note}
 
-```{julia}
+The model data is currently uprated to 2023 Q3 and the tax-benfit parameter system is as of November 2023. So there is a 2p reduction in National Insurance, a round of benefit uprating, and 6 months of wage and cost uprating that will have to be a applied. The Legal Aid parameters themselves are those currently in operation.
 
-#| echo: false
-#| warning: false
-
-threeplot( 
-  hh_dataset.net_financial_wealth, 
-  hh_dataset.total_wealth, xlabel="FRS Financial Wealth", ylabel="WAS Modelled Financial Wealth")
-
-# with_theme(f, theme_ggplot2())
-```
-
-```{julia}
-
-```
-
+:::
 
 ### References
 
@@ -331,4 +304,5 @@ threeplot(
 :::
 
 
-[^fntotcap]: we use `totcap3` since that's the only version that's available for all the years we pool over.
+[^fntotcap]: We use `totcap3` since that's the only version that's available for all the years we pool over.
+[^upratenote]: Note that since this data is aggregated over 2015-21 and uprated to 2023Q4, these numbers won't be exactly reproducable from the raw FRS records.
