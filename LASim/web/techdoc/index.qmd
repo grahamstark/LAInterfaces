@@ -163,6 +163,10 @@ Code for this is in the [MatchingLibs.jl module](https://github.com/grahamstark/
 
 #### Capital
 
+
+> "The total value of all liquid assets, including fixed-term investments. Pound amounts are informed by responses to questions on the value of assets or, in some cases, estimated from the interest on the savings."[@office_for_national_statistics_wealth_2017]
+
+
 ```julia 
 
 # from MakeHousehold
