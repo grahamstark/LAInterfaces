@@ -6,7 +6,6 @@
 
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
 
-<meta name="dcterms.date" content="2024-05-20">
 
 <title>SLAB Legal Aid Model Documentation</title>
 <style>
@@ -121,7 +120,7 @@ div.csl-indent {
     <div>
     <div class="quarto-title-meta-heading">Published</div>
     <div class="quarto-title-meta-contents">
-      <p class="date">May 20, 2024</p>
+      <p class="date">Tuesday, May 28, 2024</p>
     </div>
   </div>
   
@@ -291,11 +290,28 @@ Note
 <li><code>totsav</code>, which is a banded benefit unit level variable that’s supposed to be derived from the <code>totcap</code> variables, though it seems inconsistent with those in some cases.</li>
 </ul>
 <p>FRS has no physical capital variables and no measure of net debt. (All these measure are non-negative)</p>
+<p>The FRS/ONS note on savings and investments is as follows:<span class="citation" data-cites="dwp_family_2020"><a href="#fn15" class="footnote-ref" id="fnref15" role="doc-noteref"><sup>15</sup></a></span></p>
+<blockquote class="blockquote">
+<p>Savings and investments</p>
+</blockquote>
+<blockquote class="blockquote">
+<p>The FRS does not capture information on non-liquid assets. Physical wealth and pensions accruing are not included in FRS estimates. The survey also does not capture detailed information on expenditure (except for housing costs). Therefore, it is not possible to show how households are coping financially, in terms of income versus outgoings.</p>
+</blockquote>
+<blockquote class="blockquote">
+<p>However, the FRS does capture information on liquid financial assets, referred to in the survey as ‘savings and investments’. Estimates for savings and investments should be treated with caution, as they are likely to be under-estimates, since respondents often inaccurately report their account details. In view of this, the information is gathered as follows:</p>
+</blockquote>
+<blockquote class="blockquote">
+<ul>
+<li>Respondents are asked, as a benefit unit, to say which of several £ bands their total level of savings and investments are in</li>
+<li>Benefit units that report between £1,500 and £20,000 (28% of benefit units) are then asked, for each of their accounts and assets, how much each is worth and how much interest they accrue. The total level of savings and investments is then calculated using this set of reported values</li>
+<li>Benefit units with reported savings and investments below £1,500 and above £20,000 (72% of benefit units) are only asked how much interest each account and asset accrues. These respondents are also asked to estimate the value of all of their current accounts and basic bank accounts combined</li>
+</ul>
+</blockquote>
 <p>The 2007 Model used the <code>totsav</code> record exclusively.</p>
 </section>
 <section id="the-wealth-and-assets-survey-was" class="level4">
 <h4 class="anchored" data-anchor-id="the-wealth-and-assets-survey-was">The Wealth and Assets Survey (WAS)</h4>
-<p>The Wealth and Assets Survey (WAS).<span class="citation" data-cites="office_for_national_statistics_wealth_2017"><a href="#fn15" class="footnote-ref" id="fnref15" role="doc-noteref"><sup>15</sup></a></span> It has compehensive data on financial, physical, housing and pension wealth.</p>
+<p>The Wealth and Assets Survey (WAS).<span class="citation" data-cites="office_for_national_statistics_wealth_2017"><a href="#fn16" class="footnote-ref" id="fnref16" role="doc-noteref"><sup>16</sup></a></span> It has compehensive data on financial, physical, housing and pension wealth.</p>
 <p>An alternative we explored was to impute wealth onto the FRS from WAS. We did this using a linear regression on household characteristics (Code for this is in the files: <code>load_was.jl</code> and <code>wealth_regressions.jl</code> in the [https://github.com/grahamstark/ScottishTaxBenefitModel.jl/blob/master/regressions/(https://github.com/grahamstark/ScottishTaxBenefitModel.jl/blob/master/regressions/)] folder)</p>
 <ul>
 <li><code>HphysWR7</code> - Total Physical Wealth</li>
@@ -318,7 +334,7 @@ Note
 </div>
 </div>
 <p>We also developed a hybrid method which we took the higher of the <code>totsav</code> and <code>totcapb3</code> FRS variables and then inferred physical wealth as 60% of financial wealth, since this is roughly the ratio between the two in WAS. There is no great logic to this but it may be the best we can do with the data we have.</p>
-<p>The upshot of this is that we have three different measures of financial wealth, with no very clear story to tell about which is the best. The differences between the FRS measures and the WAS measure is very striking<a href="#fn16" class="footnote-ref" id="fnref16" role="doc-noteref"><sup>16</sup></a>. All three measures are selectable from the model front-end. Below are summary statics for our three financial wealth measures and a frequency plot in levels and logs. Note how much larger the WAS measure is, and that WAS financial wealth can be negative.</p>
+<p>The upshot of this is that we have three different measures of financial wealth, with no very clear story to tell about which is the best. The differences between the FRS measures and the WAS measure is very striking<a href="#fn17" class="footnote-ref" id="fnref17" role="doc-noteref"><sup>17</sup></a>. All three measures are selectable from the model front-end. Below are summary statics for our three financial wealth measures and a frequency plot in levels and logs. Note how much larger the WAS measure is, and that WAS financial wealth can be negative.</p>
 <p>FRS <code>totcapb3</code>:</p>
 <pre><code>Mean:           49956.744418
 Std. Deviation: 341989.645891
@@ -343,8 +359,8 @@ Minimum:        -1031504.371745
 Median:         9087.785520
 3rd Quartile:   56710.460409
 Maximum:        118888658.238608</code></pre>
-<div id="a109c862" class="cell" data-execution_count="2">
-<div class="cell-output cell-output-display" data-execution_count="39">
+<div id="762cda87" class="cell" data-execution_count="2">
+<div class="cell-output cell-output-display" data-execution_count="11">
 <div>
 <figure class="figure">
 <p><img src="index_files/figure-html/cell-3-output-1.svg" class="img-fluid figure-img"></p>
@@ -355,11 +371,24 @@ Maximum:        118888658.238608</code></pre>
 </section>
 <section id="expenses" class="level4">
 <h4 class="anchored" data-anchor-id="expenses">Expenses</h4>
-<ul>
-<li>Housing - for owner occupiers the FRS normally just counts mortgage interest as a cost. We add in capital repayments though this is tricky to derive from FRS variables. Code is in <code>mortage_capital_payments</code> function in the <code>Household_Mappings_FRS_Only.jl</code> module.</li>
-<li>Maintenance payments - this is the sum of the FRS <code>maint</code> records for each individual.</li>
-<li>Debt repayments - there is no FRS code for repayments other than student debt repayments, so for this we use matched LCF data - codes: <code>lcf.b237 + lcf.b238 + lcf.ck5316t + lcf.cc6211c</code>. See the <a href="https://github.com/grahamstark/ScottishTaxBenefitModel.jl/blob/master/src/MatchingLibs.jl">MatchingLibs.jl</a> package and <a href="https://github.com/grahamstark/ScottishTaxBenefitModel.jl/blob/master/matching/lcf_frs_matching.jl">lcf_frs_matching.jl</a> script for more on how FRS and LCF are matched.</li>
-</ul>
+<p><em>Housing</em> - for owner occupiers the FRS normally just counts mortgage interest as a cost. We add in capital repayments though this is tricky to derive from FRS variables. Code is in <code>mortage_capital_payments</code> function in the <code>Household_Mappings_FRS_Only.jl</code> module. <code>mortage_capital_payments</code> calculates:</p>
+<pre><code>total amount of mortgage (borramt) / total Term of mortgage (mortend)</code></pre>
+<p>With a correction for remortgages and returns the weekly equivalent.</p>
+<p>Mortgage interest is a separate slot using the FRS <code>mortint</code> variable. Both are used in the legal aid calculation (but capital can optionally be switched off).</p>
+<p><em>Maintenance payments</em> - this is the sum of the FRS <code>maint</code> records for each individual.</p>
+<p><em>Debt repayments</em> - there is no FRS code for repayments other than student debt repayments, so for this we use matched LCF data - codes: <code>lcf.b237 + lcf.b238 + lcf.ck5316t + lcf.cc6211t</code>.</p>
+<pre><code>B237 = Credit card interest payments
+B238 = Annual standing charge for credit cards
+ck5316t = Pay off loan to clear other debt - children and adults
+C62114t = Bank Charges</code></pre>
+<p>See the <a href="https://github.com/grahamstark/ScottishTaxBenefitModel.jl/blob/master/src/MatchingLibs.jl">MatchingLibs.jl</a> package and <a href="https://github.com/grahamstark/ScottishTaxBenefitModel.jl/blob/master/matching/lcf_frs_matching.jl">lcf_frs_matching.jl</a> script for more on how FRS and LCF are matched.</p>
+<p><em>travel to work</em>: here’s no good data on this in any household dataset I’m aware of. So I make an arbitrary assumption: 50% of spending on:</p>
+<pre><code>- bus_boat_and_train, 
+- petrol,
+- diesel,
+- other_motor_oils, 
+- other_transport </code></pre>
+<p>from the matched lcf record, allocated between all those reporing in work. Previosly the FRS had a travel to work cost variable TTWCOSTS but this was deleted in 2007 onwards.</p>
 <div class="callout callout-style-default callout-note callout-titled">
 <div class="callout-header d-flex align-content-center">
 <div class="callout-icon-container">
@@ -377,7 +406,7 @@ Note
 </section>
 <section id="scottish-crime-and-justice-survey-scjs" class="level3">
 <h3 class="anchored" data-anchor-id="scottish-crime-and-justice-survey-scjs">Scottish Crime and Justice Survey (SCJS)</h3>
-<p>As an aside, the original proposal was to use SCJS<span class="citation" data-cites="scottish_government_scottish_crime_2024"><a href="#fn17" class="footnote-ref" id="fnref17" role="doc-noteref"><sup>17</sup></a></span> to model the likelihood of households experiencing a problem requiring legal advice. Some initial work was carried out which produced promising but this was abandoned on SLAB’s instructions. It could well be worth returning to this, perhaps as a stand-alone piece of work.</p>
+<p>As an aside, the original proposal was to use SCJS<span class="citation" data-cites="scottish_government_scottish_crime_2024"><a href="#fn18" class="footnote-ref" id="fnref18" role="doc-noteref"><sup>18</sup></a></span> to model the likelihood of households experiencing a problem requiring legal advice. Some initial work was carried out which produced promising but this was abandoned on SLAB’s instructions. It could well be worth returning to this, perhaps as a stand-alone piece of work.</p>
 </section>
 <section id="slab-datasets" class="level3">
 <h3 class="anchored" data-anchor-id="slab-datasets">SLAB Datasets</h3>
@@ -432,6 +461,9 @@ D’Orazio, Marcello. <span>“<span>StatMatch</span>: <span>Statistical</span> 
 <div id="ref-digan_financial_2007" class="csl-entry" role="listitem">
 Digan, Tony, and Graham Stark. <span>“Financial <span>Arrangements</span> for <span>Access</span> to <span>Civil</span> <span>Legal</span> <span>Aid</span>.”</span> Northern Ireland Legal Services Commission, 2007.
 </div>
+<div id="ref-dwp_family_2020" class="csl-entry" role="listitem">
+DWP. <span>“Family <span>Resources</span> <span>Survey</span>: Background Information and Methodology.”</span> <em>GOV.UK</em>, 2020. <a href="https://www.gov.uk/government/statistics/family-resources-survey-financial-year-2019-to-2020/family-resources-survey-background-information-and-methodology">https://www.gov.uk/government/statistics/family-resources-survey-financial-year-2019-to-2020/family-resources-survey-background-information-and-methodology</a>.
+</div>
 <div id="ref-scottish_government_scottish_crime_2024" class="csl-entry" role="listitem">
 Government, Scottish. <span>“Scottish <span>Crime</span> and <span>Justice</span> <span>Survey</span> 2021/22,”</span> 2024. <a href="http://www.gov.scot/news/scottish-crime-justice-survey/">http://www.gov.scot/news/scottish-crime-justice-survey/</a>.
 </div>
@@ -478,20 +510,21 @@ Work and Pensions, Department for. <span>“Family <span>Resources</span> <span>
 <li id="fn12"><p><a href="#ref-office_for_national_statistics_wealth_2017" role="doc-biblioref">National Statistics, <span>“Wealth and Assets Survey (<span>WAS</span>)”</span></a>.<a href="#fnref12" class="footnote-back" role="doc-backlink">↩︎</a></p></li>
 <li id="fn13"><p><a href="#ref-department_for_work_and_pensions_family_2023" role="doc-biblioref">Work and Pensions, <span>“Family <span>Resources</span> <span>Survey</span>”</span></a>.<a href="#fnref13" class="footnote-back" role="doc-backlink">↩︎</a></p></li>
 <li id="fn14"><p>We use <code>totcap3</code> since that’s the only version that’s available for all the years we pool over.<a href="#fnref14" class="footnote-back" role="doc-backlink">↩︎</a></p></li>
-<li id="fn15"><p><a href="#ref-office_for_national_statistics_wealth_2017" role="doc-biblioref">National Statistics, <span>“Wealth and Assets Survey (<span>WAS</span>)”</span></a>.<a href="#fnref15" class="footnote-back" role="doc-backlink">↩︎</a></p></li>
-<li id="fn16"><p>Note that since this data is aggregated over 2015-21 and uprated to 2023Q4, these numbers won’t be exactly reproducable from the raw FRS records.<a href="#fnref16" class="footnote-back" role="doc-backlink">↩︎</a></p></li>
-<li id="fn17"><p><a href="#ref-scottish_government_scottish_crime_2024" role="doc-biblioref">Government, <span>“Scottish <span>Crime</span> and <span>Justice</span> <span>Survey</span> 2021/22”</span></a>.<a href="#fnref17" class="footnote-back" role="doc-backlink">↩︎</a></p></li>
+<li id="fn15"><p><a href="#ref-dwp_family_2020" role="doc-biblioref">DWP, <span>“Family <span>Resources</span> <span>Survey</span>”</span></a>.<a href="#fnref15" class="footnote-back" role="doc-backlink">↩︎</a></p></li>
+<li id="fn16"><p><a href="#ref-office_for_national_statistics_wealth_2017" role="doc-biblioref">National Statistics, <span>“Wealth and Assets Survey (<span>WAS</span>)”</span></a>.<a href="#fnref16" class="footnote-back" role="doc-backlink">↩︎</a></p></li>
+<li id="fn17"><p>Note that since this data is aggregated over 2015-21 and uprated to 2023Q4, these numbers won’t be exactly reproducable from the raw FRS records.<a href="#fnref17" class="footnote-back" role="doc-backlink">↩︎</a></p></li>
+<li id="fn18"><p><a href="#ref-scottish_government_scottish_crime_2024" role="doc-biblioref">Government, <span>“Scottish <span>Crime</span> and <span>Justice</span> <span>Survey</span> 2021/22”</span></a>.<a href="#fnref18" class="footnote-back" role="doc-backlink">↩︎</a></p></li>
 </ol>
 </section><section class="quarto-appendix-contents" id="quarto-citation"><h2 class="anchored quarto-appendix-heading">Citation</h2><div><div class="quarto-appendix-secondary-label">BibTeX citation:</div><pre class="sourceCode code-with-copy quarto-appendix-bibtex"><code class="sourceCode bibtex">@online{stark2024,
   author = {Stark, Graham},
   title = {SLAB {Legal} {Aid} {Model} {Documentation}},
-  date = {2024-05-20},
+  date = {2024-05-28},
   url = {https://virtual-worlds.scot/techdoc/index.html},
   langid = {en}
 }
 </code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre><div class="quarto-appendix-secondary-label">For attribution, please cite this work as:</div><div id="ref-stark2024" class="csl-entry quarto-appendix-citeas" role="listitem">
 Stark, Graham. <span>“SLAB Legal Aid Model Documentation,”</span> May
-20, 2024. <a href="https://virtual-worlds.scot/techdoc/index.html">https://virtual-worlds.scot/techdoc/index.html</a>.
+28, 2024. <a href="https://virtual-worlds.scot/techdoc/index.html">https://virtual-worlds.scot/techdoc/index.html</a>.
 </div></div></section></div></main>
 <!-- /main column -->
 <script id="quarto-html-after-body" type="application/javascript">

@@ -1,6 +1,7 @@
 ---
 title: "SLAB Legal Aid Model Documentation"
-date: May/20/2024
+date: today
+date-format: full
 authors:
   - name: Graham Stark
     affiliation: Virtual Worlds Research
