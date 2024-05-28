@@ -52,30 +52,30 @@ The LASim model that was built do do this built on earlier work for the England 
 ## The Model
 ::: {.callout-note}
 
-All the code used in this project is publicly available on the GitHub code sharinf site. The code is indended to be readable by non-specialists; hopefully it should mostly be clear enough for SLAB to understand at least in outline. Understanding of the Julia programming language would be helpful for this but shouldn't be needed to understand the the intention of code. An exception to this is the user interface code which was revised so frequently in the last few weeks that it badly needs a refactor.
+All the code used in this project is publicly available on the GitHub code sharing site. The code is intended to be readable by non-specialists; hopefully it should mostly be clear enough for SLAB to understand at least in outline. Understanding of the Julia programming language[@bezanson_julia:_2017] would be helpful for this but shouldn't be needed to understand the the intention of code. An exception to this is the user interface code which was revised so frequently in the last few weeks that it badly needs a refactor.
 
 :::
 
 ### Code organisation
 
-LASim builds on [Scotben](https://github.com/grahamstark/ScottishTaxBenefitModel.jl/), a microsimulation tax-benefit model of Scotland. Scotben is a conventional static microsimulation model, built using the [Julia](https://juliahub.org) programming language and Family Resources Survey (FRS) [] data. 
+LASim builds on [Scotben](https://github.com/grahamstark/ScottishTaxBenefitModel.jl/), a microsimulation tax-benefit model of Scotland. Scotben is a conventional static microsimulation model, built using the [Julia](https://juliahub.org) programming language and Family Resources Survey (FRS) [@department_for_work_and_pensions_family_2023] data. 
 
-A tax benefit model is [..]. For more information on this model, see [] and for tax-benefit models generally, see [].
+A tax benefit model is a computer program that calculates the effects of possible changes to the fiscal system on a sample of households. We take each of the households in our dataset, calculate how much tax the household members are liable for under some proposed tax and benefit regime, and how much benefits they are entitled to, and add add up the results. If the sample is representative of the population, and the modelling sufficiently accurate, the model can then tell you, for example, the net costs of the proposals, the numbers who are made better or worse off, the effective tax rates faced by individuals, the numbers taken in and out of poverty by some change, and much else. For  tax-benefit models generally, see [@odonoghue_practical_2021].
 
 All the code used in this project is available for inspection on the GitHub code sharing site, as follows:
 
 * [Scotben - the Main Model](https://github.com/grahamstark/scottishtaxbenefitmodel.jl)
 * [LASim - the web Front End](https://github.com/grahamstark/lainterfaces/)
 
-Julia code is organised into `modules` [] which are aggregated into packages []. Packages can be downloaded and either run directly or integrated into other programs. ScotBen is a Julia package. For this project, several modules were added to the Scotben package:
+Julia code is organised into [modules](https://docs.julialang.org/en/v1/manual/modules/) which are aggregated into [packages](https://juliapackages.com/). Packages can be downloaded and either run directly or integrated into other programs. ScotBen is a Julia package. For this project, several modules were added to the Scotben package:
 
 * [LegalAidCalculations.jl](https://github.com/grahamstark/ScottishTaxBenefitModel.jl/blob/master/src/LegalAidCalculations.jl) - this calculates entitlement to both Civil and AA for a single FRS household.  
-* [LegalAidOutput.jl](https://github.com/grahamstark/ScottishTaxBenefitModel.jl/blob/master/src/LegalAidOutput.jl) - this generates output tables and calculates the likelyhood that a given household will claim legal aid.
+* [LegalAidOutput.jl](https://github.com/grahamstark/ScottishTaxBenefitModel.jl/blob/master/src/LegalAidOutput.jl) - this generates output tables and calculates the likelihood that a given household will claim legal aid.
 * [LegalAidData.jl](https://github.com/grahamstark/ScottishTaxBenefitModel.jl/blob/master/src/LegalAidData.jl) - this holds SLAB supplied individual-level records for payments and contributions under both Civil and AA legal aid. This is used along with tbe entitlement data to produce cost and takeup estimates. 
 
 in addition, additions were made to the following Modules:
 
-* [STBParameters.jl](https://github.com/grahamstark/ScottishTaxBenefitModel.jl/blob/master/src/STBParameters.jl) - this models the parameters needed for the entire Scottisg/UK fiscal system - tax rates, benefit levels and so on. A set of parameters capturing capital and income limits, rules for allowances, disregarded incomes, etc. was added 
+* [STBParameters.jl](https://github.com/grahamstark/ScottishTaxBenefitModel.jl/blob/master/src/STBParameters.jl) - this models the parameters needed for the entire Scottish/UK fiscal system - tax rates, benefit levels and so on. A set of parameters capturing capital and income limits, rules for allowances, disregarded incomes, etc. was added 
 * [Results.jl](https://github.com/grahamstark/ScottishTaxBenefitModel.jl/blob/master/src/Results.jl) - This holds records capturing entitlements to benefits, liability to tax, etc. for a single household. A record capturing entitlement to Legal Aid, contributions, assessed income, etc. was added, as `OneLegalAidResult`.
 * [SingleHouseholdCalculations.jl](https://github.com/grahamstark/ScottishTaxBenefitModel.jl/blob/master/src/SingleHouseholdCalculations.jl) - this runs all calculations for all FRS households. A small call was added to optionally run the legal aid calculations; 
 * [STBOutput](https://github.com/grahamstark/ScottishTaxBenefitModel.jl/blob/master/src/STBOutput.jl) - this holds the main output from the model. The structures from `LegalAidOutput` are incorporated here.
@@ -103,8 +103,8 @@ Specification of the legal aid system came from the following documents:
 
 ### Testing 
 
-Core code is created test-first []. Material for the tests came mainly from the online Legal Aid Calculators [@slab_aa_estimator_2024;@slab_eligibility_2024]. The spreadsheet 
-[testcalcs.ods][https://github.com/grahamstark/ScottishTaxBenefitModel.jl/blob/master/docs/legalaid/testcalcs.ods] contains the raw test cases, which were translated into the testsuite [legal_aid_calculations_tests.jl](https://github.com/grahamstark/ScottishTaxBenefitModel.jl/blob/master/test/legal_aid_calculations_tests.jl). The testsuite also contains a number of "dry runs" of the model.
+Core code is created test-first[@google_inc_introducing_2021]. Material for the tests came mainly from the online Legal Aid Calculators[@slab_aa_estimator_2024;@slab_eligibility_2024]. The spreadsheet 
+[testcalcs.ods][https://github.com/grahamstark/ScottishTaxBenefitModel.jl/blob/master/docs/legalaid/testcalcs.ods] contains the raw test cases, which were translated into the test suite [legal_aid_calculations_tests.jl](https://github.com/grahamstark/ScottishTaxBenefitModel.jl/blob/master/test/legal_aid_calculations_tests.jl). The testsuite also contains a number of "dry runs" of the model.
 
 ::: {.callout-note}
 The test suite is not as comprehensive as it should be. Quite a serious mistake in how capital is treated for passporting in AA slipped through unchecked until late in the development process. Mistakes in which benefits are disregarded also slipped though until late on. 
@@ -133,7 +133,7 @@ The model uses the Scottish households from pooled 2015-2021 Family Resources (F
 
 ### Matching 
 
-The FRS is augmented with matched in data from the Scottish Household Survey[@scottish_government_scottish_2024-1] and the Living Costs and Food Survey. SHS is mainly used to give local-level information and is not very relevant to Legal Aid. LCF is used to provide estimates for some of the expense fields - repayments, travel to work costs and work expenses. The matching code for thse dataset is [the matching/ folder](https://github.com/grahamstark/ScottishTaxBenefitModel.jl/tree/master/matching). Matching uses a custom version of Coarsened Exact Matching [@iacus_causal_2011; @leulescu_statistical_2013; @dorazio_statmatch_2022] 
+The FRS is augmented with matched in data from the Scottish Household Survey[@scottish_government_scottish_2024-1] and the Living Costs and Food Survey. SHS is mainly used to give local-level information and is not very relevant to Legal Aid. LCF is used to provide estimates for some of the expense fields - repayments, travel to work costs and work expenses. The matching code for this dataset is [the matching/ folder](https://github.com/grahamstark/ScottishTaxBenefitModel.jl/tree/master/matching). Matching uses a custom version of Coarsened Exact Matching [@iacus_causal_2011; @leulescu_statistical_2013; @dorazio_statmatch_2022] 
 
 Both LCF and SHS are matched to FRS at the household level.
 
@@ -151,7 +151,7 @@ The SHS/FRS are matched on:
 LCF/FRS are matched on:
 
 * Tenure Type
-* Accomodation Type
+* Accommodation Type
 * Number of Rooms
 * Age of Head
 * Num Children
@@ -171,7 +171,7 @@ Code for this is in the [MatchingLibs.jl module](https://github.com/grahamstark/
 Modelling the capital test proved a struggle. The FRS has limited information on assets. A companion survey, the Wealth Assets Survey (WAS)[@office_for_national_statistics_wealth_2017] provides more comprehensive coverage. WAS figures are often much larger than FRS figures.  
 
 #### FRS 
-FRS asset figures are for financial assets only and are recorded at individial, benefit unit and household levels.
+FRS asset figures are for financial assets only and are recorded at individual, benefit unit and household levels.
 The variables aim to record:
 
 > "The total value of all liquid assets, including fixed-term investments. Pound amounts are informed by responses to questions on the value of assets or, in some cases, estimated from the interest on the savings."[@department_for_work_and_pensions_family_2023]. 
@@ -201,7 +201,7 @@ The 2007 Model used the `totsav` record exclusively.
 
 #### The Wealth and Assets Survey (WAS)
 
-The Wealth and Assets Survey (WAS) [@office_for_national_statistics_wealth_2017]. It has compehensive data on financial, physical, housing and pension wealth. 
+The Wealth and Assets Survey (WAS) [@office_for_national_statistics_wealth_2017]. It has comprehensive data on financial, physical, housing and pension wealth. 
 
 An alternative we explored was to impute wealth onto the FRS from WAS. We did this using a linear regression on household characteristics (Code for this is in the files: `load_was.jl` and `wealth_regressions.jl` in the [https://github.com/grahamstark/ScottishTaxBenefitModel.jl/blob/master/regressions/(https://github.com/grahamstark/ScottishTaxBenefitModel.jl/blob/master/regressions/)] folder)
 
@@ -210,11 +210,11 @@ An alternative we explored was to impute wealth onto the FRS from WAS. We did th
 * `TOTPENR7_aggr` - HH Value of total pensions
 * `HFINWNTR7_Sum` - Household Net Financial wealth
 
-All at the household level. Regresions were in logs.  All except net pension wealth can be negative, so seperate regression were run for net debtors and creditors, and a probit was used to predict whether a household had net positive assets of each type.
+All at the household level. Regressions were in logs.  All except net pension wealth can be negative, so separate regression were run for net debtors and creditors, and a probit was used to predict whether a household had net positive assets of each type.
 
 ::: {.callout-note}
 
-These regressions were a holdover from a previous project modelling a wealth tax. Modelling wealth from regressions is hard because wealth is highly skewed and because of the need to model net positives and negative seperately. In retrospect it would have likely been preferable to use data matching rather than regressions here.
+These regressions were a holdover from a previous project modelling a wealth tax. Modelling wealth from regressions is hard because wealth is highly skewed and because of the need to model net positives and negative separately. In retrospect it would have likely been preferable to use data matching rather than regressions here.
 
 :::
 
@@ -289,7 +289,7 @@ f
 
 *Housing* - for owner occupiers the FRS normally just counts mortgage interest as a cost. We add in capital repayments though this is tricky to derive from FRS variables. Code is in `mortage_capital_payments` function in the `Household_Mappings_FRS_Only.jl` module. `mortage_capital_payments` calculates:
 
-    total amount of mortgage (borramt) / total Term of mortgage (mortend)
+    total amount of mortgage (`borramt`) / total Term of mortgage (`mortend`)
 
 With a correction for remortgages and returns the weekly equivalent.
 
@@ -314,7 +314,7 @@ See the [MatchingLibs.jl](https://github.com/grahamstark/ScottishTaxBenefitModel
     - other_motor_oils, 
     - other_transport 
 
-from the matched lcf record, allocated between all those reporing in work. Previosly the FRS had a travel to work cost variable TTWCOSTS but this was deleted in 2007 onwards.
+from the matched lcf record, allocated between all those reporting being in work. Previously the FRS had a travel to work cost variable `TTWCOSTS` but this was deleted in 2007 onwards.
 
 ::: {.callout-note}
 
@@ -327,13 +327,13 @@ As an aside, the original proposal was to use SCJS[@scottish_government_scottish
 
 ### SLAB Datasets
 
-Anonymised versions of the complete SLAB Civil and AA payments data for 2022/3 were supplied. These were used in the production of cost and caseload estimates. The procedure is crude, but the same as used in the 2007 study. The module `LegalAidData.jl` crosstabs the payment data by age group, sex/gender, case type, and entitlement level (passported/full entitlement/with contribition) and these are matched against crosstabs from the model by age/sex/estimated entitlement level to give estimates of the propensity of each entitlement group to claim legal aid. This is a crude procedure which at times produces questionable results such as the propensities for contributory benefit units sometimes being higher than for passported/fully entitled benefit units.    
+Anonymised versions of the complete SLAB Civil and AA payments data for 2022/3 were supplied. These were used in the production of cost and caseload estimates. The procedure is crude, but the same as used in the 2007 study. The module `LegalAidData.jl` crosstabs the payment data by age group, sex/gender, case type, and entitlement level (passported/full entitlement/with contribution) and these are matched against crosstabs from the model by age/sex/estimated entitlement level to give estimates of the propensity of each entitlement group to claim legal aid. This is a crude procedure which at times produces questionable results such as the propensities for contributory benefit units sometimes being higher than for passported/fully entitled benefit units.    
 
 ### Updating and Maintenance
 
 ::: {.callout-note}
 
-The model data is currently uprated to 2023 Q3 and the tax-benfit parameter system is as of November 2023. So there is a 2p reduction in National Insurance, a round of benefit uprating, and 6 months of wage and cost uprating that will have to be a applied. The Legal Aid parameters themselves are those currently in operation.
+The model data is currently uprated to 2023 Q3 and the tax-benefit parameter system is as of November 2023. So there is a 2p reduction in National Insurance, a round of benefit uprating, and 6 months of wage and cost uprating that will have to be a applied. The Legal Aid parameters themselves are those currently in operation.
 
 :::
 
