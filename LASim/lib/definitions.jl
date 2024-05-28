@@ -19,6 +19,7 @@ mutable struct LASubsys{T}
     income_partners_allowance   :: T        
     income_other_dependants_allowance :: T  
     income_child_allowance   :: T   
+    include_mortgage_repayments :: Bool
     INCOME_SUPPORT_passported :: Bool
     NON_CONTRIB_EMPLOYMENT_AND_SUPPORT_ALLOWANCE_passported :: Bool
     NON_CONTRIB_JOBSEEKERS_ALLOWANCE_passported  :: Bool
@@ -130,6 +131,7 @@ function LASubsys( uuid :: UUID, sys :: OneLegalAidSys )
         sys.income_partners_allowance,        
         sys.income_other_dependants_allowance,
         sys.income_child_allowance,
+        sys.include_mortgage_repayments,
         INCOME_SUPPORT in sys.passported_benefits,
         NON_CONTRIB_EMPLOYMENT_AND_SUPPORT_ALLOWANCE in sys.passported_benefits,
         NON_CONTRIB_JOBSEEKERS_ALLOWANCE in sys.passported_benefits, 
