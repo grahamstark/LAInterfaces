@@ -44,6 +44,7 @@ function map_sys_from_subsys( subsys :: LASubsys )::OneLegalAidSys
     fullsys.income_partners_allowance         = subsys.income_partners_allowance
     fullsys.income_other_dependants_allowance = subsys.income_other_dependants_allowance
     fullsys.income_child_allowance            = subsys.income_child_allowance
+    fullsys.include_mortgage_repayments       = subsys.include_mortgage_repayments
     if subsys.INCOME_SUPPORT_passported 
       push!( fullsys.passported_benefits, INCOME_SUPPORT )
     else

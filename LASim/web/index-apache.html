@@ -242,6 +242,14 @@
                             <input id='housing_v' type='number' name="housing_v" min='0' max='2000' value='' step='0.01' size="8" class='form-control w-50'/>
                             <label for='housing_max' class='form-label'>Maximum Amount (£)</label>
                             <input id='housing_max' type='number' name="housing_max" min='0' max='99999999999' value='' step='1' size="8" class='form-control w-50'/>
+                           
+                            <div class="form-check">
+                                <input class="form-check-input include_mortgage_repayments" type="checkbox" value="" id="include_mortgage_repayments" />
+                                <label class="form-check-label include_mortgage_repayments" for="include_mortgage_repayments">
+                                    Include Mortgage Capital Repayments in housing costs?
+                                </label>
+                            </div>
+                        
                         </div>
                         </fieldset>
                         
@@ -340,6 +348,8 @@
                             </fieldset>
                         
                 </div>
+
+             
                 <fieldset class="row border text-black m-1 p-2">
 
                     <legend class="text-primary">Disregarded Incomes</legend>
@@ -1106,6 +1116,9 @@ function loadParams( defaults, params ){
     setVal( "income_partners_allowance", params.income_partners_allowance, defaults.income_partners_allowance );
     setVal( "income_other_dependants_allowance", params.income_other_dependants_allowance, defaults.income_other_dependants_allowance );
     setVal( "income_child_allowance", params.income_child_allowance, defaults.income_child_allowance );
+    setCheck( "include_mortgage_repayments",
+        params.include_mortgage_repayments,
+        defaults.include_mortgage_repayments )
     setCheck( 
         "INCOME_SUPPORT_passported", 
         params.INCOME_SUPPORT_passported, 
@@ -1452,6 +1465,7 @@ function loadFromForm(new_uuid){
         income_partners_allowance: parseFloat($( "#income_partners_allowance" ).val()),
         income_other_dependants_allowance: parseFloat($( "#income_other_dependants_allowance" ).val()),
         income_child_allowance: parseFloat($( "#income_child_allowance" ).val()),
+        include_mortgage_repayments: $('#include_mortgage_repayments').is(':checked'),
         INCOME_SUPPORT_passported: $('#INCOME_SUPPORT_passported').is(':checked'),
         NON_CONTRIB_EMPLOYMENT_AND_SUPPORT_ALLOWANCE_passported: $('#NON_CONTRIB_EMPLOYMENT_AND_SUPPORT_ALLOWANCE_passported').is(':checked'),
         NON_CONTRIB_JOBSEEKERS_ALLOWANCE_passported: $('#NON_CONTRIB_JOBSEEKERS_ALLOWANCE_passported').is(':checked'),
