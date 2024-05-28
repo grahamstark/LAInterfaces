@@ -290,7 +290,7 @@ f
 
     total amount of mortgage (borramt) / total Term of mortgage (mortend)
 
-With a correction for remortgages and returns thr weekly equivalent.
+With a correction for remortgages and returns the weekly equivalent.
 
 Mortgage interest is a separate slot using the FRS ` mortint` variable. Both are used in the legal aid calculation (but capital can optionally be switched off).
 
