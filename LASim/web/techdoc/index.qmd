@@ -183,6 +183,19 @@ FRS asset data is recorded in several places:
 
 FRS has no physical capital variables and no measure of net debt. (All these measure are non-negative)
 
+The FRS/ONS note on savings and investments is as follows [@dwp_family_2020]:
+
+> Savings and investments
+
+> The FRS does not capture information on non-liquid assets. Physical wealth and pensions accruing are not included in FRS estimates. The survey also does not capture detailed information on expenditure (except for housing costs). Therefore, it is not possible to show how households are coping financially, in terms of income versus outgoings.
+
+> However, the FRS does capture information on liquid financial assets, referred to in the survey as ‘savings and investments’. Estimates for savings and investments should be treated with caution, as they are likely to be under-estimates, since respondents often inaccurately report their account details. In view of this, the information is gathered as follows:
+
+>  *  Respondents are asked, as a benefit unit, to say which of several £ bands their total level of savings and investments are in
+> * Benefit units that report between £1,500 and £20,000 (28% of benefit units) are then asked, for each of their accounts and assets, how much each is worth and how much interest they accrue. The total level of savings and investments is then calculated using this set of reported values
+> * Benefit units with reported savings and investments below £1,500 and above £20,000 (72% of benefit units) are only asked how much interest each account and asset accrues. These respondents are also asked to estimate the value of all of their current accounts and basic bank accounts combined
+
+
 The 2007 Model used the `totsav` record exclusively.
 
 #### The Wealth and Assets Survey (WAS)
@@ -273,9 +286,34 @@ f
 
 #### Expenses
 
-* Housing - for owner occupiers the FRS normally just counts mortgage interest as a cost. We add in capital repayments though this is tricky to derive from FRS variables. Code is in `mortage_capital_payments` function in the `Household_Mappings_FRS_Only.jl` module. 
-* Maintenance payments - this is the sum of the FRS `maint` records for each individual.
-* Debt repayments - there is no FRS code for repayments other than student debt repayments, so for this we use matched LCF data - codes: `lcf.b237 + lcf.b238 + lcf.ck5316t + lcf.cc6211c`. See the [MatchingLibs.jl](https://github.com/grahamstark/ScottishTaxBenefitModel.jl/blob/master/src/MatchingLibs.jl) package and [lcf_frs_matching.jl](https://github.com/grahamstark/ScottishTaxBenefitModel.jl/blob/master/matching/lcf_frs_matching.jl) script for more on how FRS and LCF are matched. 
+*Housing* - for owner occupiers the FRS normally just counts mortgage interest as a cost. We add in capital repayments though this is tricky to derive from FRS variables. Code is in `mortage_capital_payments` function in the `Household_Mappings_FRS_Only.jl` module. `mortage_capital_payments` calculates:
+
+    total amount of mortgage (borramt) / total Term of mortgage (mortend)
+
+With a correction for remortgages and returns thr weekly equivalent.
+
+Mortgage interest is a separate slot using the FRS ` mortint` variable. Both are used in the legal aid calculation (but capital can optionally be switched off).
+
+*Maintenance payments* - this is the sum of the FRS `maint` records for each individual.
+
+*Debt repayments* - there is no FRS code for repayments other than student debt repayments, so for this we use matched LCF data - codes: `lcf.b237 + lcf.b238 + lcf.ck5316t + lcf.cc6211t`. 
+
+    B237 = Credit card interest payments
+    B238 = Annual standing charge for credit cards
+    ck5316t = Pay off loan to clear other debt - children and adults
+    C62114t = Bank Charges
+
+See the [MatchingLibs.jl](https://github.com/grahamstark/ScottishTaxBenefitModel.jl/blob/master/src/MatchingLibs.jl) package and [lcf_frs_matching.jl](https://github.com/grahamstark/ScottishTaxBenefitModel.jl/blob/master/matching/lcf_frs_matching.jl) script for more on how FRS and LCF are matched. 
+
+*travel to work*: here's no good data on this in any household dataset I'm aware of. So I make an arbitrary assumption: 50% of spending on:
+
+    - bus_boat_and_train, 
+    - petrol,
+    - diesel,
+    - other_motor_oils, 
+    - other_transport 
+
+from the matched lcf record, allocated between all those reporing in work. Previosly the FRS had a travel to work cost variable TTWCOSTS but this was deleted in 2007 onwards.
 
 ::: {.callout-note}
 
