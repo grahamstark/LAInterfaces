@@ -180,9 +180,15 @@
                             </label>
                         </div>
                         <div class="form-check">
-                            <input class="form-check-input net_housing_wealth" type="checkbox" value="" id="net_housing_wealth" checked="checked"/>
+                            <input class="form-check-input net_housing_wealth" type="checkbox" value="" id="net_housing_wealth" />
                             <label class="form-check-label net_housing_wealth" for="net_housing_wealth">
                                 Net Housing Wealth
+                            </label>
+                        </div>
+                        <div class="form-check">
+                            <input class="form-check-input second_homes" type="checkbox" value="" id="second_homes" />
+                            <label class="form-check-label second_homes" for="second_homes">
+                                Second Homes
                             </label>
                         </div>
 
@@ -712,7 +718,7 @@
                         <br/>
                         <input class='form-check-input ' type='checkbox' id='reset_all_if_changed' name='reset_all_if_changed'/>
                         <label class="form-check-label reset_all_if_changed" for="reset_all_if_changed">
-                            Reset Everthing? (May Take a While; needed to make things completely consistent)
+                            Reset Everything? (May Take a While; needed to make things completely consistent)
                         </label>
                     </fieldset>
                 </div>
@@ -805,6 +811,7 @@
 
         
         <footer>
+
             <ul class="nav flex-column">
                 <li class="nav-item mb-2">
                     <a class="nav-link p-0 text-muted" href="techdoc/index.html">Technical Doc</a>
@@ -1143,6 +1150,10 @@ function loadParams( defaults, params ){
         params.net_housing_wealth,
         defaults.net_housing_wealth );
     setCheck(
+        "second_homes",
+        params.second_homes,
+        defaults.second_homes );
+    setCheck(
         "net_financial_wealth",
         params.net_financial_wealth,
         defaults.net_financial_wealth );
@@ -1476,6 +1487,7 @@ function loadFromForm(new_uuid){
         net_financial_wealth: $('#net_financial_wealth').is(':checked'),
         net_physical_wealth: $('#net_physical_wealth').is(':checked'),
         net_housing_wealth: $('#net_housing_wealth').is(':checked'),
+        second_homes: $('#second_homes').is(':checked'),
         income_contribution_rates: ic[0], 
         income_contribution_limits: ic[1],
         capital_contribution_rates: cc[0], 
@@ -1626,7 +1638,7 @@ const FULL_DATA_ACTIONS = new Set([
 const NEW_UUID_ACTIONS = new Set(['run']);
 
 function submitForm( action, target ){
-     var url = "/lasim/"+action; // url = "/lasim/"+action;
+     var url = "/lasim/"+action; // url = "/"+action;
      if( target != null ){
         url += "/"+target;
      }
