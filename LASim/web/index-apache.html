@@ -676,19 +676,32 @@
                 </fieldset>
 
                 <div class="row">
+                    <h3 c;ass='text-secondary'>Run Settings</h3>
                     <fieldset class="col-12 border text-black m-1 p-2">
-                        <legend class="text-primary">Run Settings</legend>
+                        <legend class="text-primary">Capital Option</legend>
                         <div class="form-check">
                             <input class="form-check-input" 
                                 type="radio" 
                                 name="wealth_method" 
                                 id="imputation"  
-                                value="imputation"
+                                value="matching"
                                 checked='checked'>
                             <label 
                                 class="form-check-label" 
+                                for="matching">
+                            Use matched Data from the Wealth and Assets Survey (WAS) (Default; use this for 2nd homes)
+                            </label>
+                        </div>
+                        <div class="form-check">
+                            <input class="form-check-input" 
+                                type="radio" 
+                                name="wealth_method" 
+                                id="imputation"  
+                                value="imputation">
+                            <label 
+                                class="form-check-label" 
                                 for="imputation">
-                            Use Imputations from the Wealth and Assets Survey
+                            Use Imputations from WAS
                             </label>
                         </div>
                         <div class="form-check">
@@ -715,14 +728,10 @@
                             Hybrid Method (Financial and Physical Only); higher than raw FRS, lower than WAS.
                             </label>
                         </div>
-                        <br/>
-                        <input class='form-check-input ' type='checkbox' id='reset_all_if_changed' name='reset_all_if_changed'/>
-                        <label class="form-check-label reset_all_if_changed" for="reset_all_if_changed">
-                            Reset Everything? (May Take a While; needed to make things completely consistent)
-                        </label>
+                        
                     </fieldset>
                 </div>
-
+                <input type='hidden' id='reset_all_if_changed' name='reset_all_if_changed'/>
                 <div class="row"> <!-- progress bar -->
                     <div class="col"></div>
                     <div class='col-4' id="progress-indicator"></div>
