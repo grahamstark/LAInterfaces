@@ -54,34 +54,39 @@ function map_sys_from_subsys( subsys :: LASubsys )::OneLegalAidSys
       end
     end
     if subsys.NON_CONTRIB_EMPLOYMENT_AND_SUPPORT_ALLOWANCE_passported 
-      push!( fullsys.passported_benefits, NON_CONTRIB_EMPLOYMENT_AND_SUPPORT_ALLOWANCE )
+        push!( fullsys.passported_benefits, NON_CONTRIB_EMPLOYMENT_AND_SUPPORT_ALLOWANCE )
     else
-      spop!( fullsys.passported_benefits, NON_CONTRIB_EMPLOYMENT_AND_SUPPORT_ALLOWANCE)
+        spop!( fullsys.passported_benefits, NON_CONTRIB_EMPLOYMENT_AND_SUPPORT_ALLOWANCE)
     end
     if subsys.NON_CONTRIB_JOBSEEKERS_ALLOWANCE_passported
-      push!( fullsys.passported_benefits, NON_CONTRIB_JOBSEEKERS_ALLOWANCE )
+        push!( fullsys.passported_benefits, NON_CONTRIB_JOBSEEKERS_ALLOWANCE )
     else
-      spop!( fullsys.passported_benefits, NON_CONTRIB_JOBSEEKERS_ALLOWANCE )
+        spop!( fullsys.passported_benefits, NON_CONTRIB_JOBSEEKERS_ALLOWANCE )
     end
     if subsys.UNIVERSAL_CREDIT_passported
-      push!( fullsys.passported_benefits, UNIVERSAL_CREDIT )
+        push!( fullsys.passported_benefits, UNIVERSAL_CREDIT )
     else
-      spop!( fullsys.passported_benefits, UNIVERSAL_CREDIT )
+        spop!( fullsys.passported_benefits, UNIVERSAL_CREDIT )
     end
     if subsys.net_financial_wealth
-      push!( fullsys.included_capital, net_financial_wealth ) 
+        push!( fullsys.included_capital, net_financial_wealth ) 
     else
-      spop!( fullsys.included_capital, net_financial_wealth )
+        spop!( fullsys.included_capital, net_financial_wealth )
     end
     if subsys.net_physical_wealth
-      push!( fullsys.included_capital, net_physical_wealth ) 
+        push!( fullsys.included_capital, net_physical_wealth ) 
     else
-      spop!( fullsys.included_capital, net_physical_wealth )
+        spop!( fullsys.included_capital, net_physical_wealth )
     end
     if subsys.net_housing_wealth
-      push!( fullsys.included_capital, net_housing_wealth ) 
+        push!( fullsys.included_capital, net_housing_wealth ) 
     else
-      spop!( fullsys.included_capital, net_housing_wealth )
+        spop!( fullsys.included_capital, net_housing_wealth )
+    end
+    if subsys.second_homes
+        push!( fullsys.included_capital, second_homes ) 
+    else
+        spop!( fullsys.included_capital, second_homes )
     end
     println( "sys.income_contribution_rates was: $(fullsys.income_contribution_rates)")
     println( "sys.income_contribution_limit was: $(fullsys.income_contribution_limits)")

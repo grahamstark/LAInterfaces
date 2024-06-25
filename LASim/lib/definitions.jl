@@ -27,6 +27,7 @@ mutable struct LASubsys{T}
     net_financial_wealth :: Bool
     net_physical_wealth :: Bool
     net_housing_wealth :: Bool    
+    second_homes :: Bool
     income_contribution_rates :: Vector{T}
     income_contribution_limits :: Vector{T}  
     capital_contribution_rates :: Vector{T}
@@ -139,6 +140,7 @@ function LASubsys( uuid :: UUID, sys :: OneLegalAidSys )
         net_financial_wealth in sys.included_capital,
         net_physical_wealth in sys.included_capital,
         net_housing_wealth in sys.included_capital,
+        second_homes in sys.included_capital,
         sys.income_contribution_rates,
         sys.income_contribution_limits,
         sys.capital_contribution_rates,
