@@ -677,7 +677,7 @@
 
                 <div class="row">
                     <h3 class='text-secondary'>Run Settings</h3>
-                    <fieldset class="col-2 border text-black m-1 p-2">
+                    <fieldset class="col-4 border text-black m-1 p-2">
                         <legend class="text-primary">Capital Option</legend>
                         <div class="form-check">
                             <input class="form-check-input" 
@@ -729,16 +729,16 @@
                             </label>
                         </div>
                     </fieldset>
-                    <fieldset class="class="col-2 border text-black m-1 p-2">
+                    <fieldset class="col-4 border text-black m-1 p-2">
                         <legend class="text-primary">Takeup Correction</legend>
                         <div class="form-check">
-                            <input class="form-check-input do_dodgy_takeup_corrections" type="checkbox" value="" id="do_dodgy_takeup_corrections" />
+                            <input class="form-check-input do_dodgy_takeup_corrections" type="checkbox" value="" id="do_dodgy_takeup_corrections" name="do_dodgy_takeup_corrections"/>
                             <label class="form-check-label do_dodgy_takeup_corrections" for="do_dodgy_takeup_corrections">
                                 Make a very crude means-tested benefit take-up correction? (See tech notes).
                             </label>
                         </div>                        
                     </fieldset>
-                    <div class="col-6"></div>
+                    <div class="col-4"></div>
                 </div>
                 <input type='hidden' id='reset_all_if_changed' name='reset_all_if_changed'/>
                 <div class="row"> <!-- progress bar -->
@@ -1550,7 +1550,7 @@ function loadFromForm(new_uuid){
         uc_limit_type: $('input[name="uc_limit_type"]:checked').val(),
         uc_use_income: $('#uc_use_income').is(':checked'),
         wealth_method: $('input[name="wealth_method"]:checked').val(),
-        do_dodgy_takeup_corrections: $('input[name="do_dodgy_takeup_corrections"]:checked').val(),
+        do_dodgy_takeup_corrections: $('#do_dodgy_takeup_corrections').is(':checked'),
         reset_all_if_changed: $('#reset_all_if_changed').is(':checked'),
     
         ANY_OTHER_NI_OR_STATE_BENEFIT_disregarded: $('#ANY_OTHER_NI_OR_STATE_BENEFIT_disregarded').is(':checked'),
