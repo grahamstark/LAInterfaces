@@ -128,7 +128,7 @@ function dict_obs( settings :: Settings )::Observable
             completed = 0
         end
         prog = Progress( settings.uuid, p.phase, p.thread, completed, p.step, p.size )
-        @show "dict_obs: setting PROGRESS[$(settings.uuid)] to $(prog.phase)"
+        # @show "dict_obs: setting PROGRESS[$(settings.uuid)] to $(prog.phase)"
         PROGRESS[settings.uuid] = prog
     end
     return sobs
