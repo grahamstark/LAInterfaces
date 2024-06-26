@@ -676,8 +676,8 @@
                 </fieldset>
 
                 <div class="row">
-                    <h3 c;ass='text-secondary'>Run Settings</h3>
-                    <fieldset class="col-12 border text-black m-1 p-2">
+                    <h3 class='text-secondary'>Run Settings</h3>
+                    <fieldset class="col-3 border text-black m-1 p-2">
                         <legend class="text-primary">Capital Option</legend>
                         <div class="form-check">
                             <input class="form-check-input" 
@@ -716,6 +716,7 @@
                             Use FRS Assets Data (Financial Assets Only, much lower than WAS)
                             </label>
                         </div>
+                        <caption 
                         <div class="form-check">
                             <input class="form-check-input" 
                                 type="radio" 
@@ -728,14 +729,17 @@
                             Hybrid Method (Financial and Physical Only); higher than raw FRS, lower than WAS.
                             </label>
                         </div>
+                    </fieldset>
+                    <fieldset class="col-3">
+                        <legend class="text-primary">Takeup Correction</legend>
                         <div class="form-check">
                             <input class="form-check-input do_dodgy_takeup_corrections" type="checkbox" value="" id="do_dodgy_takeup_corrections" />
                             <label class="form-check-label do_dodgy_takeup_corrections" for="do_dodgy_takeup_corrections">
                                 Make a very crude means-tested benefit take-up correction? (See tech notes).
                             </label>
-                        </div>
-                        
+                        </div>                        
                     </fieldset>
+                    <div class="col-6"></div>
                 </div>
                 <input type='hidden' id='reset_all_if_changed' name='reset_all_if_changed'/>
                 <div class="row"> <!-- progress bar -->
