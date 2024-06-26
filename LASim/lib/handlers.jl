@@ -30,6 +30,7 @@ end
 
 function map_settings_from_subsys!( settings :: Settings, subsys :: LASubsys )
     settings.wealth_method = subsys.wealth_method
+    settings.do_dodgy_takeup_corrections = subsys.do_dodgy_takeup_corrections
     settings.uuid = subsys.uuid
 end
   

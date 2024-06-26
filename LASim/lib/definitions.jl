@@ -65,6 +65,7 @@ mutable struct LASubsys{T}
     repayments_max :: T
 
     wealth_method :: ExtraDataMethod
+    do_dodgy_takeup_corrections :: Bool
     reset_all_if_changed :: Bool
 
     ANY_OTHER_NI_OR_STATE_BENEFIT_disregarded :: Bool
@@ -178,6 +179,7 @@ function LASubsys( uuid :: UUID, sys :: OneLegalAidSys )
         sys.expenses.repayments.max,
 
         DEFAULT_SETTINGS.wealth_method,
+        DEFAULT_SETTINGS.do_dodgy_takeup_corrections,
         false,
         ! (ANY_OTHER_NI_OR_STATE_BENEFIT in sys.incomes.included),
         ! (ARMED_FORCES_COMPENSATION_SCHEME in sys.incomes.included),

@@ -728,6 +728,12 @@
                             Hybrid Method (Financial and Physical Only); higher than raw FRS, lower than WAS.
                             </label>
                         </div>
+                        <div class="form-check">
+                            <input class="form-check-input do_dodgy_takeup_corrections" type="checkbox" value="" id="do_dodgy_takeup_corrections" />
+                            <label class="form-check-label do_dodgy_takeup_corrections" for="do_dodgy_takeup_corrections">
+                                Make a very crude means-tested benefit take-up correction? (See tech notes).
+                            </label>
+                        </div>
                         
                     </fieldset>
                 </div>
@@ -1240,6 +1246,10 @@ function loadParams( defaults, params ){
 
     setRadio( "wealth_method", params.wealth_method, defaults.wealth_method )
     setCheck(
+        "do_dodgy_takeup_corrections",
+        params.do_dodgy_takeup_corrections,
+        defaults.do_dodgy_takeup_corrections );
+    setCheck(
         "reset_all_if_changed",
         params.reset_all_if_changed,
         defaults.reset_all_if_changed );
@@ -1537,6 +1547,7 @@ function loadFromForm(new_uuid){
         uc_limit_type: $('input[name="uc_limit_type"]:checked').val(),
         uc_use_income: $('#uc_use_income').is(':checked'),
         wealth_method: $('input[name="wealth_method"]:checked').val(),
+        do_dodgy_takeup_corrections: $('input[name="do_dodgy_takeup_corrections"]:checked').val(),
         reset_all_if_changed: $('#reset_all_if_changed').is(':checked'),
     
         ANY_OTHER_NI_OR_STATE_BENEFIT_disregarded: $('#ANY_OTHER_NI_OR_STATE_BENEFIT_disregarded').is(':checked'),
