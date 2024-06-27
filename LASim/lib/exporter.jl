@@ -37,17 +37,30 @@ function export_xlsx( results :: LegalOutput )::String
     filename = joinpath(  "web", urlname )
     XLSX.openxlsx(filename, mode="w") do xf
         sheet = xf[1]
-        XLSX.rename!( sheet, "Eligibility Crosstab")
+        XLSX.rename!( sheet, "Eligibility Crosstabs")
         sheet["A1"] = "Eligibility Crosstab, all people, inc. children"
         XLSX.writetable!( sheet, 
             crosstab_to_frame(
                 results.crosstab_pers[1]);
                 anchor_cell=XLSX.CellRef("A3"))  
-           # sheetname="Person Crosstab")        
-        sheet["A12"] = "Kieren's Summary Table"
+
+        sheet["A10"] = "Eligibility Crosstab, adults only"
+        XLSX.writetable!( sheet, 
+        crosstab_to_frame(
+            results.crosstab_adults[1]);
+            anchor_cell=XLSX.CellRef("A12"))  
+
+        sheet["A19"] = "Eligibility Crosstab, adults only"
+        XLSX.writetable!( sheet, 
+        crosstab_to_frame(
+            results.crosstab_bus[1]);
+            anchor_cell=XLSX.CellRef("A21"))  
+                # sheetname="Person Crosstab")        
+
+        sheet["A29"] = "Kieren's Summary Table"
            XLSX.writetable!( sheet,                
                    results.summary_tables[1];
-                   anchor_cell=XLSX.CellRef("A14"))  
+                   anchor_cell=XLSX.CellRef("A31"))  
               
         insert_sheet!( xf, "Elig", "Pre", results.breakdown_pers[1])
         insert_sheet!( xf, "Elig", "Post", results.breakdown_pers[2])

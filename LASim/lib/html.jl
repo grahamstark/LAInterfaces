@@ -250,16 +250,16 @@ function results_to_html(
     # table expects a tuple
     # k = "$(LegalAidData.PROBLEM_TYPES[1])-$(LegalAidData.ESTIMATE_TYPES[2])"
     crosstab = format_crosstab( 
-        results.crosstab_pers[1];
-        examples =  results.crosstab_pers_examples[1], 
+        results.crosstab_adults[1];
+        examples =  results.crosstab_adults_examples[1], 
         caption="Changes to elgibility: all Scottish People (click table for breakdowns)" )
     
     crosstab_examples = "<div>"
     for r in 1:5
         for c in 1:5
-            if length(results.crosstab_pers_examples[1][r,c])  > 0
+            if length(results.crosstab_adults_examples[1][r,c])  > 0
                 examples = make_examples( 
-                    results.crosstab_pers_examples[1][r,c], 
+                    results.crosstab_adults_examples[1][r,c], 
                     la2=la2 )
                 k = "example-popup-$r-$c"
                 from = CT_LABELS[c]
