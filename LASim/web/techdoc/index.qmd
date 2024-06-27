@@ -90,10 +90,27 @@ The 2007 model was custom-written to specifically model Legal Aid. Instead of ca
 ::: {.callout-note}
 There are two issues with benefits:
 
-* we use modelled entitlements rather than recorded receipts. There are currently no official estimates of means-tested benefit takeup (it is deemed too complex because of the legacy/UC transition) but previous estimates were of the range 50-80% [^@], 
-* the transition from Legacy Benefits [] to Universal Credit is progressing and this is hard to capture accurately. [Our modelling of this](https://github.com/grahamstark/ScottishTaxBenefitModel.jl/blob/master/src/UCTransition.jl) is based on analysis by the House Of Commons Library[@house_of_commons_library_constituency_2020].
+* we use modelled entitlements rather than recorded receipts. There are currently no official estimates of means-tested benefit takeup (it is deemed too complex because of the legacy/UC transition[@dwp_income-related_2022]) but previous estimates were of the range 50-80% [^@]. As a late option, a simple takeup correction routine was added; this is [discussed below]();
+* the transition from Legacy Benefits to Universal Credit is progressing and this is hard to capture accurately. [Our modelling of this](https://github.com/grahamstark/ScottishTaxBenefitModel.jl/blob/master/src/UCTransition.jl) is based on analysis by the House Of Commons Library[@house_of_commons_library_constituency_2020].
 
 :::
+
+#### Takeup
+
+A simple [benefit takeup correction routine](https://github.com/grahamstark/ScottishTaxBenefitModel.jl/blob/master/src/CrudeTakeup.jl) was added last-minute. This disallows fixed proportions of calculated benefit entitlements, as follows:
+
+* Working Tax Credit Single Parents = 72%
+* Working Tax Credit Others = 50% ([source](https://ifs.org.uk/sites/default/files/output_url_files/ifs-takeup1b.pdf) )
+
+* Universal Credit: I can't find any study of UC takeup (see [@dwp_income-related_2022] for a discussion); however there is an argument that it is likely at least as high as for Income Support or WTC since it bundles housing costs so average payment is higher [@brewer_universal_2011]. 80% was chosen.
+
+* Pension/Savings Credit 60% [@dwp_income-related_2024]
+* Housing Benefit 80%
+* Income Support/JSA/ESA 90%
+
+A full takeup correction model would be much more sophisticated than this, but I was unable to locate up-to-date models for the UK or Scotland, and there was no time to estimate one. See [@brewer_estimating_2003;@fry_takeup_1992] for examples. Typically takeup varies positively with income (so takeup by value is higher than takeup by caseload) but for our purposes a crude correction by caseload is mostly OK since we're mostly concerned with passporting.
+
+### Sources 
 
 Specification of the legal aid system came from the following documents:
 
@@ -285,6 +302,29 @@ f
 
 ```
 
+##### WAS/FRS Data Matching 
+
+As a very late addition at the request of SLAB an option to join FRS and WAS was added. The [code for this](https://github.com/grahamstark/ScottishTaxBenefitModel.jl/blob/master/src/MatchingLibs.jl) follows the LCF/WAS matching discussed immediately below though with different matching variables. Data is matched on:
+
+* age of head 
+* region (biased towards matching Scottish records from each dataset)
+* socio-ecomomic position of head 
+* type of dwelling (flat, etc.)
+* tenure type 
+* socio-economic position of head 
+* employment status of head 
+* sex of head
+* marital status of head
+* any wages in hh
+* any self-employment income in hh 
+* any pension income in hh
+* head has degree or above
+* number of adults
+* number of children
+
+For each frs household, a score is generated from comparing with each WAS record on these fields.
+The top 20 matches are then sorted by closeness of household income. Currently only the closest single record is used but a facility to use multiple records to generate confidence intervals could be added [^li-chung]. 
+
 #### Expenses
 
 *Housing* - for owner occupiers the FRS normally just counts mortgage interest as a cost. We add in capital repayments though this is tricky to derive from FRS variables. Code is in `mortage_capital_payments` function in the `Household_Mappings_FRS_Only.jl` module. `mortage_capital_payments` calculates:
@@ -345,3 +385,4 @@ The model data is currently uprated to 2023 Q3 and the tax-benefit parameter sys
 
 [^fntotcap]: We use `totcap3` since that's the only version that's available for all the years we pool over.
 [^upratenote]: Note that since this data is aggregated over 2015-21 and uprated to 2023Q4, these numbers won't be exactly reproducable from the raw FRS records.
+[^li-chung]: sometimes called 'Li-Chuning' after the [University of Southamption professor who proposed this method](https://www.southampton.ac.uk/people/5x9mtl/professor-li-chun-zhang). 
