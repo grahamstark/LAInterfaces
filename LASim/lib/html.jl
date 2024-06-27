@@ -186,8 +186,8 @@ function civil_colname_rename( thing )::String
     return get( FIRST_COL_RENAMES, thing, Utils.pretty( thing ))
 end
 
-const CIVIL_TRANS = Dict(["aa_total"=>"Total", "Adults with incapacity/Mental Health"=>"Adults with Incapacity"])
-const AA_TRANS = Dict(["aa_total"=>"Total", "Adults with incapacity/Mental Health"=>"Mental Health"])
+const CIVIL_TRANS = Dict(["Aa Total"=>"Total", "Adults With Incapacity Or Mental Health"=>"Adults with Incapacity"])
+const AA_TRANS = Dict(["Aa Total"=>"Total", "Adults With Incapacity Or Mental Health"=>"Mental Health"])
 
 function frame_to_table(
     ;
@@ -202,8 +202,9 @@ function frame_to_table(
         return get( translations, name, name )
     end
     
-
+    @info names( pre_df )
     colnames = Utils.pretty.( translate.(names( pre_df )))
+    @info colnames
     headers = "<th></th><th colspan='2'>" * join( colnames[2:end], "</th><th colspan='2'>" ) * "</th>"
     table = "<table class='table table-sm'>"
     table *= "<thead>

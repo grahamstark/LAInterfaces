@@ -147,8 +147,8 @@ function load_all()::HTTP.Messages.Response
         resp.params.aa.uuid = uuid4()
         OUTPUT[resp.params.civil.uuid] = resp
     end
-    @show resp.params
-    @show DEFAULT_COMPLETE_RESPONSE
+    # @show resp.params
+    # @show DEFAULT_COMPLETE_RESPONSE
     return ( response=output_ready, data = OneResponse( systype, resp )) |> json
 end
 
@@ -213,19 +213,13 @@ function do_dict_run(
     sys2 = deepcopy( DEFAULT_PARAMS )
     sys2.legalaid.civil = map_sys_from_subsys( allresp.params.civil )
     sys2.legalaid.aa = map_sys_from_subsys( allresp.params.aa )
-    @info "dorun entered activesubsys is " activesubsys
-    println( "#1")
     res = do_la_run( settings, DEFAULT_PARAMS, sys2, sobs )
-    println( "#2")
     resp = CompleteResponse(
         res.xlsxfile,
         res.html,
         DEFAULT_SUBSYS,
         allresp.params )
-    println( "#3")
     OUTPUT[uuid] = resp
-    println( "#4 $uuid")
-    @info "saved resp to output; keys in OUTPUT are $(keys(OUTPUT)) "
     sobs[]= Progress( uuid, "reached-run-end", -99, -99, -99, -99 )
 end
   
