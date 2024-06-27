@@ -186,13 +186,24 @@ function civil_colname_rename( thing )::String
     return get( FIRST_COL_RENAMES, thing, Utils.pretty( thing ))
 end
 
+const CIVIL_TRANS = Dict(["aa_total"=>"Total", "Adults with incapacity/Mental Health"=>"Adults with Incapacity"])
+const AA_TRANS = Dict(["aa_total"=>"Total", "Adults with incapacity/Mental Health"=>"Mental Health"])
+
 function frame_to_table(
     ;
     pre_df  :: DataFrame,
     post_df :: DataFrame,
-    caption :: String = "" )
+    caption :: String = "",
+    systype :: SystemType )
     @argcheck size( pre_df ) == size( post_df )
-    colnames = Utils.pretty.( names( pre_df ))
+
+    function translate( name :: String ) :: String
+        translations = systype == sys_aa ? AA_TRANS : CIVIL_TRANS
+        return get( translations, name, name )
+    end
+    
+
+    colnames = Utils.pretty.( translate.(names( pre_df )))
     headers = "<th></th><th colspan='2'>" * join( colnames[2:end], "</th><th colspan='2'>" ) * "</th>"
     table = "<table class='table table-sm'>"
     table *= "<thead>
@@ -291,7 +302,8 @@ function results_to_html(
         ;    
         pre_df = results.breakdown_pers[1][t],
         post_df = results.breakdown_pers[2][t],
-        caption =  "Eligibility Counts, all Scottish people, by Employment (click table for more)." )
+        caption =  "Eligibility Counts, all Scottish people, by Employment (click table for more).",
+        systype = systype )
     
     allcounts =  "<div class='row'><div class='col'><h3>Breakdowns By Characteristics</h3></div></div>"
     for t in tgts[2:end]
@@ -302,13 +314,15 @@ function results_to_html(
             ;    
             pre_df = results.breakdown_pers[1][t],
             post_df = results.breakdown_pers[2][t],
-            caption =  "Eligibility Counts of all Scottish people, by $prett." )
+            caption =  "Eligibility Counts of all Scottish people, by $prett.",
+            systype = systype  )
         allcounts *= "<div class='row'><div class='col'><h4>Assessment Unit Level</h4></div></div>"
         allcounts *= frame_to_table(
             ;    
             pre_df = results.breakdown_bu[1][t],
             post_df = results.breakdown_bu[2][t],
-            caption =  "Eligibility Counts of assessment units, by $prett of the head of the unit." )
+            caption =  "Eligibility Counts of assessment units, by $prett of the head of the unit.",
+            systype = systype  )
         allcounts *= "</div></div>"
     end
     allcounts *= "</div>"    
@@ -317,7 +331,8 @@ function results_to_html(
             ;    
             pre_df = results.cases_pers[1][t],
             post_df = results.cases_pers[2][t],
-            caption =  "Costs, all Scottish people, by Employment and Problem Type(click table for more)." )
+            caption =  "Costs, all Scottish people, by Employment and Problem Type(click table for more).",
+            systype = systype )
             allcosts = "<div class='row'><div class='col'><h3>Costs By Characteristics</h3></div></div>"
     
     allcases= "<div class='row'><div class='col'><h3>Cases By Characteristics</h3></div></div>"
@@ -329,7 +344,8 @@ function results_to_html(
             ;    
             pre_df = results.cases_pers[1][t],
             post_df = results.cases_pers[2][t],
-            caption =  "Cases, all Scottish people, by $prett and case type." )
+            caption =  "Cases, all Scottish people, by $prett and case type.",
+            systype = systype )
         allcases *= "</div></div>"
     end
     allcases *= "</div>"    
@@ -339,7 +355,8 @@ function results_to_html(
             ;    
             pre_df = results.costs_pers[1][t],
             post_df = results.costs_pers[2][t],
-            caption =  "Costs, all Scottish people, by Employment and Problem Type(click table for more)." )
+            caption =  "Costs, all Scottish people, by Employment and Problem Type(click table for more).",
+            systype = systype )
             allcosts = "<div class='row'><div class='col table-responsive'><h3>Costs By Characteristics</h3></div></div>"
     
     allcosts= "<div class='row'><div class='col'><h3>Cases By Characteristics</h3></div></div>"
@@ -351,7 +368,8 @@ function results_to_html(
             ;    
             pre_df = results.costs_pers[1][t],
             post_df = results.costs_pers[2][t],
-            caption =  "Costs, by $prett and case type." )
+            caption =  "Costs, by $prett and case type.",
+            systype = systype )
         allcosts *= "</div></div>"
     end
     allcosts *= "</div>"    
