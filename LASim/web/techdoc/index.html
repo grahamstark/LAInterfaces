@@ -80,6 +80,7 @@ div.csl-indent {
   <ul class="collapse">
   <li><a href="#code-organisation" id="toc-code-organisation" class="nav-link" data-scroll-target="#code-organisation">Code organisation</a></li>
   <li><a href="#taxes-and-benefits" id="toc-taxes-and-benefits" class="nav-link" data-scroll-target="#taxes-and-benefits">Taxes and Benefits</a></li>
+  <li><a href="#sources" id="toc-sources" class="nav-link" data-scroll-target="#sources">Sources</a></li>
   <li><a href="#testing" id="toc-testing" class="nav-link" data-scroll-target="#testing">Testing</a></li>
   <li><a href="#web-interface" id="toc-web-interface" class="nav-link" data-scroll-target="#web-interface">Web Interface</a></li>
   <li><a href="#frs-data" id="toc-frs-data" class="nav-link" data-scroll-target="#frs-data">FRS Data</a></li>
@@ -120,7 +121,7 @@ div.csl-indent {
     <div>
     <div class="quarto-title-meta-heading">Published</div>
     <div class="quarto-title-meta-contents">
-      <p class="date">Tuesday, May 28, 2024</p>
+      <p class="date">Thursday, June 27, 2024</p>
     </div>
   </div>
   
@@ -194,21 +195,37 @@ Note
 <div class="callout-body-container callout-body">
 <p>There are two issues with benefits:</p>
 <ul>
-<li>we use modelled entitlements rather than recorded receipts. There are currently no official estimates of means-tested benefit takeup (it is deemed too complex because of the legacy/UC transition) but previous estimates were of the range 50-80% [^@],</li>
-<li>the transition from Legacy Benefits [] to Universal Credit is progressing and this is hard to capture accurately. <a href="https://github.com/grahamstark/ScottishTaxBenefitModel.jl/blob/master/src/UCTransition.jl">Our modelling of this</a> is based on analysis by the House Of Commons Library<span class="citation" data-cites="house_of_commons_library_constituency_2020"><a href="#fn7" class="footnote-ref" id="fnref7" role="doc-noteref"><sup>7</sup></a></span>.</li>
+<li>we use modelled entitlements rather than recorded receipts. There are currently no official estimates of means-tested benefit takeup (it is deemed too complex because of the legacy/UC transition<span class="citation" data-cites="dwp_income-related_2022"><a href="#fn7" class="footnote-ref" id="fnref7" role="doc-noteref"><sup>7</sup></a></span>) but previous estimates were of the range 50-80% [^@]. As a late option, a simple takeup correction routine was added; this is <a href="">discussed below</a>;</li>
+<li>the transition from Legacy Benefits to Universal Credit is progressing and this is hard to capture accurately. <a href="https://github.com/grahamstark/ScottishTaxBenefitModel.jl/blob/master/src/UCTransition.jl">Our modelling of this</a> is based on analysis by the House Of Commons Library<span class="citation" data-cites="house_of_commons_library_constituency_2020"><a href="#fn8" class="footnote-ref" id="fnref8" role="doc-noteref"><sup>8</sup></a></span>.</li>
 </ul>
 </div>
 </div>
+<section id="takeup" class="level4">
+<h4 class="anchored" data-anchor-id="takeup">Takeup</h4>
+<p>A simple <a href="https://github.com/grahamstark/ScottishTaxBenefitModel.jl/blob/master/src/CrudeTakeup.jl">benefit takeup correction routine</a> was added last-minute. This disallows fixed proportions of calculated benefit entitlements, as follows:</p>
+<ul>
+<li><p>Working Tax Credit Single Parents = 72%</p></li>
+<li><p>Working Tax Credit Others = 50% (<a href="https://ifs.org.uk/sites/default/files/output_url_files/ifs-takeup1b.pdf">source</a> )</p></li>
+<li><p>Universal Credit: I can’t find any study of UC takeup (see<span class="citation" data-cites="dwp_income-related_2022"><a href="#fn9" class="footnote-ref" id="fnref9" role="doc-noteref"><sup>9</sup></a></span> for a discussion); however there is an argument that it is likely at least as high as for Income Support or WTC since it bundles housing costs so average payment is higher.<span class="citation" data-cites="brewer_universal_2011"><a href="#fn10" class="footnote-ref" id="fnref10" role="doc-noteref"><sup>10</sup></a></span> 80% was chosen.</p></li>
+<li><p>Pension/Savings Credit 60%<span class="citation" data-cites="dwp_income-related_2024"><a href="#fn11" class="footnote-ref" id="fnref11" role="doc-noteref"><sup>11</sup></a></span></p></li>
+<li><p>Housing Benefit 80%</p></li>
+<li><p>Income Support/JSA/ESA 90%</p></li>
+</ul>
+<p>A full takeup correction model would be much more sophisticated than this, but I was unable to locate up-to-date models for the UK or Scotland, and there was no time to estimate one. See<span class="citation" data-cites="brewer_estimating_2003 fry_takeup_1992"><a href="#fn12" class="footnote-ref" id="fnref12" role="doc-noteref"><sup>12</sup></a></span> for examples. Typically takeup varies positively with income (so takeup by value is higher than takeup by caseload) but for our purposes a crude correction by caseload is mostly OK since we’re mostly concerned with passporting.</p>
+</section>
+</section>
+<section id="sources" class="level3">
+<h3 class="anchored" data-anchor-id="sources">Sources</h3>
 <p>Specification of the legal aid system came from the following documents:</p>
 <ul>
-<li>SLAB Civil Keycard<span class="citation" data-cites="slab_civil_2024"><a href="#fn8" class="footnote-ref" id="fnref8" role="doc-noteref"><sup>8</sup></a></span></li>
-<li>Financial eligibility for civil legal aid: general conditions and limits<span class="citation" data-cites="slab_financial_2024-1"><a href="#fn9" class="footnote-ref" id="fnref9" role="doc-noteref"><sup>9</sup></a></span></li>
-<li>The Civil Legal Aid (Scotland) Regulations 2002;<span class="citation" data-cites="scottish_legal_aid_board_civil_2002"><a href="#fn10" class="footnote-ref" id="fnref10" role="doc-noteref"><sup>10</sup></a></span></li>
+<li>SLAB Civil Keycard<span class="citation" data-cites="slab_civil_2024"><a href="#fn13" class="footnote-ref" id="fnref13" role="doc-noteref"><sup>13</sup></a></span></li>
+<li>Financial eligibility for civil legal aid: general conditions and limits<span class="citation" data-cites="slab_financial_2024-1"><a href="#fn14" class="footnote-ref" id="fnref14" role="doc-noteref"><sup>14</sup></a></span></li>
+<li>The Civil Legal Aid (Scotland) Regulations 2002;<span class="citation" data-cites="scottish_legal_aid_board_civil_2002"><a href="#fn15" class="footnote-ref" id="fnref15" role="doc-noteref"><sup>15</sup></a></span></li>
 </ul>
 </section>
 <section id="testing" class="level3">
 <h3 class="anchored" data-anchor-id="testing">Testing</h3>
-<p>Core code is created test-first<span class="citation" data-cites="google_inc_introducing_2021"><a href="#fn11" class="footnote-ref" id="fnref11" role="doc-noteref"><sup>11</sup></a></span>. Material for the tests came mainly from the online Legal Aid Calculators<span class="citation" data-cites="slab_aa_estimator_2024 slab_eligibility_2024"><a href="#fn12" class="footnote-ref" id="fnref12" role="doc-noteref"><sup>12</sup></a></span>. The spreadsheet [testcalcs.ods][https://github.com/grahamstark/ScottishTaxBenefitModel.jl/blob/master/docs/legalaid/testcalcs.ods] contains the raw test cases, which were translated into the test suite <a href="https://github.com/grahamstark/ScottishTaxBenefitModel.jl/blob/master/test/legal_aid_calculations_tests.jl">legal_aid_calculations_tests.jl</a>. The testsuite also contains a number of “dry runs” of the model.</p>
+<p>Core code is created test-first<span class="citation" data-cites="google_inc_introducing_2021"><a href="#fn16" class="footnote-ref" id="fnref16" role="doc-noteref"><sup>16</sup></a></span>. Material for the tests came mainly from the online Legal Aid Calculators<span class="citation" data-cites="slab_aa_estimator_2024 slab_eligibility_2024"><a href="#fn17" class="footnote-ref" id="fnref17" role="doc-noteref"><sup>17</sup></a></span>. The spreadsheet [testcalcs.ods][https://github.com/grahamstark/ScottishTaxBenefitModel.jl/blob/master/docs/legalaid/testcalcs.ods] contains the raw test cases, which were translated into the test suite <a href="https://github.com/grahamstark/ScottishTaxBenefitModel.jl/blob/master/test/legal_aid_calculations_tests.jl">legal_aid_calculations_tests.jl</a>. The testsuite also contains a number of “dry runs” of the model.</p>
 <div class="callout callout-style-default callout-note callout-titled">
 <div class="callout-header d-flex align-content-center">
 <div class="callout-icon-container">
@@ -250,11 +267,11 @@ Note
 </section>
 <section id="frs-data" class="level3">
 <h3 class="anchored" data-anchor-id="frs-data">FRS Data</h3>
-<p>The model uses the Scottish households from pooled 2015-2021 Family Resources (FRS) data<span class="citation" data-cites="department_for_work_and_pensions_family_2024"><a href="#fn13" class="footnote-ref" id="fnref13" role="doc-noteref"><sup>13</sup></a></span>. We use the public use FRS release which has a number of fields deleted for privacy reasons, though the deletions often seem arbitrary.</p>
+<p>The model uses the Scottish households from pooled 2015-2021 Family Resources (FRS) data<span class="citation" data-cites="department_for_work_and_pensions_family_2024"><a href="#fn18" class="footnote-ref" id="fnref18" role="doc-noteref"><sup>18</sup></a></span>. We use the public use FRS release which has a number of fields deleted for privacy reasons, though the deletions often seem arbitrary.</p>
 </section>
 <section id="matching" class="level3">
 <h3 class="anchored" data-anchor-id="matching">Matching</h3>
-<p>The FRS is augmented with matched in data from the Scottish Household Survey<span class="citation" data-cites="scottish_government_scottish_2024-1"><a href="#fn14" class="footnote-ref" id="fnref14" role="doc-noteref"><sup>14</sup></a></span> and the Living Costs and Food Survey. SHS is mainly used to give local-level information and is not very relevant to Legal Aid. LCF is used to provide estimates for some of the expense fields - repayments, travel to work costs and work expenses. The matching code for this dataset is <a href="https://github.com/grahamstark/ScottishTaxBenefitModel.jl/tree/master/matching">the matching/ folder</a>. Matching uses a custom version of Coarsened Exact Matching<span class="citation" data-cites="iacus_causal_2011 leulescu_statistical_2013 dorazio_statmatch_2022"><a href="#fn15" class="footnote-ref" id="fnref15" role="doc-noteref"><sup>15</sup></a></span></p>
+<p>The FRS is augmented with matched in data from the Scottish Household Survey<span class="citation" data-cites="scottish_government_scottish_2024-1"><a href="#fn19" class="footnote-ref" id="fnref19" role="doc-noteref"><sup>19</sup></a></span> and the Living Costs and Food Survey. SHS is mainly used to give local-level information and is not very relevant to Legal Aid. LCF is used to provide estimates for some of the expense fields - repayments, travel to work costs and work expenses. The matching code for this dataset is <a href="https://github.com/grahamstark/ScottishTaxBenefitModel.jl/tree/master/matching">the matching/ folder</a>. Matching uses a custom version of Coarsened Exact Matching<span class="citation" data-cites="iacus_causal_2011 leulescu_statistical_2013 dorazio_statmatch_2022"><a href="#fn20" class="footnote-ref" id="fnref20" role="doc-noteref"><sup>20</sup></a></span></p>
 <p>Both LCF and SHS are matched to FRS at the household level.</p>
 <p>The SHS/FRS are matched on: * Tenure Type * Accomodation Type * Single Parent * Num Adults * Num Children * Employment Status of Head of Household (HoH) * Socio-Economic Status of HoH * Age of HoH * Ethnic Group Of HoH</p>
 <p>LCF/FRS are matched on:</p>
@@ -275,22 +292,22 @@ Note
 <p>Code for this is in the <a href="https://github.com/grahamstark/ScottishTaxBenefitModel.jl/blob/master/src/MatchingLibs.jl">MatchingLibs.jl module</a></p>
 <section id="capital" class="level4">
 <h4 class="anchored" data-anchor-id="capital">Capital</h4>
-<p>Modelling the capital test proved a struggle. The FRS has limited information on assets. A companion survey, the Wealth Assets Survey (WAS)<span class="citation" data-cites="office_for_national_statistics_wealth_2017"><a href="#fn16" class="footnote-ref" id="fnref16" role="doc-noteref"><sup>16</sup></a></span> provides more comprehensive coverage. WAS figures are often much larger than FRS figures.</p>
+<p>Modelling the capital test proved a struggle. The FRS has limited information on assets. A companion survey, the Wealth Assets Survey (WAS)<span class="citation" data-cites="office_for_national_statistics_wealth_2017"><a href="#fn21" class="footnote-ref" id="fnref21" role="doc-noteref"><sup>21</sup></a></span> provides more comprehensive coverage. WAS figures are often much larger than FRS figures.</p>
 </section>
 <section id="frs" class="level4">
 <h4 class="anchored" data-anchor-id="frs">FRS</h4>
 <p>FRS asset figures are for financial assets only and are recorded at individual, benefit unit and household levels. The variables aim to record:</p>
 <blockquote class="blockquote">
-<p>“The total value of all liquid assets, including fixed-term investments. Pound amounts are informed by responses to questions on the value of assets or, in some cases, estimated from the interest on the savings.”<span class="citation" data-cites="department_for_work_and_pensions_family_2023"><a href="#fn17" class="footnote-ref" id="fnref17" role="doc-noteref"><sup>17</sup></a></span>.</p>
+<p>“The total value of all liquid assets, including fixed-term investments. Pound amounts are informed by responses to questions on the value of assets or, in some cases, estimated from the interest on the savings.”<span class="citation" data-cites="department_for_work_and_pensions_family_2023"><a href="#fn22" class="footnote-ref" id="fnref22" role="doc-noteref"><sup>22</sup></a></span>.</p>
 </blockquote>
 <p>FRS asset data is recorded in several places:</p>
 <ul>
 <li>The <code>assets</code> records, which record individual assets held by household members, and the <code>accounts</code> record, which records interest receipts;</li>
-<li><code>totcapb3</code> and <code>totcapb4</code>, which are ONS calculated total financial assets, constructed by summing the <code>assets</code> values and adding to that estimated assets from the <code>accounts</code> records for cases where <code>assets</code> are missing for some account type<a href="#fn18" class="footnote-ref" id="fnref18" role="doc-noteref"><sup>18</sup></a>. These are recorded at the benefit unit level;</li>
+<li><code>totcapb3</code> and <code>totcapb4</code>, which are ONS calculated total financial assets, constructed by summing the <code>assets</code> values and adding to that estimated assets from the <code>accounts</code> records for cases where <code>assets</code> are missing for some account type<a href="#fn23" class="footnote-ref" id="fnref23" role="doc-noteref"><sup>23</sup></a>. These are recorded at the benefit unit level;</li>
 <li><code>totsav</code>, which is a banded benefit unit level variable that’s supposed to be derived from the <code>totcap</code> variables, though it seems inconsistent with those in some cases.</li>
 </ul>
 <p>FRS has no physical capital variables and no measure of net debt. (All these measure are non-negative)</p>
-<p>The FRS/ONS note on savings and investments is as follows:<span class="citation" data-cites="dwp_family_2020"><a href="#fn19" class="footnote-ref" id="fnref19" role="doc-noteref"><sup>19</sup></a></span></p>
+<p>The FRS/ONS note on savings and investments is as follows:<span class="citation" data-cites="dwp_family_2020"><a href="#fn24" class="footnote-ref" id="fnref24" role="doc-noteref"><sup>24</sup></a></span></p>
 <blockquote class="blockquote">
 <p>Savings and investments</p>
 </blockquote>
@@ -311,7 +328,7 @@ Note
 </section>
 <section id="the-wealth-and-assets-survey-was" class="level4">
 <h4 class="anchored" data-anchor-id="the-wealth-and-assets-survey-was">The Wealth and Assets Survey (WAS)</h4>
-<p>The Wealth and Assets Survey (WAS).<span class="citation" data-cites="office_for_national_statistics_wealth_2017"><a href="#fn20" class="footnote-ref" id="fnref20" role="doc-noteref"><sup>20</sup></a></span> It has comprehensive data on financial, physical, housing and pension wealth.</p>
+<p>The Wealth and Assets Survey (WAS).<span class="citation" data-cites="office_for_national_statistics_wealth_2017"><a href="#fn25" class="footnote-ref" id="fnref25" role="doc-noteref"><sup>25</sup></a></span> It has comprehensive data on financial, physical, housing and pension wealth.</p>
 <p>An alternative we explored was to impute wealth onto the FRS from WAS. We did this using a linear regression on household characteristics (Code for this is in the files: <code>load_was.jl</code> and <code>wealth_regressions.jl</code> in the [https://github.com/grahamstark/ScottishTaxBenefitModel.jl/blob/master/regressions/(https://github.com/grahamstark/ScottishTaxBenefitModel.jl/blob/master/regressions/)] folder)</p>
 <ul>
 <li><code>HphysWR7</code> - Total Physical Wealth</li>
@@ -334,7 +351,7 @@ Note
 </div>
 </div>
 <p>We also developed a hybrid method which we took the higher of the <code>totsav</code> and <code>totcapb3</code> FRS variables and then inferred physical wealth as 60% of financial wealth, since this is roughly the ratio between the two in WAS. There is no great logic to this but it may be the best we can do with the data we have.</p>
-<p>The upshot of this is that we have three different measures of financial wealth, with no very clear story to tell about which is the best. The differences between the FRS measures and the WAS measure is very striking<a href="#fn21" class="footnote-ref" id="fnref21" role="doc-noteref"><sup>21</sup></a>. All three measures are selectable from the model front-end. Below are summary statics for our three financial wealth measures and a frequency plot in levels and logs. Note how much larger the WAS measure is, and that WAS financial wealth can be negative.</p>
+<p>The upshot of this is that we have three different measures of financial wealth, with no very clear story to tell about which is the best. The differences between the FRS measures and the WAS measure is very striking<a href="#fn26" class="footnote-ref" id="fnref26" role="doc-noteref"><sup>26</sup></a>. All three measures are selectable from the model front-end. Below are summary statics for our three financial wealth measures and a frequency plot in levels and logs. Note how much larger the WAS measure is, and that WAS financial wealth can be negative.</p>
 <p>FRS <code>totcapb3</code>:</p>
 <pre><code>Mean:           49956.744418
 Std. Deviation: 341989.645891
@@ -359,7 +376,7 @@ Minimum:        -1031504.371745
 Median:         9087.785520
 3rd Quartile:   56710.460409
 Maximum:        118888658.238608</code></pre>
-<div id="e49b1f47" class="cell" data-execution_count="2">
+<div id="1aeabe81" class="cell" data-execution_count="2">
 <div class="cell-output cell-output-display" data-execution_count="11">
 <div>
 <figure class="figure">
@@ -368,6 +385,28 @@ Maximum:        118888658.238608</code></pre>
 </div>
 </div>
 </div>
+<section id="wasfrs-data-matching" class="level5">
+<h5 class="anchored" data-anchor-id="wasfrs-data-matching">WAS/FRS Data Matching</h5>
+<p>As a very late addition at the request of SLAB an option to join FRS and WAS was added. The <a href="https://github.com/grahamstark/ScottishTaxBenefitModel.jl/blob/master/src/MatchingLibs.jl">code for this</a> follows the LCF/WAS matching discussed immediately below though with different matching variables. Data is matched on:</p>
+<ul>
+<li>age of head</li>
+<li>region (biased towards matching Scottish records from each dataset)</li>
+<li>socio-ecomomic position of head</li>
+<li>type of dwelling (flat, etc.)</li>
+<li>tenure type</li>
+<li>socio-economic position of head</li>
+<li>employment status of head</li>
+<li>sex of head</li>
+<li>marital status of head</li>
+<li>any wages in hh</li>
+<li>any self-employment income in hh</li>
+<li>any pension income in hh</li>
+<li>head has degree or above</li>
+<li>number of adults</li>
+<li>number of children</li>
+</ul>
+<p>For each frs household, a score is generated from comparing with each WAS record on these fields. The top 20 matches are then sorted by closeness of household income. Currently only the closest single record is used but a facility to use multiple records to generate confidence intervals could be added <a href="#fn27" class="footnote-ref" id="fnref27" role="doc-noteref"><sup>27</sup></a>.</p>
+</section>
 </section>
 <section id="expenses" class="level4">
 <h4 class="anchored" data-anchor-id="expenses">Expenses</h4>
@@ -406,7 +445,7 @@ Note
 </section>
 <section id="scottish-crime-and-justice-survey-scjs" class="level3">
 <h3 class="anchored" data-anchor-id="scottish-crime-and-justice-survey-scjs">Scottish Crime and Justice Survey (SCJS)</h3>
-<p>As an aside, the original proposal was to use SCJS<span class="citation" data-cites="scottish_government_scottish_crime_2024"><a href="#fn22" class="footnote-ref" id="fnref22" role="doc-noteref"><sup>22</sup></a></span> to model the likelihood of households experiencing a problem requiring legal advice. Some initial work was carried out which produced promising but this was abandoned on SLAB’s instructions. It could well be worth returning to this, perhaps as a stand-alone piece of work.</p>
+<p>As an aside, the original proposal was to use SCJS<span class="citation" data-cites="scottish_government_scottish_crime_2024"><a href="#fn28" class="footnote-ref" id="fnref28" role="doc-noteref"><sup>28</sup></a></span> to model the likelihood of households experiencing a problem requiring legal advice. Some initial work was carried out which produced promising but this was abandoned on SLAB’s instructions. It could well be worth returning to this, perhaps as a stand-alone piece of work.</p>
 </section>
 <section id="slab-datasets" class="level3">
 <h3 class="anchored" data-anchor-id="slab-datasets">SLAB Datasets</h3>
@@ -449,6 +488,12 @@ Board, Scottish Legal Aid. <span>“Civil <span>Keycard</span>,”</span> 2024. 
 <div id="ref-scottish_legal_aid_board_civil_2002" class="csl-entry" role="listitem">
 ———. <span>“The <span>Civil</span> <span>Legal</span> <span>Aid</span> (<span>Scotland</span>) <span>Regulations</span> 2002.”</span> <em>Scottish Legal Aid Board</em>, 2002. <a href="https://www.slab.org.uk/solicitors/legal-aid-legislation/civil-legal-aid-regulations/the-civil-legal-aid-scotland-regulations-2002/">https://www.slab.org.uk/solicitors/legal-aid-legislation/civil-legal-aid-regulations/the-civil-legal-aid-scotland-regulations-2002/</a>.
 </div>
+<div id="ref-brewer_estimating_2003" class="csl-entry" role="listitem">
+Brewer, Mike. <span>“Estimating <span>Models</span> of <span>Benefit</span> <span>Take</span>-up.”</span> <em>GOV.UK</em>, December 2003. <a href="https://www.gov.uk/government/publications/estimating-models-of-benefit-take-up">https://www.gov.uk/government/publications/estimating-models-of-benefit-take-up</a>.
+</div>
+<div id="ref-brewer_universal_2011" class="csl-entry" role="listitem">
+Brewer, Mike, James Browne, and Wenchao (Michelle) Jin. <span>“Universal <span>Credit</span>: A Preliminary Analysis,”</span> January 2011. <a href="http://www.ifs.org.uk/bns/bn116.pdf">http://www.ifs.org.uk/bns/bn116.pdf</a>.
+</div>
 <div id="ref-buck_means_2001" class="csl-entry" role="listitem">
 Buck, Alexy, and Graham Stark. <span>“Means <span>Assessment</span>: <span>Options</span> for <span>Change</span>.”</span> Legal Services Commission, 2001. <a href="http://webarchive.nationalarchives.gov.uk/20100210214359/http://lsrc.org.uk/publications/meansassessmentoptionsforchange.pdf">http://webarchive.nationalarchives.gov.uk/20100210214359/http://lsrc.org.uk/publications/meansassessmentoptionsforchange.pdf</a>.
 </div>
@@ -466,6 +511,15 @@ Digan, Tony, and Graham Stark. <span>“Financial <span>Arrangements</span> for 
 </div>
 <div id="ref-dwp_family_2020" class="csl-entry" role="listitem">
 DWP. <span>“Family <span>Resources</span> <span>Survey</span>: Background Information and Methodology.”</span> <em>GOV.UK</em>, 2020. <a href="https://www.gov.uk/government/statistics/family-resources-survey-financial-year-2019-to-2020/family-resources-survey-background-information-and-methodology">https://www.gov.uk/government/statistics/family-resources-survey-financial-year-2019-to-2020/family-resources-survey-background-information-and-methodology</a>.
+</div>
+<div id="ref-dwp_income-related_2022" class="csl-entry" role="listitem">
+———. <span>“Income-Related Benefits: Estimates of Take-up <span>FYE</span> 2020: Statistical Notice.”</span> <em>GOV.UK</em>, January 2022. <a href="https://www.gov.uk/guidance/income-related-benefits-estimates-of-take-up-fye-2020-statistical-notice">https://www.gov.uk/guidance/income-related-benefits-estimates-of-take-up-fye-2020-statistical-notice</a>.
+</div>
+<div id="ref-dwp_income-related_2024" class="csl-entry" role="listitem">
+———. <span>“Income-Related Benefits: Estimates of Take-up: Financial Year Ending 2022.”</span> <em>GOV.UK</em>, January 2024. <a href="https://www.gov.uk/government/statistics/income-related-benefits-estimates-of-take-up-financial-year-ending-2022/income-related-benefits-estimates-of-take-up-financial-year-ending-2022">https://www.gov.uk/government/statistics/income-related-benefits-estimates-of-take-up-financial-year-ending-2022/income-related-benefits-estimates-of-take-up-financial-year-ending-2022</a>.
+</div>
+<div id="ref-fry_takeup_1992" class="csl-entry" role="listitem">
+Fry, Vanessa, and Graham Stark. <span>“The <span>Takeup</span> of <span>Means</span>-<span>Tested</span> <span>Benefits</span> in the <span>UK</span>: <span>The</span> <span>Transition</span> to <span>Income</span> <span>Support</span> and <span>Family</span> <span>Credit</span>.”</span> Institute for Fiscal Studies, May 1992.
 </div>
 <div id="ref-google_inc_introducing_2021" class="csl-entry" role="listitem">
 Google, Inc. <span>“Introducing "<span>Testing</span> on the <span>Toilet</span>".”</span> <em>Google Testing Blog</em>, 2021. <a href="https://testing.googleblog.com/2007/01/introducing-testing-on-toilet.html">https://testing.googleblog.com/2007/01/introducing-testing-on-toilet.html</a>.
@@ -511,33 +565,39 @@ Work and Pensions, Department for. <span>“Family <span>Resources</span> <span>
 <li id="fn4"><p><a href="#ref-bezanson_julia:_2017" role="doc-biblioref">Bezanson et al., <span>“Julia”</span></a>.<a href="#fnref4" class="footnote-back" role="doc-backlink">↩︎</a></p></li>
 <li id="fn5"><p><a href="#ref-department_for_work_and_pensions_family_2023" role="doc-biblioref">Work and Pensions, <span>“Family <span>Resources</span> <span>Survey</span>”</span></a>.<a href="#fnref5" class="footnote-back" role="doc-backlink">↩︎</a></p></li>
 <li id="fn6"><p><a href="#ref-odonoghue_practical_2021" role="doc-biblioref">O’Donoghue, <em>Practical <span>Microsimulation</span> <span>Modelling</span></em></a>.<a href="#fnref6" class="footnote-back" role="doc-backlink">↩︎</a></p></li>
-<li id="fn7"><p><a href="#ref-house_of_commons_library_constituency_2020" role="doc-biblioref">Commons Library, <span>“Constituency Data”</span></a>.<a href="#fnref7" class="footnote-back" role="doc-backlink">↩︎</a></p></li>
-<li id="fn8"><p><a href="#ref-slab_civil_2024" role="doc-biblioref">Board, <span>“Civil <span>Keycard</span>”</span></a>.<a href="#fnref8" class="footnote-back" role="doc-backlink">↩︎</a></p></li>
-<li id="fn9"><p><a href="#ref-slab_financial_2024-1" role="doc-biblioref">Board, <span>“Financial Eligibility for Civil Legal Aid”</span></a>.<a href="#fnref9" class="footnote-back" role="doc-backlink">↩︎</a></p></li>
-<li id="fn10"><p><a href="#ref-scottish_legal_aid_board_civil_2002" role="doc-biblioref">Board, <span>“The <span>Civil</span> <span>Legal</span> <span>Aid</span> (<span>Scotland</span>) <span>Regulations</span> 2002”</span></a>.<a href="#fnref10" class="footnote-back" role="doc-backlink">↩︎</a></p></li>
-<li id="fn11"><p><a href="#ref-google_inc_introducing_2021" role="doc-biblioref">Google, <span>“Introducing "<span>Testing</span> on the <span>Toilet</span>"”</span></a>.<a href="#fnref11" class="footnote-back" role="doc-backlink">↩︎</a></p></li>
-<li id="fn12"><p><a href="#ref-slab_aa_estimator_2024" role="doc-biblioref">Board, <span>“Estimator”</span></a>; <a href="#ref-slab_eligibility_2024" role="doc-biblioref">Board, <span>“Ligibility Estimators”</span></a>.<a href="#fnref12" class="footnote-back" role="doc-backlink">↩︎</a></p></li>
-<li id="fn13"><p><a href="#ref-department_for_work_and_pensions_family_2024" role="doc-biblioref">Work and Pensions, <span>“Family <span>Resources</span> <span>Survey</span> - <span>GOV</span>.<span>UK</span>”</span></a>.<a href="#fnref13" class="footnote-back" role="doc-backlink">↩︎</a></p></li>
-<li id="fn14"><p><a href="#ref-scottish_government_scottish_2024-1" role="doc-biblioref">Government, <span>“Scottish <span>Household</span> <span>Survey</span>”</span></a>.<a href="#fnref14" class="footnote-back" role="doc-backlink">↩︎</a></p></li>
-<li id="fn15"><p><a href="#ref-iacus_causal_2011" role="doc-biblioref">Iacus, King, and Porro, <span>“Causal <span>Inference</span> <span>Without</span> <span>Balance</span> <span>Checking</span>”</span></a>; <a href="#ref-leulescu_statistical_2013" role="doc-biblioref">LEULESCU and AGAFIŢEI, <span>“Statistical Matching”</span></a>; <a href="#ref-dorazio_statmatch_2022" role="doc-biblioref">D’Orazio, <span>“<span>StatMatch</span>”</span></a>.<a href="#fnref15" class="footnote-back" role="doc-backlink">↩︎</a></p></li>
-<li id="fn16"><p><a href="#ref-office_for_national_statistics_wealth_2017" role="doc-biblioref">National Statistics, <span>“Wealth and Assets Survey (<span>WAS</span>)”</span></a>.<a href="#fnref16" class="footnote-back" role="doc-backlink">↩︎</a></p></li>
-<li id="fn17"><p><a href="#ref-department_for_work_and_pensions_family_2023" role="doc-biblioref">Work and Pensions, <span>“Family <span>Resources</span> <span>Survey</span>”</span></a>.<a href="#fnref17" class="footnote-back" role="doc-backlink">↩︎</a></p></li>
-<li id="fn18"><p>We use <code>totcap3</code> since that’s the only version that’s available for all the years we pool over.<a href="#fnref18" class="footnote-back" role="doc-backlink">↩︎</a></p></li>
-<li id="fn19"><p><a href="#ref-dwp_family_2020" role="doc-biblioref">DWP, <span>“Family <span>Resources</span> <span>Survey</span>”</span></a>.<a href="#fnref19" class="footnote-back" role="doc-backlink">↩︎</a></p></li>
-<li id="fn20"><p><a href="#ref-office_for_national_statistics_wealth_2017" role="doc-biblioref">National Statistics, <span>“Wealth and Assets Survey (<span>WAS</span>)”</span></a>.<a href="#fnref20" class="footnote-back" role="doc-backlink">↩︎</a></p></li>
-<li id="fn21"><p>Note that since this data is aggregated over 2015-21 and uprated to 2023Q4, these numbers won’t be exactly reproducable from the raw FRS records.<a href="#fnref21" class="footnote-back" role="doc-backlink">↩︎</a></p></li>
-<li id="fn22"><p><a href="#ref-scottish_government_scottish_crime_2024" role="doc-biblioref">Government, <span>“Scottish <span>Crime</span> and <span>Justice</span> <span>Survey</span> 2021/22”</span></a>.<a href="#fnref22" class="footnote-back" role="doc-backlink">↩︎</a></p></li>
+<li id="fn7"><p><a href="#ref-dwp_income-related_2022" role="doc-biblioref">DWP, <span>“Income-Related Benefits,”</span> January 2022</a>.<a href="#fnref7" class="footnote-back" role="doc-backlink">↩︎</a></p></li>
+<li id="fn8"><p><a href="#ref-house_of_commons_library_constituency_2020" role="doc-biblioref">Commons Library, <span>“Constituency Data”</span></a>.<a href="#fnref8" class="footnote-back" role="doc-backlink">↩︎</a></p></li>
+<li id="fn9"><p><a href="#ref-dwp_income-related_2022" role="doc-biblioref">DWP, <span>“Income-Related Benefits,”</span> January 2022</a>.<a href="#fnref9" class="footnote-back" role="doc-backlink">↩︎</a></p></li>
+<li id="fn10"><p><a href="#ref-brewer_universal_2011" role="doc-biblioref">Brewer, Browne, and Jin, <span>“Universal <span>Credit</span>”</span></a>.<a href="#fnref10" class="footnote-back" role="doc-backlink">↩︎</a></p></li>
+<li id="fn11"><p><a href="#ref-dwp_income-related_2024" role="doc-biblioref">DWP, <span>“Income-Related Benefits,”</span> January 2024</a>.<a href="#fnref11" class="footnote-back" role="doc-backlink">↩︎</a></p></li>
+<li id="fn12"><p><a href="#ref-brewer_estimating_2003" role="doc-biblioref">Brewer, <span>“Estimating <span>Models</span> of <span>Benefit</span> <span>Take</span>-up”</span></a>; <a href="#ref-fry_takeup_1992" role="doc-biblioref">Fry and Stark, <span>“The <span>Takeup</span> of <span>Means</span>-<span>Tested</span> <span>Benefits</span> in the <span>UK</span>”</span></a>.<a href="#fnref12" class="footnote-back" role="doc-backlink">↩︎</a></p></li>
+<li id="fn13"><p><a href="#ref-slab_civil_2024" role="doc-biblioref">Board, <span>“Civil <span>Keycard</span>”</span></a>.<a href="#fnref13" class="footnote-back" role="doc-backlink">↩︎</a></p></li>
+<li id="fn14"><p><a href="#ref-slab_financial_2024-1" role="doc-biblioref">Board, <span>“Financial Eligibility for Civil Legal Aid”</span></a>.<a href="#fnref14" class="footnote-back" role="doc-backlink">↩︎</a></p></li>
+<li id="fn15"><p><a href="#ref-scottish_legal_aid_board_civil_2002" role="doc-biblioref">Board, <span>“The <span>Civil</span> <span>Legal</span> <span>Aid</span> (<span>Scotland</span>) <span>Regulations</span> 2002”</span></a>.<a href="#fnref15" class="footnote-back" role="doc-backlink">↩︎</a></p></li>
+<li id="fn16"><p><a href="#ref-google_inc_introducing_2021" role="doc-biblioref">Google, <span>“Introducing "<span>Testing</span> on the <span>Toilet</span>"”</span></a>.<a href="#fnref16" class="footnote-back" role="doc-backlink">↩︎</a></p></li>
+<li id="fn17"><p><a href="#ref-slab_aa_estimator_2024" role="doc-biblioref">Board, <span>“Estimator”</span></a>; <a href="#ref-slab_eligibility_2024" role="doc-biblioref">Board, <span>“Ligibility Estimators”</span></a>.<a href="#fnref17" class="footnote-back" role="doc-backlink">↩︎</a></p></li>
+<li id="fn18"><p><a href="#ref-department_for_work_and_pensions_family_2024" role="doc-biblioref">Work and Pensions, <span>“Family <span>Resources</span> <span>Survey</span> - <span>GOV</span>.<span>UK</span>”</span></a>.<a href="#fnref18" class="footnote-back" role="doc-backlink">↩︎</a></p></li>
+<li id="fn19"><p><a href="#ref-scottish_government_scottish_2024-1" role="doc-biblioref">Government, <span>“Scottish <span>Household</span> <span>Survey</span>”</span></a>.<a href="#fnref19" class="footnote-back" role="doc-backlink">↩︎</a></p></li>
+<li id="fn20"><p><a href="#ref-iacus_causal_2011" role="doc-biblioref">Iacus, King, and Porro, <span>“Causal <span>Inference</span> <span>Without</span> <span>Balance</span> <span>Checking</span>”</span></a>; <a href="#ref-leulescu_statistical_2013" role="doc-biblioref">LEULESCU and AGAFIŢEI, <span>“Statistical Matching”</span></a>; <a href="#ref-dorazio_statmatch_2022" role="doc-biblioref">D’Orazio, <span>“<span>StatMatch</span>”</span></a>.<a href="#fnref20" class="footnote-back" role="doc-backlink">↩︎</a></p></li>
+<li id="fn21"><p><a href="#ref-office_for_national_statistics_wealth_2017" role="doc-biblioref">National Statistics, <span>“Wealth and Assets Survey (<span>WAS</span>)”</span></a>.<a href="#fnref21" class="footnote-back" role="doc-backlink">↩︎</a></p></li>
+<li id="fn22"><p><a href="#ref-department_for_work_and_pensions_family_2023" role="doc-biblioref">Work and Pensions, <span>“Family <span>Resources</span> <span>Survey</span>”</span></a>.<a href="#fnref22" class="footnote-back" role="doc-backlink">↩︎</a></p></li>
+<li id="fn23"><p>We use <code>totcap3</code> since that’s the only version that’s available for all the years we pool over.<a href="#fnref23" class="footnote-back" role="doc-backlink">↩︎</a></p></li>
+<li id="fn24"><p><a href="#ref-dwp_family_2020" role="doc-biblioref">DWP, <span>“Family <span>Resources</span> <span>Survey</span>”</span></a>.<a href="#fnref24" class="footnote-back" role="doc-backlink">↩︎</a></p></li>
+<li id="fn25"><p><a href="#ref-office_for_national_statistics_wealth_2017" role="doc-biblioref">National Statistics, <span>“Wealth and Assets Survey (<span>WAS</span>)”</span></a>.<a href="#fnref25" class="footnote-back" role="doc-backlink">↩︎</a></p></li>
+<li id="fn26"><p>Note that since this data is aggregated over 2015-21 and uprated to 2023Q4, these numbers won’t be exactly reproducable from the raw FRS records.<a href="#fnref26" class="footnote-back" role="doc-backlink">↩︎</a></p></li>
+<li id="fn27"><p>sometimes called ‘Li-Chuning’ after the <a href="https://www.southampton.ac.uk/people/5x9mtl/professor-li-chun-zhang">University of Southamption professor who proposed this method</a>.<a href="#fnref27" class="footnote-back" role="doc-backlink">↩︎</a></p></li>
+<li id="fn28"><p><a href="#ref-scottish_government_scottish_crime_2024" role="doc-biblioref">Government, <span>“Scottish <span>Crime</span> and <span>Justice</span> <span>Survey</span> 2021/22”</span></a>.<a href="#fnref28" class="footnote-back" role="doc-backlink">↩︎</a></p></li>
 </ol>
 </section><section class="quarto-appendix-contents" id="quarto-citation"><h2 class="anchored quarto-appendix-heading">Citation</h2><div><div class="quarto-appendix-secondary-label">BibTeX citation:</div><pre class="sourceCode code-with-copy quarto-appendix-bibtex"><code class="sourceCode bibtex">@online{stark2024,
   author = {Stark, Graham},
   title = {SLAB {Legal} {Aid} {Model} {Documentation}},
-  date = {2024-05-28},
+  date = {2024-06-27},
   url = {https://virtual-worlds.scot/techdoc/index.html},
   langid = {en}
 }
 </code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre><div class="quarto-appendix-secondary-label">For attribution, please cite this work as:</div><div id="ref-stark2024" class="csl-entry quarto-appendix-citeas" role="listitem">
-Stark, Graham. <span>“SLAB Legal Aid Model Documentation,”</span> May
-28, 2024. <a href="https://virtual-worlds.scot/techdoc/index.html">https://virtual-worlds.scot/techdoc/index.html</a>.
+Stark, Graham. <span>“SLAB Legal Aid Model Documentation,”</span> June
+27, 2024. <a href="https://virtual-worlds.scot/techdoc/index.html">https://virtual-worlds.scot/techdoc/index.html</a>.
 </div></div></section></div></main>
 <!-- /main column -->
 <script id="quarto-html-after-body" type="application/javascript">
