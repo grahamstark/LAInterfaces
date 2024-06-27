@@ -53,7 +53,7 @@ function export_xlsx( results :: LegalOutput )::String
         sheet["A19"] = "Eligibility Crosstab, adults only"
         XLSX.writetable!( sheet, 
         crosstab_to_frame(
-            results.crosstab_bus[1]);
+            results.crosstab_bu[1]);
             anchor_cell=XLSX.CellRef("A21"))  
                 # sheetname="Person Crosstab")        
 

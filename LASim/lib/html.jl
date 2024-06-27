@@ -252,7 +252,7 @@ function results_to_html(
     crosstab = format_crosstab( 
         results.crosstab_adults[1];
         examples =  results.crosstab_adults_examples[1], 
-        caption="Changes to elgibility: all Scottish People (click table for breakdowns)" )
+        caption="Changes to elgibility: all Scottish Adults (click table for breakdowns)" )
     
     crosstab_examples = "<div>"
     for r in 1:5
