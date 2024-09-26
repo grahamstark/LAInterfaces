@@ -39,7 +39,7 @@ using .LegalAidData
 using .LegalAidOutput
 # using .LegalAidRunner
 
-@enum Responses output_ready has_progress no_progress please_stop # load_params bad_request
+@enum Responses output_ready has_progress no_progress please_stop has_error # load_params bad_request
 
 const DEFAULT_UUID = UUID("c2ae9c83-d24a-431c-b04f-74662d2ba07e")
 const HOME_DIR = joinpath(dirname(pathof( LASim )),".." )

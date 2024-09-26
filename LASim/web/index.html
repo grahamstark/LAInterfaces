@@ -759,6 +759,9 @@
                              <li class="nav-item p-2">                      
                                 <button  type="button" class='btn btn-primary ' value='' onclick='submitForm( "run" )'>Run</button>
                             </li>
+                            <li class="nav-item p-2">                      
+                                <button  type="button" class='btn btn-warning ' value='' onclick='submitForm( "clear" )'>Clear The Run Queue</button>
+                            </li>
                         </ul>
                     </div>
                 </fieldset> <!-- submission row -->
@@ -1732,6 +1735,10 @@ function submitForm( action, target ){
                                 case 'has_progress':
                                     updateProgress( responseFromUpdater );
                                 break;
+                                case 'has_error':
+                                    updater.stop();
+                                    $("#progress-indicator").html( "<div class='alert alert-info' role='alert'>ERROR ENCOUNTERED"+resp.data.data+"</div>" );
+                                    break;
                                 case 'please_stop':
                                     updater.stop();
                                 case 'no_progress':
@@ -1756,6 +1763,7 @@ function submitForm( action, target ){
                     break;          
                 case 'reset':
                 case 'load':
+                case 'clear':
                 case 'initial_load':
                 case 'switch_system':
                     // FIXME something to reset parameters
