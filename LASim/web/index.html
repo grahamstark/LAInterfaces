@@ -149,22 +149,55 @@
                                   </div>
                                   <br/>
 
+
+
                                   <label for='uc_limit' id='uc_limit_l'  class='form-label'>Amount (£)</label>
                                   <input id='uc_limit' type='number' name="uc_limit" min='0' max='100000' value='' step='0.01' size="8" class='form-control w-50'/>
 
-                                  <div class="form-check">
-                                    <input class="form-check-input uc_use_income" type="checkbox" value=""  id="uc_use_income" />
-                                    <label class="form-check-label uc_use_income" for="uc_use_income" >
-                                        Use Net income (rather than net earnings)?
-                                    </label>
-                                </div>
- 
-
+                                  <div class="form-check">                                                                                                                                            
+                                    <div class="form-check">
+                                        <input class="form-check-input" 
+                                            type="radio" 
+                                            name="uc_use_earnings" 
+                                            id="assessed_net_income"  
+                                            value="assessed_net_income"
+                                            checked='checked'>
+                                        <label 
+                                            class="form-check-label" 
+                                            for="uc_use_earnings">
+                                          Legal Aid Assessed Net Income
+                                        </label>
+                                      </div>
+                                      <div class="form-check">
+                                        <input class="form-check-input" 
+                                            type="radio" 
+                                            name="uc_use_earnings" 
+                                            id="tapered_uc_earnings"  
+                                            value="tapered_uc_earnings">
+                                        <label 
+                                            class="uc_use_earnings" 
+                                            for="uc_max_income">
+                                          UC Assessed Earnings - <em>after</em> UC Taper Applied
+                                        </label>
+                                      </div>
+                                      <div class="form-check">
+                                        <input class="form-check-input" 
+                                            type="radio" 
+                                            name="uc_use_earnings" 
+                                            id="full_uc_earnings"  
+                                            value="full_uc_earnings">
+                                        <label 
+                                            class="form-check-label" 
+                                            for="uc_use_earnings">
+                                            UC Assessed Earnings - <em>before</em> UC Taper Applied
+                                        </label>
+                                      </div>
+                                  </div>
+                                  <br/>                                                                                                
                             </div>
-                            </fieldset>
-
-                        </fieldset>
-                    </fieldset>
+                            </fieldset> <!-- UC fields -->
+                        </fieldset> <!-- Passported Fields -->
+                    </fieldset> <!-- Top Row -->
                     <fieldset class="col border text-black m-1 p-2">
                         <legend class="text-primary">Included Wealth</legend>
                         <div class="form-check">
@@ -759,9 +792,6 @@
                              <li class="nav-item p-2">                      
                                 <button  type="button" class='btn btn-primary ' value='' onclick='submitForm( "run" )'>Run</button>
                             </li>
-                            <li class="nav-item p-2">                      
-                                <button  type="button" class='btn btn-warning ' value='' onclick='submitForm( "clear" )'>Clear The Run Queue</button>
-                            </li>
                         </ul>
                     </div>
                 </fieldset> <!-- submission row -->
@@ -1237,10 +1267,7 @@ function loadParams( defaults, params ){
 
     setRadio( "uc_limit_type", params.uc_limit_type, defaults.uc_limit_type );
     setVal( "uc_limit", params.uc_limit, defaults.uc_limit );
-    setCheck(
-        "uc_use_income",
-        params.uc_use_income,
-        defaults.uc_use_income );
+    setRadio( "uc_use_earnings", params.uc_use_earnings, defaults.uc_use_earnings );
 
     setVal( "prem_family", params.prem_family, defaults.prem_family );
     setVal( "prem_family_lone_parent", params.prem_family_lone_parent, defaults.prem_family_lone_parent );
@@ -1551,7 +1578,7 @@ function loadFromForm(new_uuid){
         prem_disability_couple: parseFloat($('#prem_disability_couple').val()),
         uc_limit: parseFloat($('#uc_limit').val()),
         uc_limit_type: $('input[name="uc_limit_type"]:checked').val(),
-        uc_use_income: $('#uc_use_income').is(':checked'),
+        uc_use_earnings: $('input[name="uc_use_earnings"]:checked').val(), // $('#uc_use_earnings').is(':checked'),
         wealth_method: $('input[name="wealth_method"]:checked').val(),
         do_dodgy_takeup_corrections: $('#do_dodgy_takeup_corrections').is(':checked'),
         reset_all_if_changed: $('#reset_all_if_changed').is(':checked'),
@@ -1735,10 +1762,6 @@ function submitForm( action, target ){
                                 case 'has_progress':
                                     updateProgress( responseFromUpdater );
                                 break;
-                                case 'has_error':
-                                    updater.stop();
-                                    $("#progress-indicator").html( "<div class='alert alert-info' role='alert'>ERROR ENCOUNTERED"+resp.data.data+"</div>" );
-                                    break;
                                 case 'please_stop':
                                     updater.stop();
                                 case 'no_progress':
@@ -1763,7 +1786,6 @@ function submitForm( action, target ){
                     break;          
                 case 'reset':
                 case 'load':
-                case 'clear':
                 case 'initial_load':
                 case 'switch_system':
                     // FIXME something to reset parameters

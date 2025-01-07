@@ -42,7 +42,7 @@ mutable struct LASubsys{T}
     prem_disability_couple :: T # = 48.95
     uc_limit :: T
     uc_limit_type :: UCLimitType
-    uc_use_income :: Bool
+    uc_use_earnings :: UCEarningsType
 
     housing_is_flat :: Bool
     housing_v :: T
@@ -156,7 +156,7 @@ function LASubsys( uuid :: UUID, sys :: OneLegalAidSys )
         sys.premia.disability_couple,
         sys.uc_limit,
         sys.uc_limit_type,
-        ! sys.uc_use_earnings,
+        sys.uc_use_earnings,
 
         sys.expenses.housing.is_flat,
         sys.expenses.housing.v,
