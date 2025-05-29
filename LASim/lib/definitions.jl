@@ -79,7 +79,7 @@ mutable struct LASubsys{T}
     CONTRIB_EMPLOYMENT_AND_SUPPORT_ALLOWANCE_disregarded :: Bool
     CONTRIB_JOBSEEKERS_ALLOWANCE_disregarded :: Bool
     COUNCIL_TAX_BENEFIT_disregarded :: Bool
-    DISCRESIONARY_HOUSING_PAYMENT_disregarded :: Bool
+    DISCRETIONARY_HOUSING_PAYMENT_disregarded :: Bool
     DLA_MOBILITY_disregarded :: Bool
     DLA_SELF_CARE_disregarded :: Bool
     EDUCATION_ALLOWANCES_disregarded :: Bool
@@ -192,7 +192,7 @@ function LASubsys( uuid :: UUID, sys :: OneLegalAidSys )
         ! (CONTRIB_EMPLOYMENT_AND_SUPPORT_ALLOWANCE in sys.incomes.included),
         ! (CONTRIB_JOBSEEKERS_ALLOWANCE in sys.incomes.included),
         ! (COUNCIL_TAX_BENEFIT in sys.incomes.included),
-        ! (DISCRESIONARY_HOUSING_PAYMENT in sys.incomes.included),
+        ! ( DISCRETIONARY_HOUSING_PAYMENT in sys.incomes.included),
         ! (DLA_MOBILITY in sys.incomes.included),
         ! (DLA_SELF_CARE in sys.incomes.included),
         ! (EDUCATION_ALLOWANCES in sys.incomes.included),
