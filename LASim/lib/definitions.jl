@@ -103,7 +103,7 @@ mutable struct LASubsys{T}
     PERSONAL_INDEPENDENCE_PAYMENT_MOBILITY_disregarded :: Bool
     SAVINGS_CREDIT_disregarded :: Bool
     CARERS_ALLOWANCE_SUPPLEMENT_disregarded :: Bool
-    SCOTTISH_CHILD_PAYMENT_disregarded :: Bool
+    xxx_disregarded :: Bool
     CHILD_DISABILITY_PAYMENT_CARE_disregarded :: Bool
     CHILD_DISABILITY_PAYMENT_MOBILITY_disregarded :: Bool
     PENSION_AGE_DISABILITY_disregarded :: Bool
@@ -216,7 +216,7 @@ function LASubsys( uuid :: UUID, sys :: OneLegalAidSys )
         ! (PERSONAL_INDEPENDENCE_PAYMENT_MOBILITY in sys.incomes.included),
         ! (SAVINGS_CREDIT in sys.incomes.included),
         ! (CARERS_ALLOWANCE_SUPPLEMENT in sys.incomes.included),
-        ! (SCOTTISH_CHILD_PAYMENT in sys.incomes.included),
+        ! (xxx in sys.incomes.included),
         ! (CHILD_DISABILITY_PAYMENT_CARE in sys.incomes.included),
         ! (CHILD_DISABILITY_PAYMENT_MOBILITY in sys.incomes.included),
         ! (PENSION_AGE_DISABILITY in sys.incomes.included),

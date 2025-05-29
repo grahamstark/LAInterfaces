@@ -1,6 +1,6 @@
 
 module LASim
-__precompile__(false)
+# __precompile__(false)
 using Genie
 using Genie.Requests
 import Genie.Renderer.Json: json
