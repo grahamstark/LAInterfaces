@@ -102,13 +102,13 @@ mutable struct LASubsys{T}
     PERSONAL_INDEPENDENCE_PAYMENT_DAILY_LIVING_disregarded :: Bool
     PERSONAL_INDEPENDENCE_PAYMENT_MOBILITY_disregarded :: Bool
     SAVINGS_CREDIT_disregarded :: Bool
-    SCOTTISH_CARERS_SUPPLEMENT_disregarded :: Bool
+    CARERS_ALLOWANCE_SUPPLEMENT_disregarded :: Bool
     SCOTTISH_CHILD_PAYMENT_disregarded :: Bool
-    SCOTTISH_DISABILITY_ASSISTANCE_CHILDREN_DAILY_LIVING_disregarded :: Bool
-    SCOTTISH_DISABILITY_ASSISTANCE_CHILDREN_MOBILITY_disregarded :: Bool
-    SCOTTISH_DISABILITY_ASSISTANCE_OLDER_PEOPLE_disregarded :: Bool
-    SCOTTISH_DISABILITY_ASSISTANCE_WORKING_AGE_DAILY_LIVING_disregarded :: Bool
-    SCOTTISH_DISABILITY_ASSISTANCE_WORKING_AGE_MOBILITY_disregarded :: Bool
+    CHILD_DISABILITY_PAYMENT_CARE_disregarded :: Bool
+    CHILD_DISABILITY_PAYMENT_MOBILITY_disregarded :: Bool
+    PENSION_AGE_DISABILITY_disregarded :: Bool
+    ADP_DAILY_LIVING_disregarded :: Bool
+    ADP_MOBILITY_disregarded :: Bool
     SEVERE_DISABILITY_ALLOWANCE_disregarded :: Bool
     STATE_PENSION_disregarded :: Bool
     STUDENT_GRANTS_disregarded :: Bool
@@ -192,7 +192,7 @@ function LASubsys( uuid :: UUID, sys :: OneLegalAidSys )
         ! (CONTRIB_EMPLOYMENT_AND_SUPPORT_ALLOWANCE in sys.incomes.included),
         ! (CONTRIB_JOBSEEKERS_ALLOWANCE in sys.incomes.included),
         ! (COUNCIL_TAX_BENEFIT in sys.incomes.included),
-        ! ( DISCRETIONARY_HOUSING_PAYMENT in sys.incomes.included),
+        ! (DISCRETIONARY_HOUSING_PAYMENT in sys.incomes.included),
         ! (DLA_MOBILITY in sys.incomes.included),
         ! (DLA_SELF_CARE in sys.incomes.included),
         ! (EDUCATION_ALLOWANCES in sys.incomes.included),
@@ -215,13 +215,13 @@ function LASubsys( uuid :: UUID, sys :: OneLegalAidSys )
         ! (PERSONAL_INDEPENDENCE_PAYMENT_DAILY_LIVING in sys.incomes.included),
         ! (PERSONAL_INDEPENDENCE_PAYMENT_MOBILITY in sys.incomes.included),
         ! (SAVINGS_CREDIT in sys.incomes.included),
-        ! (SCOTTISH_CARERS_SUPPLEMENT in sys.incomes.included),
+        ! (CARERS_ALLOWANCE_SUPPLEMENT in sys.incomes.included),
         ! (SCOTTISH_CHILD_PAYMENT in sys.incomes.included),
-        ! (SCOTTISH_DISABILITY_ASSISTANCE_CHILDREN_DAILY_LIVING in sys.incomes.included),
-        ! (SCOTTISH_DISABILITY_ASSISTANCE_CHILDREN_MOBILITY in sys.incomes.included),
-        ! (SCOTTISH_DISABILITY_ASSISTANCE_OLDER_PEOPLE in sys.incomes.included),
-        ! (SCOTTISH_DISABILITY_ASSISTANCE_WORKING_AGE_DAILY_LIVING in sys.incomes.included),
-        ! (SCOTTISH_DISABILITY_ASSISTANCE_WORKING_AGE_MOBILITY in sys.incomes.included),
+        ! (CHILD_DISABILITY_PAYMENT_CARE in sys.incomes.included),
+        ! (CHILD_DISABILITY_PAYMENT_MOBILITY in sys.incomes.included),
+        ! (PENSION_AGE_DISABILITY in sys.incomes.included),
+        ! (ADP_DAILY_LIVING in sys.incomes.included),
+        ! (ADP_MOBILITY in sys.incomes.included),
         ! (SEVERE_DISABILITY_ALLOWANCE in sys.incomes.included),
         ! (STATE_PENSION in sys.incomes.included),
         ! (STUDENT_GRANTS in sys.incomes.included),
