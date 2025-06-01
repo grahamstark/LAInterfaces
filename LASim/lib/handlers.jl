@@ -163,20 +163,20 @@ function map_sys_from_subsys( subsys :: LASubsys )::OneLegalAidSys
     else
         push!( fullsys.incomes.included, WINTER_FUEL_PAYMENTS )
     end
-    if subsys.SCOTTISH_CARERS_SUPPLEMENT_disregarded 
-        spop!(fullsys.incomes.included, SCOTTISH_CARERS_SUPPLEMENT )
+    if subsys.CARERS_ALLOWANCE_SUPPLEMENT_disregarded 
+        spop!(fullsys.incomes.included, CARERS_ALLOWANCE_SUPPLEMENT )
     else
-        push!( fullsys.incomes.included, SCOTTISH_CARERS_SUPPLEMENT )
+        push!( fullsys.incomes.included, CARERS_ALLOWANCE_SUPPLEMENT )
     end
-    if subsys.SCOTTISH_DISABILITY_ASSISTANCE_WORKING_AGE_MOBILITY_disregarded 
-        spop!(fullsys.incomes.included, SCOTTISH_DISABILITY_ASSISTANCE_WORKING_AGE_MOBILITY )
+    if subsys.ADP_MOBILITY_disregarded 
+        spop!(fullsys.incomes.included, ADP_MOBILITY )
     else
-        push!( fullsys.incomes.included, SCOTTISH_DISABILITY_ASSISTANCE_WORKING_AGE_MOBILITY )
+        push!( fullsys.incomes.included, ADP_MOBILITY )
     end
-    if subsys.DISCRESIONARY_HOUSING_PAYMENT_disregarded 
-        spop!(fullsys.incomes.included, DISCRESIONARY_HOUSING_PAYMENT )
+    if subsys.DISCRETIONARY_HOUSING_PAYMENT_disregarded 
+        spop!(fullsys.incomes.included, DISCRETIONARY_HOUSING_PAYMENT )
     else
-        push!( fullsys.incomes.included, DISCRESIONARY_HOUSING_PAYMENT )
+        push!( fullsys.incomes.included, DISCRETIONARY_HOUSING_PAYMENT )
     end
     if subsys.SCOTTISH_CHILD_PAYMENT_disregarded 
         spop!(fullsys.incomes.included, SCOTTISH_CHILD_PAYMENT )
@@ -188,10 +188,10 @@ function map_sys_from_subsys( subsys :: LASubsys )::OneLegalAidSys
     else
         push!( fullsys.incomes.included, INCAPACITY_BENEFIT )
     end
-    if subsys.SCOTTISH_DISABILITY_ASSISTANCE_CHILDREN_MOBILITY_disregarded 
-        spop!(fullsys.incomes.included, SCOTTISH_DISABILITY_ASSISTANCE_CHILDREN_MOBILITY )
+    if subsys.CHILD_DISABILITY_PAYMENT_MOBILITY_disregarded 
+        spop!(fullsys.incomes.included, CHILD_DISABILITY_PAYMENT_MOBILITY )
     else
-        push!( fullsys.incomes.included, SCOTTISH_DISABILITY_ASSISTANCE_CHILDREN_MOBILITY )
+        push!( fullsys.incomes.included, CHILD_DISABILITY_PAYMENT_MOBILITY )
     end
     if subsys.WAR_WIDOWS_PENSION_disregarded 
         spop!(fullsys.incomes.included, WAR_WIDOWS_PENSION )
@@ -278,10 +278,10 @@ function map_sys_from_subsys( subsys :: LASubsys )::OneLegalAidSys
     else
         push!( fullsys.incomes.included, STATE_PENSION )
     end
-    if subsys.SCOTTISH_DISABILITY_ASSISTANCE_OLDER_PEOPLE_disregarded 
-        spop!(fullsys.incomes.included, SCOTTISH_DISABILITY_ASSISTANCE_OLDER_PEOPLE )
+    if subsys.PENSION_AGE_DISABILITY_disregarded 
+        spop!(fullsys.incomes.included, PENSION_AGE_DISABILITY )
     else
-        push!( fullsys.incomes.included, SCOTTISH_DISABILITY_ASSISTANCE_OLDER_PEOPLE )
+        push!( fullsys.incomes.included, PENSION_AGE_DISABILITY )
     end
     if subsys.CONTRIB_JOBSEEKERS_ALLOWANCE_disregarded 
         spop!(fullsys.incomes.included, CONTRIB_JOBSEEKERS_ALLOWANCE )
@@ -293,15 +293,15 @@ function map_sys_from_subsys( subsys :: LASubsys )::OneLegalAidSys
     else
         push!( fullsys.incomes.included, NON_CONTRIB_JOBSEEKERS_ALLOWANCE )
     end
-    if subsys.SCOTTISH_DISABILITY_ASSISTANCE_CHILDREN_DAILY_LIVING_disregarded 
-        spop!(fullsys.incomes.included, SCOTTISH_DISABILITY_ASSISTANCE_CHILDREN_DAILY_LIVING )
+    if subsys.CHILD_DISABILITY_PAYMENT_CARE_disregarded 
+        spop!(fullsys.incomes.included, CHILD_DISABILITY_PAYMENT_CARE )
     else
-        push!( fullsys.incomes.included, SCOTTISH_DISABILITY_ASSISTANCE_CHILDREN_DAILY_LIVING )
+        push!( fullsys.incomes.included, CHILD_DISABILITY_PAYMENT_CARE )
     end
-    if subsys.SCOTTISH_DISABILITY_ASSISTANCE_WORKING_AGE_DAILY_LIVING_disregarded 
-        spop!(fullsys.incomes.included, SCOTTISH_DISABILITY_ASSISTANCE_WORKING_AGE_DAILY_LIVING )
+    if subsys.ADP_DAILY_LIVING_disregarded 
+        spop!(fullsys.incomes.included, ADP_DAILY_LIVING )
     else
-        push!( fullsys.incomes.included, SCOTTISH_DISABILITY_ASSISTANCE_WORKING_AGE_DAILY_LIVING )
+        push!( fullsys.incomes.included, ADP_DAILY_LIVING )
     end
     if subsys.ANY_OTHER_NI_OR_STATE_BENEFIT_disregarded 
         spop!(fullsys.incomes.included, ANY_OTHER_NI_OR_STATE_BENEFIT )

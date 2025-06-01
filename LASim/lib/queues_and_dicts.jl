@@ -218,9 +218,13 @@ function do_dict_run(
     sobs[]= Progress( settings.uuid, "start-pre", -99, -99, -99, -99 )
     sys2 = deepcopy( DEFAULT_PARAMS )
     sys2.legalaid.civil = map_sys_from_subsys( allresp.params.civil )
+    @show "civil mapped ok"
     sys2.legalaid.aa = map_sys_from_subsys( allresp.params.aa )
+    @show "aa mapped ok"
     try 
+        @show "at start of run"
         res = do_la_run( settings, DEFAULT_PARAMS, sys2, sobs )
+        @show "run completed"
         resp = CompleteResponse(
             res.xlsxfile,
             res.html,
