@@ -140,9 +140,8 @@ end
 
 #=
 to start from repl: 
-
+ENV["GENIE_ENV"]="windows" # or "prod" or "dev" or "debug"
 using Genie
-using Revise
 Genie.loadapp()
 up()
 =#

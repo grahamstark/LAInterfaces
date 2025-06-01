@@ -69,12 +69,12 @@ end
 
 function addcapital( n :: Int ) ::HTTP.Messages.Response
     params = subsys_from_payload()
-    @info "before " params.capital_contribution_rates
+    # @debug "before " params.capital_contribution_rates
     addonerb!( 
         params.capital_contribution_rates, 
         params.capital_contribution_limits,
         n )
-    @info "after " params.capital_contribution_rates
+    # @debug "after " params.capital_contribution_rates
     put_single_subsys_to_dict( params )
     default_params=default_la_subsys( params.systype )
     (; default_params, params ) |> json
@@ -93,14 +93,14 @@ end
 
 function addincome( n :: Int ) ::HTTP.Messages.Response
     params = subsys_from_payload()
-    @info "addincome; before = $(params.income_contribution_rates)"
-    @info params.income_contribution_limits
+    @debug "addincome; before = $(params.income_contribution_rates)"
+    @debug params.income_contribution_limits
     addonerb!( 
         params.income_contribution_rates, 
         params.income_contribution_limits,
         n )
-    @info "addincome; after = $(params.income_contribution_rates)"
-    @info params.income_contribution_limits
+    @debug "addincome; after = $(params.income_contribution_rates)"
+    @debug params.income_contribution_limits
     put_single_subsys_to_dict( params )
     default_params=default_la_subsys( params.systype )
     (; default_params, params ) |> json
@@ -108,14 +108,14 @@ end
 
 function delincome( n )::HTTP.Messages.Response
     params = subsys_from_payload()
-    @info "delincome; before = $(params.income_contribution_rates)"
-    @info params.income_contribution_limits
+    @debug "delincome; before = $(params.income_contribution_rates)"
+    @debug params.income_contribution_limits
     delonerb!( 
         params.income_contribution_rates, 
         params.income_contribution_limits,
         n )
-    @info "delincome; after = $(params.income_contribution_rates)"
-    @info params.income_contribution_limits
+    @debug "delincome; after = $(params.income_contribution_rates)"
+    @debug params.income_contribution_limits
     put_single_subsys_to_dict( params )
     default_params=default_la_subsys( params.systype )
     (; default_params, params ) |> json
@@ -131,7 +131,7 @@ function dict_obs( settings :: Settings )::Observable
             completed = 0
         end
         prog = Progress( settings.uuid, p.phase, p.thread, completed, p.step, p.size )
-        # @show "dict_obs: setting PROGRESS[$(settings.uuid)] to $(prog.phase)"
+        # @debug "dict_obs: setting PROGRESS[$(settings.uuid)] to $(prog.phase)"
         PROGRESS[settings.uuid] = prog
     end
     return sobs
@@ -150,8 +150,8 @@ function load_all()::HTTP.Messages.Response
         resp.params.aa.uuid = uuid4()
         OUTPUT[resp.params.civil.uuid] = resp
     end
-    # @show resp.params
-    # @show DEFAULT_COMPLETE_RESPONSE
+    # @debug resp.params
+    # @debug DEFAULT_COMPLETE_RESPONSE
     return ( response=output_ready, data = OneResponse( systype, resp )) |> json
 end
 
@@ -179,13 +179,13 @@ function get_output(systype::SystemType, uuid :: UUID ) :: NamedTuple
 end
 
 function getprogress( uuid :: UUID, systype :: SystemType ) ::HTTP.Messages.Response
-    @show "getprogress entered looking for uuid=$uuid" 
-    @show "available progess keys are: $(keys(PROGRESS))"
-    @show "available output keys are: $(keys(OUTPUT))"
+    @debug "getprogress entered looking for uuid=$uuid" 
+    @debug "available progess keys are: $(keys(PROGRESS))"
+    @debug "available output keys are: $(keys(OUTPUT))"
     if( haskey( PROGRESS, uuid ))
-        @show "getprogress: key $uuid found "
+        @debug "getprogress: key $uuid found "
         progress = PROGRESS[uuid]
-        @show "getprogress: progress is $progress" 
+        @debug "getprogress: progress is $progress" 
         if progress.phase == "reached-run-end" 
             outp = get_output(systype, uuid)
             @assert outp.data.params.uuid == uuid "uuid of returned outp wrong requested=$uuid vs in params=$(outp.data.params.uuid)"
@@ -197,7 +197,7 @@ function getprogress( uuid :: UUID, systype :: SystemType ) ::HTTP.Messages.Resp
             return ( response=has_progress, data=progress, systype=systype ) |> json
         end
     else
-        @show "getprogress: no progress found"
+        @debug "getprogress: no progress found"
         progress = NO_PROGRESS 
         return ( response=no_progress, data=NO_PROGRESS, systype=systype ) |> json
     end
@@ -218,13 +218,13 @@ function do_dict_run(
     sobs[]= Progress( settings.uuid, "start-pre", -99, -99, -99, -99 )
     sys2 = deepcopy( DEFAULT_PARAMS )
     sys2.legalaid.civil = map_sys_from_subsys( allresp.params.civil )
-    @show "civil mapped ok"
+    @debug "civil mapped ok"
     sys2.legalaid.aa = map_sys_from_subsys( allresp.params.aa )
-    @show "aa mapped ok"
+    @debug "aa mapped ok"
     try 
-        @show "at start of run"
+        @debug "at start of run"
         res = do_la_run( settings, DEFAULT_PARAMS, sys2, sobs )
-        @show "run completed"
+        @debug "run completed"
         resp = CompleteResponse(
             res.xlsxfile,
             res.html,
@@ -273,7 +273,7 @@ end
 
 function submit_job()
     subsys = subsys_from_payload()
-    @info "submit_job uuid = $(subsys.uuid)"
+    @debug "submit_job uuid = $(subsys.uuid)"
     # allsubsys = get_params_from_dict(subsys.uuid)
     allresp = get( OUTPUT, subsys.uuid, nothing )
     if isnothing(allresp)
@@ -309,6 +309,6 @@ end
 # Run the job queues
 #
 for i in 1:NUM_HANDLERS # start n tasks to process requests in parallel
-  @info "starting handler $i"   
+  @debug "starting handler $i"   
   errormonitor( @async grab_runs_from_queue())
 end

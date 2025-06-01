@@ -68,7 +68,7 @@ function format_crosstab(
                 colour = if( r == 5) && ( c == 5)
                     "table-primary"
                 elseif(r == 5) || (c == 5) # totals
-                    "table-info"
+                    "table-debug"
                 elseif r == c # on the diagonal
                     "table-primary"
                 elseif r < c # above the diagonal
@@ -153,7 +153,7 @@ function frame_to_table(
     for r in eachrow( df )
         i += 1
         fmtd = format_diff( before=r[2], after=r[3], up_is_good=up_is_good[i], prec=prec )
-        row_style = i == totals_col ? "class='text-bold table-info' " : ""
+        row_style = i == totals_col ? "class='text-bold table-debug' " : ""
         row = "<tr $row_style><th class='text-left'>$(r[1])</th>
                   <td style='text-align:right'>$(fmtd.before_s)</td>
                   <td style='text-align:right'>$(fmtd.after_s)</td>
@@ -202,9 +202,9 @@ function frame_to_table(
         return get( translations, name, name )
     end
     
-    @info names( pre_df )
+    @debug names( pre_df )
     colnames = Utils.pretty.( translate.(names( pre_df )))
-    @info colnames
+    @debug colnames
     headers = "<th></th><th colspan='2'>" * join( colnames[2:end], "</th><th colspan='2'>" ) * "</th>"
     table = "<table class='table table-sm'>"
     table *= "<thead>
@@ -221,7 +221,7 @@ function frame_to_table(
     for r in 1:nrows
         prer = pre_df[r,:]
         postr = post_df[r,:]
-        row_style = r == nrows ? "class='text-bold table-info' " : ""
+        row_style = r == nrows ? "class='text-bold table-debug' " : ""
         rowlabel = r == nrows ? "Totals" : first_col_rename( prer[1] )
         row = "<tr $row_style><th>$rowlabel</th>"
         for c in 2:ncols
