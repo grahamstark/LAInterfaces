@@ -1,0 +1,78 @@
+---
+title: LASIM - A Microsimulation Model of Scottish Legal Aid
+format: 
+  beamer:
+    slide-level: 2
+
+title: "SLAB Legal Aid Model Documentation"
+date: today
+date-format: full
+
+authors:
+  - name: Graham Stark
+    affiliation: [Virtual Worlds Research]((https://www.virtual-worlds.scot)/[Northumbria University](https://www.northumbria.ac.uk/)
+    email: graham.stark@northumbria.ac.uk
+  - name: Kieren Forbes
+    affiliation: [Scottish Legal Aid Board (SLAB)](https://www.slab.org.uk/)
+    email: graham.stark@northumbria.ac.uk
+citation:
+  url: https://virtual-worlds.scot/techdoc/IMA_Presentation.html
+bibliography: SLAB-2024.bib
+csl: /home/graham_s/pandoc_data/chicago-note-bibliography.csl
+# engine: julia
+jupyter: julia-1.11
+---
+
+
+##  Simulating Legal Aid Entitlement 
+
+[Graham Stark](mailto:) [University of Northumbria]/[Virtual Worlds Research] 
+[](mailto:ForbesKi@slab.org.uk) 
+20/June 2025
+
+## Legal Aid In Scotland
+
+* &pound;150m pa 
+* Originated in WW2 to help divorcing soldiers;
+* Scottish System relatively generous 
+* 3 types
+    - Advice And Assistance "Quickie" legal aid for 1 hour of a solicitor's time, with very basic means test;
+    - Civil - divorce, housing etc. complex means test;
+    - Criminal - No means-test for Criminal Legal Aid: "A socicitor will be provided"; 
+
+## The Problem 
+
+* Complexity
+    - lots of small individual allowances - travel to work, etc
+* [Scottish Parliament Enquiry](https://www.parliament.scot/chamber-and-committees/committees/current-and-previous-committees/session-6-equalities-human-rights-and-civil-justice-committee/correspondence/2025/civil-legal-aid-inquiry-ercs-21-may-2025)
+    - concerns: complexity, not targetted at correct groups (esp non-criminal domestic abuse cases, child cases)
+    - committee sessions are worth watching;
+    - model used heavily in responses.
+
+## Previous work
+
+* Our model builds on earlier work for the England And Wales Legal Aid Board [@buck_means_2001;@buck_simplicity_2003;] 
+* the Scottish and Northern Irish Legal Aid Boards [@digan_financial_2007;@StarkSLAB]. 
+
+* England And Wales work built on IFS's Taxben model; 
+* Scottish work used [legal-aid only simulation written in ADA](https://github.com/grahamstark/scottish_legal_aid). 
+
+The E&W work is especially interesting as an attempt at formally modelling the simplification of a complex benefit.
+
+## LASim
+
+- objectives
+- previous work was solely entitlement based
+
+## Scotben
+
+- as seen 
+- fully open source 
+- 
+
+## problems
+
+- entitlement 
+- dodgy data
+-
+
