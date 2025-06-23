@@ -23,56 +23,75 @@ csl: /home/graham_s/pandoc_data/chicago-note-bibliography.csl
 jupyter: julia-1.11
 ---
 
-
-##  Simulating Legal Aid Entitlement 
-
-[Graham Stark](mailto:) [University of Northumbria]/[Virtual Worlds Research] 
-[](mailto:ForbesKi@slab.org.uk) 
-20/June 2025
-
 ## Legal Aid In Scotland
 
 * &pound;150m pa 
 * Originated in WW2 to help divorcing soldiers;
-* Scottish System relatively generous 
-* 3 types
+* Scottish System relatively generous; 
+* 3 types:
     - Advice And Assistance "Quickie" legal aid for 1 hour of a solicitor's time, with very basic means test;
     - Civil - divorce, housing etc. complex means test;
-    - Criminal - No means-test for Criminal Legal Aid: "A socicitor will be provided"; 
+    - Criminal - No means-test for Criminal Legal Aid: "A socicitor will be provided".
+
+## The Means Test
+
+* 'Passported' on Universal Credit and some 'legacy benefits';
+    - UC a particular problem as entitlement (sometimes to small amounts) goes well up the income scale;
+* otherwise, compare income minus a bunch of allowances to thresholds - outcome: either qualifies, qualifies with contribution, does not qualify.
 
 ## The Problem 
 
 * Complexity
-    - lots of small individual allowances - travel to work, etc
-* [Scottish Parliament Enquiry](https://www.parliament.scot/chamber-and-committees/committees/current-and-previous-committees/session-6-equalities-human-rights-and-civil-justice-committee/correspondence/2025/civil-legal-aid-inquiry-ercs-21-may-2025)
-    - concerns: complexity, not targetted at correct groups (esp non-criminal domestic abuse cases, child cases)
+    - lots of small individual allowances - travel to work, etc;
+* [Scottish Parliament Enquiry](https://www.parliament.scot/chamber-and-committees/committees/current-and-previous-committees/session-6-equalities-human-rights-and-civil-justice-committee/correspondence/2025/civil-legal-aid-inquiry-ercs-21-may-2025):
+    - concerns: complexity, not targetted at correct groups (esp non-criminal domestic abuse cases, child cases);
     - committee sessions are worth watching;
     - model used heavily in responses.
 
 ## Previous work
 
-* Our model builds on earlier work for the England And Wales Legal Aid Board [@buck_means_2001;@buck_simplicity_2003;] 
+* Our model builds on earlier work for the England And Wales Legal Aid Board [@buck_means_2001;@buck_simplicity_2003];
 * the Scottish and Northern Irish Legal Aid Boards [@digan_financial_2007;@StarkSLAB]. 
 
-* England And Wales work built on IFS's Taxben model; 
+* England And Wales work built on IFS's Taxben model[@giles_taxben:_1995]; 
 * Scottish work used [legal-aid only simulation written in ADA](https://github.com/grahamstark/scottish_legal_aid). 
 
 The E&W work is especially interesting as an attempt at formally modelling the simplification of a complex benefit.
 
 ## LASim
 
-- objectives
-- previous work was solely entitlement based
+* objectives:
+    - accurate costings of often quite finniky changes;
+    - usable by SLAB in-house staff;
+    - emphasis on output detail:
+        - what kind of people are gaining and losing entitlement? 
+        - 
+* previous work was solely entitlement based.
 
 ## Scotben
 
-- as seen 
-- fully open source 
-- 
+* [as seen last year](https://triplepc.northumbria.ac.uk) 
+* [fully open source](https://github.com/grahamstark/ScottishTaxBenefitModel.jl); 
+* mainly uses Family Resources Survey (FRS)[@dwp_family_2012] for data.
 
-## problems
 
-- entitlement 
-- dodgy data
--
+## Entitlements to Costings
+
+* Re-work in progress!
+* use Civil Module Scottish Crime and Justice Survey to find propensities of different households to have particular problem types;
+* use the propensities to impute live records from SLAB case files - gives costs;
+    - compare the costs to the contributions.
+* [Technical Documentation](https://lasim.virtual-worlds.scot/techdoc/index.html)
+
+## Problems
+
+* poor data on some small expense items - v important for reform effort;
+* moving from entitlements to payments much tricker than for normal benefits;
+* SLAB technical people caused pain ... has to run on the slowest machine they have .. 
+
+## Live Demo
+
+* [https://lasim.virtual-worlds.scot]
+
+## THANK YOU 
 
