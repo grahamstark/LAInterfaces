@@ -1,26 +1,28 @@
 ---
 title: LASIM - A Microsimulation Model of Scottish Legal Aid
+# format: 
+#  beamer:
+#    slide-level: 2
 format: 
-  beamer:
-    slide-level: 2
-
-title: "SLAB Legal Aid Model Documentation"
+    revealjs:
+        smaller: true
+        scrollable: true  
+        theme: moon # league # sky #solarized
 date: today
 date-format: full
-
 authors:
   - name: Graham Stark
-    affiliation: [Virtual Worlds Research]((https://www.virtual-worlds.scot)/[Northumbria University](https://www.northumbria.ac.uk/)
+    affiliation: Virtual Worlds Research/University of Northumbria 
     email: graham.stark@northumbria.ac.uk
   - name: Kieren Forbes
-    affiliation: [Scottish Legal Aid Board (SLAB)](https://www.slab.org.uk/)
-    email: graham.stark@northumbria.ac.uk
+    affiliation: Scottish Legal Aid Board (SLAB)
+    email: ForbesKi@slab.org.uk
 citation:
   url: https://virtual-worlds.scot/techdoc/IMA_Presentation.html
 bibliography: SLAB-2024.bib
 csl: /home/graham_s/pandoc_data/chicago-note-bibliography.csl
 # engine: julia
-jupyter: julia-1.11
+# jupyter: julia-1.11
 ---
 
 ## Legal Aid In Scotland
@@ -91,7 +93,7 @@ The E&W work is especially interesting as an attempt at formally modelling the s
 
 ## Live Demo
 
-* [https://lasim.virtual-worlds.scot]
+* [https://lasim.virtual-worlds.scot](https://lasim.virtual-worlds.scot)
 
 ## THANK YOU 
 
