@@ -16,6 +16,9 @@ PlutoUI = "7f904dfe-b85e-4ff6-b463-dae2292396a8"
 ScottishTaxBenefitModel = "a734f2ee-4b7f-478f-84ca-797081d39f6e"
 StatsBase = "2913bbd2-ae8a-5f71-8c99-4fb6c76f3a91"
 
+[sources]
+ScottishTaxBenefitModel = {url = "https://github.com/grahamstark/ScottishTaxBenefitModel.jl"}
+
 [compat]
 julia = "1"
 
