@@ -28,7 +28,7 @@
             <span class='display-4 nav-item'><a class='nav-link active' href='https://www.slab.org.uk/'>
                 <img src='images/slab-logo.svg' height='120' width='280'/></a></span>
             <span class='display-4 nav-item'>Scottish Legal Aid Board Simulator</span>
-            <span class='display-6 nav-item'>v1.2 14 August 2025</span>
+            <span class='display-6 nav-item'>v1.2 14th August 2025</span>
         </nav>
         
         </header>
@@ -707,6 +707,18 @@
                 <div class="row">
                     <h3 class='text-secondary'>Run Settings</h3>
                     <fieldset class="col-4 border text-black m-1 p-2">
+                        <label for='payment_rate' class='form-label'>% Contributions Collected</label>
+                        <input id='payment_rate' 
+                            type='number' 
+                            name="payment_rate" 
+                            min='0' 
+                            max='100' 
+                            value='' 
+                            step='1' 
+                            size="12" 
+                            class='form-control w-50'/>
+                    </fieldset>                        
+                    <fieldset class="col-4 border text-black m-1 p-2">
                         <legend class="text-primary">Capital Option</legend>
                         <div class="form-check">
                             <input class="form-check-input" 
@@ -757,6 +769,7 @@
                             Hybrid Method (Financial and Physical Only); higher than raw FRS, lower than WAS.
                             </label>
                         </div>
+
                     </fieldset>
                     <fieldset class="col-4 border text-black m-1 p-2">
                         <legend class="text-primary">Takeup Correction</legend>
@@ -1282,7 +1295,8 @@ function loadParams( defaults, params ){
         "reset_all_if_changed",
         params.reset_all_if_changed,
         defaults.reset_all_if_changed );
-    
+    setVal( "payment_rate", params.payment_rate, defaults.payment_rate );
+
     if(params.systype == 'sys_civil'){
         $( "#income_contrib_rate" ).html( "Rate (%)" );
         $( "#units_label").html( "Money Amounts in Annual &pound;s" )
@@ -1517,7 +1531,6 @@ function uuidv4() {
   });
 }
 
-
 function loadFromForm(new_uuid){
     ic = scrapetax( "income-contribution" );
     cc = scrapetax( "capital-contribution" );
@@ -1579,7 +1592,8 @@ function loadFromForm(new_uuid){
         wealth_method: $('input[name="wealth_method"]:checked').val(),
         do_dodgy_takeup_corrections: $('#do_dodgy_takeup_corrections').is(':checked'),
         reset_all_if_changed: $('#reset_all_if_changed').is(':checked'),
-    
+        payment_rate: parseFloat($('#payment_rate').val()),
+        
         ANY_OTHER_NI_OR_STATE_BENEFIT_disregarded: $('#ANY_OTHER_NI_OR_STATE_BENEFIT_disregarded').is(':checked'),
         ARMED_FORCES_COMPENSATION_SCHEME_disregarded: $('#ARMED_FORCES_COMPENSATION_SCHEME_disregarded').is(':checked'),
         ATTENDANCE_ALLOWANCE_disregarded: $('#ATTENDANCE_ALLOWANCE_disregarded').is(':checked'),
@@ -1724,8 +1738,8 @@ function submitForm( action, target ){
                     if( resp.response != "output_ready" ){
                         console.log( "starting run and timer");               
                         console.log( "resp" + resp);
-                        var uri = '/lasim/progress/';
-                        updater = $.PeriodicalUpdater('/lasim/progress/', {
+                        var uri = '/progress/';
+                        updater = $.PeriodicalUpdater('/progress/', {
                             url: uri,         // URL of ajax request
                             cache: false,     // By default, don't allow caching
                             method: 'POST',    // method; get or post

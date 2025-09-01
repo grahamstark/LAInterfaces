@@ -32,6 +32,11 @@ function map_settings_from_subsys!( settings :: Settings, subsys :: LASubsys )
     settings.wealth_method = subsys.wealth_method
     settings.do_dodgy_takeup_corrections = subsys.do_dodgy_takeup_corrections
     settings.uuid = subsys.uuid
+    if subsys.systype == sys_civil
+        settings.civil_payment_rate = subsys.payment_rate/100.0
+    else
+        settings.aa_payment_rate = subsys.payment_rate/100.0
+    end
 end
   
 function map_sys_from_subsys( subsys :: LASubsys )::OneLegalAidSys

@@ -140,7 +140,7 @@ end
 
 #=
 to start from repl: 
-ENV["GENIE_ENV"]="windows" # or "prod" or "dev" or "debug"
+ENV["GENIE_ENV"]="dev" # or "windows" # or "prod" or "dev" or "debug"
 using Genie
 Genie.loadapp()
 up()

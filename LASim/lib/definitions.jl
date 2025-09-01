@@ -67,6 +67,7 @@ mutable struct LASubsys{T}
     wealth_method :: ExtraDataMethod
     do_dodgy_takeup_corrections :: Bool
     reset_all_if_changed :: Bool
+    payment_rate :: T
 
     ANY_OTHER_NI_OR_STATE_BENEFIT_disregarded :: Bool
     ARMED_FORCES_COMPENSATION_SCHEME_disregarded :: Bool
@@ -181,6 +182,7 @@ function LASubsys( uuid :: UUID, sys :: OneLegalAidSys )
         DEFAULT_SETTINGS.wealth_method,
         DEFAULT_SETTINGS.do_dodgy_takeup_corrections,
         false,
+        (sys.systype == sys_civil ? round(DEFAULT_SETTINGS.civil_payment_rate*100;digits=0) : round(DEFAULT_SETTINGS.aa_payment_rate*100,digits=0)),
         ! (ANY_OTHER_NI_OR_STATE_BENEFIT in sys.incomes.included),
         ! (ARMED_FORCES_COMPENSATION_SCHEME in sys.incomes.included),
         ! (ATTENDANCE_ALLOWANCE in sys.incomes.included),

@@ -43,3 +43,21 @@ Test = "8dfed614-e22c-5e08-85e1-65c5234f0b40"
 
 [targets]
 test = ["Test"]
+
+[preferences.ScottishTaxBenefitModel]
+included_data_years = [2019, 2021, 2022, 2023]
+means_tested_routing = "uc_full"
+requested_threads = 4
+weighting_strategy = "use_runtime_computed_weights"
+dump_frames = false
+do_replacement_rates = false
+do_marginal_rates = false
+target_bc_income = "bhc_hh"
+do_legal_aid = true
+civil_payment_rate = 1.0
+aa_payment_rate = 1.0
+to_q = 3
+to_y = 2025
+lower_multiple = 0.62
+upper_multiple = 5.8
+
