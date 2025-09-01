@@ -123,6 +123,10 @@ function map_sys_from_subsys( subsys :: LASubsys )::OneLegalAidSys
     fullsys.uc_limit = subsys.uc_limit
     fullsys.uc_limit_type = subsys.uc_limit_type
     fullsys.uc_use_earnings = subsys.uc_use_earnings
+
+    fullsys.income_cont_type = subsys.income_cont_type
+    fullsys.capital_cont_type = subsys.capital_cont_type 
+    
     if subsys.FRIENDLY_SOCIETY_BENEFITS_disregarded 
       spop!(fullsys.incomes.included, FRIENDLY_SOCIETY_BENEFITS )
     else

@@ -238,6 +238,35 @@
                             <tbody id='income-contribution-rows'>
                             </tbody>
                         </table>
+                        <div>
+                            <legend class="text-primary">Are Rates fixed or a proportion?</legend>
+                            <div>
+                                <div class="form-check">
+                                    <input class="form-check-input" 
+                                        type="radio" 
+                                        name="income_cont_type" 
+                                        id="cont_proportion"  
+                                        value="cont_proportion"
+                                        checked='checked'>
+                                    <label 
+                                        class="form-check-label" 
+                                        for="uc_no_limit">
+                                      Proportion
+                                    </label>
+                                  </div>
+                                  <div class="form-check">
+                                    <input class="form-check-input" 
+                                        type="radio" 
+                                        name="income_cont_type"" 
+                                        id="cont_proportion"  
+                                        value="cont_proportion">
+                                    <label 
+                                        class="form-check-label" 
+                                        for="uc_max_income">
+                                      Fixed Amounts
+                                    </label>
+                                  </div>
+                            </div>
                     </fieldset>
 
                     <fieldset class='col border rounded-2 m-1 p-2'>
@@ -256,6 +285,36 @@
                             <tbody id='capital-contribution-rows'>
                             </tbody>
                         </table>
+                            <div>
+                            <legend class="text-primary">Are Rates fixed or a proportion?</legend>
+                            <div>
+                                <div class="form-check">
+                                    <input class="form-check-input" 
+                                        type="radio" 
+                                        name="capital_cont_type" 
+                                        id="cont_proportion"  
+                                        value="cont_proportion"
+                                        checked='checked'>
+                                    <label 
+                                        class="form-check-label" 
+                                        for="uc_no_limit">
+                                      Proportion
+                                    </label>
+                                  </div>
+                                  <div class="form-check">
+                                    <input class="form-check-input" 
+                                        type="radio" 
+                                        name="capital_cont_type"" 
+                                        id="cont_proportion"  
+                                        value="cont_proportion">
+                                    <label 
+                                        class="form-check-label" 
+                                        for="uc_max_income">
+                                      Fixed Amounts
+                                    </label>
+                                  </div>
+                            </div>
+
                     </fieldset>
 
                 </div> <!-- row -->
@@ -1286,7 +1345,11 @@ function loadParams( defaults, params ){
     setVal( "prem_disability_single", params.prem_disability_single, defaults.prem_disability_single );
     setVal( "prem_disability_couple", params.prem_disability_couple, defaults.prem_disability_couple );
 
+    setRadio( "income_cont_type", params.income_cont_type, defaults.income_cont_type )
+    setRadio( "capital_cont_type", params.capital_cont_type, defaults.capital_cont_type )
+
     setRadio( "wealth_method", params.wealth_method, defaults.wealth_method )
+
     setCheck(
         "do_dodgy_takeup_corrections",
         params.do_dodgy_takeup_corrections,
@@ -1590,6 +1653,10 @@ function loadFromForm(new_uuid){
         uc_limit_type: $('input[name="uc_limit_type"]:checked').val(),
         uc_use_earnings: $('input[name="uc_use_earnings"]:checked').val(), // $('#uc_use_earnings').is(':checked'),
         wealth_method: $('input[name="wealth_method"]:checked').val(),
+        
+        income_cont_type: $('input[name="income_cont_type"]:checked').val(),
+        capital_cont_type: $('input[name="capital_cont_type"]:checked').val(),
+
         do_dodgy_takeup_corrections: $('#do_dodgy_takeup_corrections').is(':checked'),
         reset_all_if_changed: $('#reset_all_if_changed').is(':checked'),
         payment_rate: parseFloat($('#payment_rate').val()),

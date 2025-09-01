@@ -44,6 +44,9 @@ mutable struct LASubsys{T}
     uc_limit_type :: UCLimitType
     uc_use_earnings :: UCEarningsType
 
+    income_cont_type :: ContributionType
+    capital_cont_type :: ContributionType
+
     housing_is_flat :: Bool
     housing_v :: T
     housing_max :: T
@@ -158,6 +161,9 @@ function LASubsys( uuid :: UUID, sys :: OneLegalAidSys )
         sys.uc_limit,
         sys.uc_limit_type,
         sys.uc_use_earnings,
+
+        sys.income_cont_type,
+        sys.capital_cont_type,
 
         sys.expenses.housing.is_flat,
         sys.expenses.housing.v,
