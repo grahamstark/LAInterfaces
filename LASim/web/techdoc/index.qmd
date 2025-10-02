@@ -247,6 +247,7 @@ WAS IMPUTATION:
     3rd Quartile:   56710.460409
     Maximum:        118888658.238608
 
+![](cell-3-output-1.png)
 
 ##### WAS/FRS Data Matching 
 
