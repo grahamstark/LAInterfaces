@@ -11,34 +11,8 @@ citation:
 bibliography: SLAB-2024.bib
 csl: /home/graham_s/pandoc_data/chicago-note-bibliography.csl
 # engine: julia
-jupyter: julia-1.11
+
 ---
-```{julia}
-
-#| echo: false
-#| warning: false
-#| output: false
-
-using DataFrames, CairoMakie, CSV, StatsBase, GLM, Revise 
-using ScottishTaxBenefitModel
-using .Definitions
-using .FRSHouseholdGetter
-using .RunSettings
-using .ConsumptionData
-using .LegalAidData
-
-settings = Settings()
-
-fig_width = 600
-fig_height = fig_width*3/4
-Makie.update_theme!(theme_ggplot2(); size = (fig_width, fig_height))
-#=
-hh_dataset = CSV.File( joinpath(settings.data_dir,settings.household_name*".tab" )) |> DataFrame
-people_dataset = CSV.File( joinpath( settings.data_dir, settings.people_name*".tab")) |> DataFrame
-=#
-cap = CSV.File( "/home/graham_s/julia/vw/StbScratch/data/capcompare.tab")|>DataFrame
-
-```
 
 
 ## Introduction
@@ -273,37 +247,6 @@ WAS IMPUTATION:
     3rd Quartile:   56710.460409
     Maximum:        118888658.238608
 
-
-
-```{julia}
-#| echo: false
-#| warning: false
-
-f = Figure(size = (1200, 1200))
-ax = Axis(f[1,1]; 
-    xlabel="HH Financial Assets £000s", 
-    title="Density Plot of 3 measures of financial assets", 
-    subtitle="truncated at 250k",
-    xtickformat="{:.0f}")
-# colo[u]rs: http://juliagraphics.github.io/Colors.jl/stable/namedcolors/
-c1 = density!(ax,cap[0 .<= cap.cap_other_method_1 .<= 250_000,:cap_other_method_1]./1000, color = (:blue, 0.4))
-c2 = density!(ax,cap[0 .<= cap.cap_no_method .<= 250_000,:cap_no_method]./1000, color = (:deeppink, 0.4))
-c3 = density!(ax,cap[0 .<= cap.cap_imputation .<= 250_000,:cap_imputation]./1000, color=(:green,0.4))
-Legend(f[1, 2],[c1,c2,c3], ["Hybrid Method", "Raw FRS", "WAS Imputation"])
-
-ax2 = Axis(f[2,1]; 
-    xlabel="Log HH Financial Assets ", 
-    subtitle="Log Scale",
-    xtickformat="{:.1f}")
-# colo[u]rs: http://juliagraphics.github.io/Colors.jl/stable/namedcolors/
-c1 = density!(ax2,log.(cap[0 .< cap.cap_other_method_1 .<= 250_000,:cap_other_method_1]), color = (:blue, 0.4))
-c2 = density!(ax2,log.(cap[0 .< cap.cap_no_method .<= 250_000,:cap_no_method]), color = (:deeppink, 0.4))
-c3 = density!(ax2,log.(cap[0 .< cap.cap_imputation .<= 250_000,:cap_imputation]), color=(:green,0.4))
-# Legend(fl[2, 2],[c1,c2,c3], ["Hybrid Method", "Raw FRS", "WAS Imputation"])
-
-f
-
-```
 
 ##### WAS/FRS Data Matching 
 
