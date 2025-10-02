@@ -32,10 +32,10 @@ settings = Settings()
 fig_width = 600
 fig_height = fig_width*3/4
 Makie.update_theme!(theme_ggplot2(); size = (fig_width, fig_height))
-
+#=
 hh_dataset = CSV.File( joinpath(settings.data_dir,settings.household_name*".tab" )) |> DataFrame
 people_dataset = CSV.File( joinpath( settings.data_dir, settings.people_name*".tab")) |> DataFrame
-
+=#
 cap = CSV.File( "/home/graham_s/julia/vw/StbScratch/data/capcompare.tab")|>DataFrame
 
 ```
