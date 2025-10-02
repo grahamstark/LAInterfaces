@@ -11,7 +11,7 @@ citation:
 bibliography: SLAB-2024.bib
 csl: /home/graham_s/pandoc_data/chicago-note-bibliography.csl
 # engine: julia
-jupyter: julia-1.10
+jupyter: julia-1.11
 ---
 ```{julia}
 
@@ -49,6 +49,8 @@ For an overview of the purpose and desired specifications of the model, please r
 
 The LASim model that was built do do this built on earlier work for the England And Wales Legal Aid Board [@buck_means_2001;@buck_simplicity_2003;] and the Scottish and Northern Irish Legal Aid Boards [@digan_financial_2007;@StarkSLAB]. 
 
+The model has undergone continual development over the period January 2024-September 2025. This version reflects the code at the latter date.
+
 ## The Model
 ::: {.callout-note}
 
@@ -85,13 +87,14 @@ In addition, considerable development time was spent on the module [LegalAidRunn
 
 ### Taxes and Benefits
 
-The 2007 model was custom-written to specifically model Legal Aid. Instead of calculating liability to taxes and entitlements to benefits, it instead simply took recorded FRS values for these things and used those in its LA calculations. The current system is a general purpose tax-benefit model which makes it's own estimates of household liabilities and entitlements given the rules of the fiscal system. We chose this approach chiefly because the benefit system, in particular, is changing rapidly, especially with the phased introduction of Universal Credit. To model Scotland with reasonable accuracy, you need to 'pool' multiple years of FRS data and, unless you override recorded benefit receipts with values calculated on the current regime, older data becomes unrepresentative. (The same is true of direct taxes though this is less relevant to Legal Aid Calculations).
+The 2007 model was custom-written to specifically model Legal Aid. Instead of calculating liability to taxes and entitlements to benefits, it instead simply took recorded FRS values for these things and used those in its LA calculations. The current system is a general purpose tax-benefit model which makes it's own estimates of household liabilities and entitlements given the rules of the fiscal system. We chose this approach chiefly because the benefit system, in particular, is changing rapidly, especially with the phased introduction of Universal Credit. To model Scotland with reasonable accuracy, you need to 'pool' multiple years of FRS data and, unless you override recorded benefit receipts with values calculated on the current regime, older data becomes unrepresentative. (The same is true of direct taxes though this is less relevant to Legal Aid Calculations). Currently, the model uses
+data from the FRSs from 2019, 2021, 2022 and 2023. 2020 was skipped because of the pandemic. Previous versions used pooled 2015-2022 FRSs, including the pandemic year.
 
 ::: {.callout-note}
 There are two issues with benefits:
 
 * we use modelled entitlements rather than recorded receipts. There are currently no official estimates of means-tested benefit takeup (it is deemed too complex because of the legacy/UC transition[@dwp_income-related_2022]) but previous estimates were of the range 50-80% [^@]. As a late option, a simple takeup correction routine was added; this is [discussed below]();
-* the transition from Legacy Benefits to Universal Credit is progressing and this is hard to capture accurately. [Our modelling of this](https://github.com/grahamstark/ScottishTaxBenefitModel.jl/blob/master/src/UCTransition.jl) is based on analysis by the House Of Commons Library[@house_of_commons_library_constituency_2020].
+* in the final Sep 2025 version, it is assumed that the transition to Universal Credit is 100% complete. This is in fact the case for Tax Credits, and almost the case for Income Support/JSA/ESA. Previous versions [attempted to model the transition](https://github.com/grahamstark/ScottishTaxBenefitModel.jl/blob/master/src/UCTransition.jl) based on analysis by the House Of Commons Library[@house_of_commons_library_constituency_2020].
 
 :::
 
@@ -146,7 +149,7 @@ There are several issues with the front-end:
 
 ### FRS Data
 
-The model uses the Scottish households from pooled 2015-2021 Family Resources (FRS) data[@department_for_work_and_pensions_family_2024]. We use the public use FRS release which has a number of fields deleted for privacy reasons, though the deletions often seem arbitrary. 
+The model uses the Scottish households from pooled 2019,2021,2022 and 2023 Family Resources (FRS) data[@department_for_work_and_pensions_family_2024]. We use the public use FRS release which has a number of fields deleted for privacy reasons, though the deletions often seem arbitrary. 
 
 ### Matching 
 
@@ -373,7 +376,7 @@ Anonymised versions of the complete SLAB Civil and AA payments data for 2022/3 w
 
 ::: {.callout-note}
 
-The model data is currently uprated to 2023 Q3 and the tax-benefit parameter system is as of November 2023. So there is a 2p reduction in National Insurance, a round of benefit uprating, and 6 months of wage and cost uprating that will have to be a applied. The Legal Aid parameters themselves are those currently in operation.
+The model data is currently uprated to 2025 Q3 and the tax-benefit parameter system is as of November 2024. The Legal Aid parameters themselves are those currently in operation.
 
 :::
 
